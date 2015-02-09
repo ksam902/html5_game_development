@@ -50,6 +50,8 @@ function onSetup() {
 
     // construct game objects
     background = assetManager.getSprite("assets");
+    background.x = 0;
+    background.y = 0;
     background.gotoAndStop("background");
     stage.addChild(background);
     introCaption = assetManager.getSprite("assets");
