@@ -1,0 +1,80 @@
+var manifest = [
+    {
+        src:"lib/assets_good.png",
+        id:"assets",
+        data:{
+            "framerate":24,
+            "images":["assets_good.png"],
+            "frames":[
+                [0, 0, 600, 561, 0, 0, 0],
+                [600, 0, 600, 561, 0, 0, 0],
+                [1200, 0, 600, 561, 0, 0, 0],
+                [1800, 0, 600, 561, 0, 0, 0],
+                [2400, 0, 600, 561, 0, 0, 0],
+                [3000, 0, 600, 561, 0, 0, 0],
+                [0, 561, 600, 561, 0, 0, 0],
+                [600, 561, 600, 561, 0, 0, 0],
+                [1200, 561, 600, 561, 0, 0, 0],
+                [1800, 561, 600, 561, 0, 0, 0],
+                [2400, 561, 600, 561, 0, 0, 0],
+                [3000, 561, 600, 561, 0, 0, 0],
+                [0, 1122, 600, 561, 0, 0, 0],
+                [600, 1122, 600, 561, 0, 0, 0],
+                [1200, 1122, 600, 561, 0, 0, 0],
+                [1800, 1122, 600, 561, 0, 0, 0],
+                [2400, 1122, 600, 561, 0, 0, 0],
+                [3000, 1122, 600, 561, 0, 0, 0],
+                [0, 1683, 600, 561, 0, 0, 0],
+                [600, 1683, 600, 561, 0, 0, 0],
+                [1200, 1683, 600, 561, 0, 0, 0],
+                [1800, 1683, 600, 561, 0, 0, 0]
+            ],
+            "animations":{
+                "infoScreen": {"speed": 1, "frames": [18]},
+                "developerText": {"speed": 1, "frames": [15]},
+                "worm": {"speed": 1, "frames": [2]},
+                "pauseText": {"speed": 1, "frames": [16]},
+                "newGameText": {"speed": 1, "frames": [14]},
+                "bird": {"speed": 1, "next": "heartIcon", "frames": [0, 1]},
+                "cloud2": {"speed": 1, "frames": [4]},
+                "startBackground": {
+                    "speed": 1,
+                    "frames": [
+                        20,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21,
+                        21
+                    ]
+                },
+                "cloud1": {"speed": 1, "frames": [3]},
+                "instructionsText": {"speed": 1, "frames": [13]},
+                "heartIcon": {"speed": 1, "frames": [6]},
+                "arenaBackground": {"speed": 1, "frames": [19]},
+                "cloud3": {"speed": 1, "frames": [5]},
+                "highScoresText": {"speed": 1, "frames": [12]},
+                "quitText": {"speed": 1, "frames": [10]},
+                "resumeText": {"speed": 1, "frames": [11]},
+                "menuButtonUp": {"speed": 1, "frames": [9]},
+                "healthBarEmpty": {"speed": 1, "frames": [8]},
+                "gameTitleText": {"speed": 1, "frames": [17]},
+                "healthBarFull": {"speed": 1, "frames": [7]}
+            }
+            }
+    }
+];
