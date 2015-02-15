@@ -1,8 +1,4 @@
-var manifest = [
-    {
-        src:"lib/assets_new.png",
-        id:"assets",
-        data:{
+{
 "framerate":30,
 "images":["assets_new.png"],
 "frames":[
@@ -69,5 +65,3 @@ var manifest = [
     "newGameText": {"speed": 1, "frames": [14]}
 }
 }
-    }
-];

@@ -8,6 +8,7 @@ var downKey = false;
 var upKey = false;
 var leftKey = false;
 var rightKey = false;
+var mousePointer;
 
 // frame rate of game
 var frameRate = 30;
@@ -16,10 +17,9 @@ var frameRate = 30;
 var assetManager = null;
 var bird = null;
 var willy = null;
-var cloud1;
-var cloud2;
-var cloud3;
-var cloud4;
+var willy2 = null;
+var cloud;
+
 
 var startBackground;
 var arenaBackground;
@@ -52,6 +52,7 @@ function onInit() {
     canvas.height = 600;
     // create stage object
     stage = new createjs.Stage(canvas);
+    stage.enableMouseOver(10);
 
     // construct preloader object to load spritesheet and sound assets
     assetManager = new AssetManager();
@@ -86,17 +87,7 @@ function onReady(e) {
     startBackground.gotoAndStop("startBackground");
     stage.addChild(startBackground);
 
-    cloud3 = assetManager.getSprite("assets");
-    cloud3.x = -75;
-    cloud3.y = 10;
-    cloud3.gotoAndStop("cloud3");
-    stage.addChild(cloud3);
-
-    cloud2 = assetManager.getSprite("assets");
-    cloud2.x = -150;
-    cloud2.y = 100;
-    cloud2.gotoAndStop("cloud2");
-    stage.addChild(cloud2);
+    addCloudsInfoScreen(5);
 
     gameTitle = assetManager.getSprite("assets");
     gameTitle.x = 100;
@@ -104,26 +95,9 @@ function onReady(e) {
     gameTitle.gotoAndStop("gameTitleText");
     stage.addChild(gameTitle);
 
-    cloud1 = assetManager.getSprite("assets");
-    cloud1.x = -250;
-    cloud1.y = 200;
-    cloud1.gotoAndStop("cloud1");
-    stage.addChild(cloud1);
-
-    bird = assetManager.getSprite("assets");
-    bird.x = -50;
-    bird.y = 20;
-    bird.gotoAndStop("bird");
-    stage.addChild(bird);
-    //bird = new Bird(stage, assetManager);
-
-    //cloud4 = new Cloud(stage, assetManager);
-
-    willy = assetManager.getSprite("assets");
-    willy.x = 260;
-    willy.y = 450;
-    willy.gotoAndStop("worm");
-    stage.addChild(willy);
+    var willy2 = new Willy(stage, assetManager);
+    willy2.resetMe();
+    willy2.setXPosYPos(260, 450);
 
     newGame = assetManager.getSprite("assets");
     newGame.x = 260;
@@ -153,22 +127,14 @@ function onReady(e) {
 }
 function onNewGame(e) {
 
-    stage.removeChild(startBackground);
-    stage.removeChild(cloud1);
-    stage.removeChild(cloud2);
-    stage.removeChild(cloud3);
-    stage.removeChild(gameTitle);
-    stage.removeChild(instructions);
-    stage.removeChild(developerCredits);
-    
+    stage.removeAllChildren();
+
     arenaBackground = assetManager.getSprite("assets");
     arenaBackground.gotoAndStop("arenaBackground");
     stage.addChild(arenaBackground);
 
-    // Adding Clouds back in
-    cloud1.x = -50;
-    cloud1.y = 10;
-    stage.addChild(cloud1);
+    addCloudsArenaScreen(4);
+
     // -- Health Elements
     healthIcon = assetManager.getSprite("assets");
     healthIcon.x = 125;
@@ -191,24 +157,37 @@ function onNewGame(e) {
     btnMenu.addEventListener("click", onMenu);
     btnMenu.addEventListener("mouseover", onMenuHover);
 
-    stage.addChild(willy);
+    var willy = new Willy(stage, assetManager);
+    willy.resetMe();
+    willy.setXPosYPos(260, 350);
     //Lets add the keyboard controls now
     $(document).keydown(function(e){
         var key = e.which;
         //We will add another clause to prevent reverse gear
-        if(key == "37" && direction != "right"){
-            direction = "left"; 
-            willy.x --; 
-        } else if(key == "38" && direction != "down"){
-            direction = "up"; 
-            willy.y --;
-        }else if(key == "39" && direction != "left"){
-            direction = "right";
-            willy.x ++;
-        }else if(key == "40" && direction != "up"){
-            direction = "down"; 
-            willy.y ++;
+        if(key == "37"){
+            //direction = "left"; 
+            willy.moveLeft();
+            e.preventDefault(); 
+        } else if(key == "38"){
+            //direction = "up"; 
+            willy.moveUp();
+            e.preventDefault();
+        }else if(key == "39"){
+            //direction = "left";
+            willy.moveRight();
+            e.preventDefault();
+        }else if(key == "40"){
+            //direction = "down"; 
+            willy.moveDown();
+            e.preventDefault();
         }
+    });
+
+    //Mouse Pointer
+    addMousePointer();    
+    $( "canvas" ).bind("click", function() {
+        console.log("Shoot Button Clicked.");
+        //alert( "Clicked over Canvas element." );
     });
 
     direction = "right";
@@ -219,21 +198,18 @@ function onNewGame(e) {
     stage.addChild(developerCredits);
 }
 function onMenu(e){
-    stage.removeChild(arenaBackground);
-    stage.removeChild(btnMenu);
-    stage.removeChild(developerCredits);
-    stage.removeChild(cloud1);
-    stage.removeChild(willy);
-
+    //remove all children from the stage and the aim for the mouse
+    stage.removeAllChildren();
+    removeMousePointer();
     //new background
     infoBackground = assetManager.getSprite("assets");
     infoBackground.gotoAndStop("infoScreen");
     stage.addChild(infoBackground);
 
+    //add in clouds
+    addCloudsInfoScreen(5);
+
     // Add background animation
-    stage.addChild(cloud3);
-    stage.addChild(cloud2);
-    stage.addChild(cloud1);
     stage.addChild(bird);
     stage.addChild(willy);
 
@@ -283,45 +259,65 @@ function onInstructions(e){
     alert("Instructions Screen will pop up.");
 }
 function onMenuHover(e){
-    alert("Menu Hover Button");
+    //alert("Menu Hover Button");
     stage.removeChild("btnMenu");
 
+}
+function addMousePointer(){
+    mousePointer = assetManager.getSprite("assets");
+    mousePointer.gotoAndStop("mousePointer");
+    $( "#stage" ).mousemove(function( event ) {
+        mousePointer.x = stage.mouseX - 20;
+        mousePointer.y = stage.mouseY - 20;
+    });
+    stage.addChild(mousePointer);
+}
+function removeMousePointer(){
+    stage.removeChild(mousePointer);
 }
 function onKeyDown(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 80) onMenu();
     if (e.keyCode == 27) onResumeGame();
 }
+// --------- CLOUDS --------
+
+// --------- BUG : If user clicks new game before all clouds are displayed on start screen, they will appear on the arena screen --------
+function addCloudsInfoScreen(numClouds){
+    // set interval
+    var cloudInterval = setInterval(addInfoCloud, 5000);
+    var cloudCount = 1;
+    function addInfoCloud() {
+        var cloud = new Cloud(stage, assetManager);
+        cloud.getInfoScreenClouds();
+        if(cloudCount === numClouds){
+            clearInterval(cloudInterval);
+        }else{        
+            cloudCount ++;
+            console.log(cloudCount + "Info Function");
+        }     
+    }
+};
+function addCloudsArenaScreen(numClouds){
+    // set interval
+    var cloudInterval = setInterval(addArenaCloud, 5000);
+    var cloudCount = 1;
+    function addArenaCloud() {
+        var cloud = new Cloud(stage, assetManager);
+        cloud.getArenaClouds(); 
+        if(cloudCount === numClouds){
+            clearInterval(cloudInterval);
+        }else{        
+            cloudCount ++;
+            console.log(cloudCount + "Arena Function");
+        } 
+    }
+};
+// --------- END CLOUDS --------
+// --------- TICK --------
 function onTick(e) {
     // TESTING FPS
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
-
-    // Detecting whether or not the Cloud is still on the canvas, if not set x back to original value
-    if (cloud1.x >= 600){
-        cloud1.x = -250;
-    }else{
-        cloud1.x += 1;
-    }
-    if (cloud2.x >= 600){
-        cloud2.x = -150;
-    }else{
-        cloud2.x += 1;
-    }
-    if (cloud3.x >= 600){
-        cloud3.x = -75;
-    }else{
-        cloud3.x += 1;
-    }
-    if (bird.x >= 600){
-        bird.x = -50;
-    }else{
-        bird.x += 1;
-    }
-    // if (willy.x >= 600){
-    //     willy.x = 10;
-    // }else{
-    //     willy.x += 1;
-    // }
 
     // update the stage!
     stage.update();
