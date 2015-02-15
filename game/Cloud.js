@@ -1,8 +1,7 @@
-//Class for Willy
+// Cloud Class
 var Cloud = function(stage, assetManager) {
     // initialization
     var xPos = 0;
-    var killed = false;
     // to keep track of scope
     var myScope = this;
 

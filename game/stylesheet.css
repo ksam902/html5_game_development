@@ -1,19 +1,50 @@
-/*body{
-	background-color: #000000;
-	color: #FFFFFF;
-}*/
-#developer-info, #fps {
-	width: 400px;
-	margin-left: auto;
+body{
+    background-color: #AB3334 !important;
+    color: #2C2C2C;
+}
+div.jumbotron{
+    background-color: #2C2C2C;
+    color: #FFFFFF;
+}
+div.jumbotron small{
+    color: #D3D3D3;
+}
+h2, h3, h4{
+    text-align: center;
+    padding-bottom: 10px;
+}
+button#btnBegin {
+    background-color: #AB3334 !important;
+    color: #FFFFFF;
+}
+#main{
+    background-color: #2C2C2C;
+    color: #FFFFFF;
+    border-radius: 15px;
+    width: 50%;
+    margin-top: 1%;
     margin-right: auto;
-    display: block;
+    margin-left: auto;
+    padding: 20px;
+    height: auto;
+    min-width: 350px;
+    max-height: 1000px;
+    overflow-x: hidden;
 }
 #stage{
-    width:550px;
-    height:550px;
+    width:600px;
+    height:600px;
     margin-left: auto;
     margin-right: auto;
     display: block;
     border-style:dotted;
     border-width:1px;
+    border-radius: 15px;
+}
+
+#developer-info, #fps {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }

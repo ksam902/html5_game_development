@@ -1,3 +1,5 @@
+//page variables
+var btnBegin;
 
 // game variables
 var stage = null;
@@ -8,14 +10,16 @@ var leftKey = false;
 var rightKey = false;
 
 // frame rate of game
-var frameRate = 24;
+var frameRate = 30;
 
 // game objects
 var assetManager = null;
 var bird = null;
+var willy = null;
 var cloud1;
 var cloud2;
 var cloud3;
+var cloud4;
 
 var startBackground;
 var arenaBackground;
@@ -29,8 +33,16 @@ var instructions;
 var btnMenu;
 var developerCredits;
 
+// -- Arena variables
+var healthIcon;
+var healthBar;
+
+
+var direction;
+
 // ------------------------------------------------------------ event handlers
 function onInit() {
+
     console.log(">> initializing");
 
     // get reference to canvas
@@ -47,6 +59,8 @@ function onInit() {
     stage.addEventListener("onAllAssetsLoaded", onReady);
     // load the assets
     assetManager.loadAssets(manifest);
+    btnBegin = document.getElementById("btnBegin");
+    btnBegin.disabled = true;
 }
 
 function onProgress(e) {
@@ -54,6 +68,15 @@ function onProgress(e) {
 }
 
 function onReady(e) {
+
+    //enable the begin button when the game is ready
+    btnBegin.disabled = false;
+    $('#btnBegin').click(function(){
+        $('html, body').animate({
+            scrollTop: $("#main").offset().top
+        }, 750);
+    });
+
     console.log(">> setup");
     // kill event listener
     stage.removeEventListener("onAssetLoaded", onProgress);
@@ -69,12 +92,6 @@ function onReady(e) {
     cloud3.gotoAndStop("cloud3");
     stage.addChild(cloud3);
 
-    bird = assetManager.getSprite("assets");
-    bird.x = -100;
-    bird.y = 20;
-    bird.gotoAndStop("bird");
-    stage.addChild(bird);
-
     cloud2 = assetManager.getSprite("assets");
     cloud2.x = -150;
     cloud2.y = 100;
@@ -82,8 +99,8 @@ function onReady(e) {
     stage.addChild(cloud2);
 
     gameTitle = assetManager.getSprite("assets");
-    gameTitle.x = 150;
-    gameTitle.y = 70;
+    gameTitle.x = 100;
+    gameTitle.y = 125;
     gameTitle.gotoAndStop("gameTitleText");
     stage.addChild(gameTitle);
 
@@ -93,19 +110,36 @@ function onReady(e) {
     cloud1.gotoAndStop("cloud1");
     stage.addChild(cloud1);
 
+    bird = assetManager.getSprite("assets");
+    bird.x = -50;
+    bird.y = 20;
+    bird.gotoAndStop("bird");
+    stage.addChild(bird);
+    //bird = new Bird(stage, assetManager);
+
+    //cloud4 = new Cloud(stage, assetManager);
+
+    willy = assetManager.getSprite("assets");
+    willy.x = 260;
+    willy.y = 450;
+    willy.gotoAndStop("worm");
+    stage.addChild(willy);
+
     newGame = assetManager.getSprite("assets");
-    newGame.x = 250;
-    newGame.y = 300;
+    newGame.x = 260;
+    newGame.y = 325;
     newGame.gotoAndStop("newGameText");
     stage.addChild(newGame);
     // setup event listener to start game
     newGame.addEventListener("click", onNewGame);
 
     instructions = assetManager.getSprite("assets");
-    instructions.x = 250;
-    instructions.y = 325;
+    instructions.x = 260;
+    instructions.y = 350;
     instructions.gotoAndStop("instructionsText");
     stage.addChild(instructions);
+    // setup event listener to instructions
+    instructions.addEventListener("click", onInstructions);
 
     developerCredits = assetManager.getSprite("assets");
     developerCredits.x = 200;
@@ -118,6 +152,7 @@ function onReady(e) {
     createjs.Ticker.addEventListener("tick", onTick);
 }
 function onNewGame(e) {
+
     stage.removeChild(startBackground);
     stage.removeChild(cloud1);
     stage.removeChild(cloud2);
@@ -134,14 +169,50 @@ function onNewGame(e) {
     cloud1.x = -50;
     cloud1.y = 10;
     stage.addChild(cloud1);
+    // -- Health Elements
+    healthIcon = assetManager.getSprite("assets");
+    healthIcon.x = 125;
+    healthIcon.y = 500;
+    healthIcon.gotoAndStop("heartIcon");
+    stage.addChild(healthIcon);
+
+    healthBar = assetManager.getSprite("assets");
+    healthBar.x = 200;
+    healthBar.y = 525;
+    healthBar.gotoAndStop("healthBarFull");
+    stage.addChild(healthBar);
 
     btnMenu = assetManager.getSprite("assets");
-    btnMenu.x = 450;
-    btnMenu.y = 575;
+    btnMenu.x = 500;
+    btnMenu.y = 500;
     btnMenu.gotoAndStop("menuButtonUp");
     stage.addChild(btnMenu);
     // setup event listener to go to pause screen
     btnMenu.addEventListener("click", onMenu);
+    btnMenu.addEventListener("mouseover", onMenuHover);
+
+    stage.addChild(willy);
+    //Lets add the keyboard controls now
+    $(document).keydown(function(e){
+        var key = e.which;
+        //We will add another clause to prevent reverse gear
+        if(key == "37" && direction != "right"){
+            direction = "left"; 
+            willy.x --; 
+        } else if(key == "38" && direction != "down"){
+            direction = "up"; 
+            willy.y --;
+        }else if(key == "39" && direction != "left"){
+            direction = "right";
+            willy.x ++;
+        }else if(key == "40" && direction != "up"){
+            direction = "down"; 
+            willy.y ++;
+        }
+    });
+
+    direction = "right";
+
     // setup event listeners for keyboard keys
     document.addEventListener("keydown", onKeyDown);
 
@@ -151,33 +222,43 @@ function onMenu(e){
     stage.removeChild(arenaBackground);
     stage.removeChild(btnMenu);
     stage.removeChild(developerCredits);
+    stage.removeChild(cloud1);
+    stage.removeChild(willy);
 
     //new background
     infoBackground = assetManager.getSprite("assets");
     infoBackground.gotoAndStop("infoScreen");
     stage.addChild(infoBackground);
 
+    // Add background animation
+    stage.addChild(cloud3);
+    stage.addChild(cloud2);
+    stage.addChild(cloud1);
+    stage.addChild(bird);
+    stage.addChild(willy);
+
     pauseTitle = assetManager.getSprite("assets");
     pauseTitle.x = 200;
-    pauseTitle.y = 150;
+    pauseTitle.y = 75;
     pauseTitle.gotoAndStop("pauseText");
     stage.addChild(pauseTitle);
 
     resumeGame = assetManager.getSprite("assets");
-    resumeGame.x = 250;
-    resumeGame.y = 300;
+    resumeGame.x = 260;
+    resumeGame.y = 325;
     resumeGame.gotoAndStop("resumeText");
     stage.addChild(resumeGame);
     // setup event listener to Resume Game
     resumeGame.addEventListener("click", onResumeGame);
 
+    // Add Instructions Back In
     stage.addChild(instructions);
 
     // !!! Need to Add Restart Game
 
     quitGame = assetManager.getSprite("assets");
-    quitGame.x = 250;
-    quitGame.y = 350;
+    quitGame.x = 260;
+    quitGame.y = 375;
     quitGame.gotoAndStop("quitText");
     stage.addChild(quitGame);
     // setup event listener to Quit Game
@@ -185,6 +266,8 @@ function onMenu(e){
 
     stage.addChild(developerCredits);
 
+    // setup event listeners for keyboard keys
+    document.addEventListener("keydown", onKeyDown);
     console.log("Menu Button Clicked");
 }
 function onResumeGame(e){
@@ -193,9 +276,21 @@ function onResumeGame(e){
 function onQuitGame(e){
     onReady();
 }
+function onGameOver(e){
+
+}
+function onInstructions(e){
+    alert("Instructions Screen will pop up.");
+}
+function onMenuHover(e){
+    alert("Menu Hover Button");
+    stage.removeChild("btnMenu");
+
+}
 function onKeyDown(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 80) onMenu();
+    if (e.keyCode == 27) onResumeGame();
 }
 function onTick(e) {
     // TESTING FPS
@@ -217,7 +312,17 @@ function onTick(e) {
     }else{
         cloud3.x += 1;
     }
-    bird.x += 1;
+    if (bird.x >= 600){
+        bird.x = -50;
+    }else{
+        bird.x += 1;
+    }
+    // if (willy.x >= 600){
+    //     willy.x = 10;
+    // }else{
+    //     willy.x += 1;
+    // }
+
     // update the stage!
     stage.update();
 }
