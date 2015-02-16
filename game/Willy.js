@@ -44,6 +44,7 @@ var Willy = function(stage, assetManager) {
         }
     }
     this.moveLeft = function(){
+        
         if(clip.x > 0){   
             clip.x -= 5;
         }

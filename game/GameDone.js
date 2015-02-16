@@ -1,5 +1,13 @@
 //page variables
 var btnBegin;
+var infoCloudCount;
+var infoCloudInterval;
+var infoBirdCount;
+var infoBirdInterval;
+var arenaCloudCount;
+var arenaCloudInterval;
+
+var infoScreenIndex = 0;    
 
 // game variables
 var stage = null;
@@ -20,7 +28,19 @@ var willy = null;
 var willy2 = null;
 var cloud;
 
+//START SCREEN ASSETS
+var arrowPointer;
 
+//arena assets
+var livesText;
+var killsText;
+var enemiesText;
+var waveText;
+var scoreText;
+
+//pause assets
+var resumeText;
+var restartText;
 var startBackground;
 var arenaBackground;
 var infoBackground;
@@ -43,7 +63,7 @@ var direction;
 // ------------------------------------------------------------ event handlers
 function onInit() {
 
-    console.log(">> initializing");
+    //console.log(">> initializing");
 
     // get reference to canvas
     canvas = document.getElementById("stage");
@@ -64,102 +84,56 @@ function onInit() {
     btnBegin.disabled = true;
 }
 
-function onProgress(e) {
-    console.log("progress: " + assetManager.getProgress());
-}
+function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
 
 function onReady(e) {
+
+    // Adding aimer for the mouse
+    mousePointer = assetManager.getSprite("assets");
+    mousePointer.gotoAndStop("mousePointer");
+    addMousePointer();
+    canvas.addEventListener("mouseenter", addMousePointer);
+    canvas.addEventListener("mouseout", removeMousePointer);      
 
     //enable the begin button when the game is ready
     btnBegin.disabled = false;
     $('#btnBegin').click(function(){
+        //$("div#main").fadeIn(800);
         $('html, body').animate({
             scrollTop: $("#main").offset().top
         }, 750);
+        btnBegin.disabled = true;
     });
+    //console.log(">> setup");
 
-    console.log(">> setup");
     // kill event listener
     stage.removeEventListener("onAssetLoaded", onProgress);
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
-    startBackground = assetManager.getSprite("assets");
-    startBackground.gotoAndStop("startBackground");
-    stage.addChild(startBackground);
+    loadStartScreen();
 
-    addCloudsInfoScreen(5);
-
-    gameTitle = assetManager.getSprite("assets");
-    gameTitle.x = 100;
-    gameTitle.y = 125;
-    gameTitle.gotoAndStop("gameTitleText");
-    stage.addChild(gameTitle);
-
-    var willy2 = new Willy(stage, assetManager);
-    willy2.resetMe();
-    willy2.setXPosYPos(260, 450);
-
-    newGame = assetManager.getSprite("assets");
-    newGame.x = 260;
-    newGame.y = 325;
-    newGame.gotoAndStop("newGameText");
-    stage.addChild(newGame);
-    // setup event listener to start game
-    newGame.addEventListener("click", onNewGame);
-
-    instructions = assetManager.getSprite("assets");
-    instructions.x = 260;
-    instructions.y = 350;
-    instructions.gotoAndStop("instructionsText");
-    stage.addChild(instructions);
-    // setup event listener to instructions
-    instructions.addEventListener("click", onInstructions);
-
-    developerCredits = assetManager.getSprite("assets");
-    developerCredits.x = 200;
-    developerCredits.y = 575;
-    developerCredits.gotoAndStop("developerText");
-    stage.addChild(developerCredits);
-
+     // setup event listeners for keyboard keys
+    document.addEventListener("keydown", onKeyDownStartScreen);   
+    document.removeEventListener("keydown", onKeyDownPauseScreen);
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
     createjs.Ticker.addEventListener("tick", onTick);
 }
 function onNewGame(e) {
 
-    stage.removeAllChildren();
+    // remove/setup event listeners for keyboard keys
+    document.removeEventListener("keydown", onKeyDownStartScreen);
+    document.removeEventListener("keydown", onKeyDownPauseScreen);
+    document.addEventListener("keydown", onKeyDownArenaScreen);
 
-    arenaBackground = assetManager.getSprite("assets");
-    arenaBackground.gotoAndStop("arenaBackground");
-    stage.addChild(arenaBackground);
+    //add assets
+    loadArenaScreen();
+    addMousePointer();
 
-    addCloudsArenaScreen(4);
-
-    // -- Health Elements
-    healthIcon = assetManager.getSprite("assets");
-    healthIcon.x = 125;
-    healthIcon.y = 500;
-    healthIcon.gotoAndStop("heartIcon");
-    stage.addChild(healthIcon);
-
-    healthBar = assetManager.getSprite("assets");
-    healthBar.x = 200;
-    healthBar.y = 525;
-    healthBar.gotoAndStop("healthBarFull");
-    stage.addChild(healthBar);
-
-    btnMenu = assetManager.getSprite("assets");
-    btnMenu.x = 500;
-    btnMenu.y = 500;
-    btnMenu.gotoAndStop("menuButtonUp");
-    stage.addChild(btnMenu);
-    // setup event listener to go to pause screen
-    btnMenu.addEventListener("click", onMenu);
-    btnMenu.addEventListener("mouseover", onMenuHover);
-
+    // -- WILLY --
     var willy = new Willy(stage, assetManager);
     willy.resetMe();
-    willy.setXPosYPos(260, 350);
+    willy.setXPosYPos(275, 350);
     //Lets add the keyboard controls now
     $(document).keydown(function(e){
         var key = e.which;
@@ -183,67 +157,29 @@ function onNewGame(e) {
         }
     });
 
-    //Mouse Pointer
-    addMousePointer();    
+    // --- SHOOTING FUNCTION - Mouse Pointer ----
+     
     $( "canvas" ).bind("click", function() {
-        console.log("Shoot Button Clicked.");
+        //console.log("Shoot Button Clicked.");
         //alert( "Clicked over Canvas element." );
     });
 
     direction = "right";
-
-    // setup event listeners for keyboard keys
-    document.addEventListener("keydown", onKeyDown);
-
-    stage.addChild(developerCredits);
 }
 function onMenu(e){
-    //remove all children from the stage and the aim for the mouse
+    //remove all assets and intervals
     stage.removeAllChildren();
-    removeMousePointer();
-    //new background
-    infoBackground = assetManager.getSprite("assets");
-    infoBackground.gotoAndStop("infoScreen");
-    stage.addChild(infoBackground);
+    clearInterval(arenaCloudInterval);
+    document.removeEventListener("keydown", onKeyDownArenaScreen);
+    document.addEventListener("keydown", onKeyDownPauseScreen);
+    
+    //load Pause screen assets
+    loadPauseScreen();
 
-    //add in clouds
-    addCloudsInfoScreen(5);
-
-    // Add background animation
-    stage.addChild(bird);
-    stage.addChild(willy);
-
-    pauseTitle = assetManager.getSprite("assets");
-    pauseTitle.x = 200;
-    pauseTitle.y = 75;
-    pauseTitle.gotoAndStop("pauseText");
-    stage.addChild(pauseTitle);
-
-    resumeGame = assetManager.getSprite("assets");
-    resumeGame.x = 260;
-    resumeGame.y = 325;
-    resumeGame.gotoAndStop("resumeText");
-    stage.addChild(resumeGame);
-    // setup event listener to Resume Game
-    resumeGame.addEventListener("click", onResumeGame);
-
-    // Add Instructions Back In
-    stage.addChild(instructions);
-
-    // !!! Need to Add Restart Game
-
-    quitGame = assetManager.getSprite("assets");
-    quitGame.x = 260;
-    quitGame.y = 375;
-    quitGame.gotoAndStop("quitText");
-    stage.addChild(quitGame);
-    // setup event listener to Quit Game
-    quitGame.addEventListener("click", onQuitGame);
-
-    stage.addChild(developerCredits);
+    addMousePointer();
 
     // setup event listeners for keyboard keys
-    document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("keydown", onKeyDownPauseScreen);
     console.log("Menu Button Clicked");
 }
 function onResumeGame(e){
@@ -251,6 +187,7 @@ function onResumeGame(e){
 }
 function onQuitGame(e){
     onReady();
+    addMousePointer();
 }
 function onGameOver(e){
 
@@ -264,8 +201,6 @@ function onMenuHover(e){
 
 }
 function addMousePointer(){
-    mousePointer = assetManager.getSprite("assets");
-    mousePointer.gotoAndStop("mousePointer");
     $( "#stage" ).mousemove(function( event ) {
         mousePointer.x = stage.mouseX - 20;
         mousePointer.y = stage.mouseY - 20;
@@ -275,45 +210,293 @@ function addMousePointer(){
 function removeMousePointer(){
     stage.removeChild(mousePointer);
 }
-function onKeyDown(e) {
-    // keystroke for "P" Button activating the menu screen
-    if (e.keyCode == 80) onMenu();
-    if (e.keyCode == 27) onResumeGame();
+// --------- LOAD SCREEN ASSETS --------
+
+function loadStartScreen(){
+
+    clearInterval(infoCloudInterval);
+    clearInterval(infoBirdInterval);
+    clearInterval(arenaCloudInterval);
+
+    startBackground = assetManager.getSprite("assets");
+    startBackground.gotoAndStop("startBackground");
+    stage.addChild(startBackground);
+
+    //add clouds and backgrounds
+    addBirdsInfoScreen(5); 
+    addCloudsInfoScreen(5);   
+
+    gameTitle = assetManager.getSprite("assets");
+    gameTitle.x = 120;
+    gameTitle.y = 125;
+    gameTitle.gotoAndStop("gameTitleText");
+    stage.addChild(gameTitle);
+
+    var willy2 = new Willy(stage, assetManager);
+    willy2.resetMe();
+    willy2.setXPosYPos(275, 450);
+
+    arrowPointer = assetManager.getSprite("assets");
+    arrowPointer.x = 220;
+    arrowPointer.y = 339;
+    arrowPointer.gotoAndStop("arrowPointer");
+    stage.addChild(arrowPointer);
+
+    newGame = assetManager.getSprite("assets");
+    newGame.x = 260;
+    newGame.y = 325;
+    newGame.gotoAndStop("newGameText");
+    stage.addChild(newGame);
+    // setup event listener to start game
+    newGame.addEventListener("click", onNewGame);
+
+    instructions = assetManager.getSprite("assets");
+    instructions.x = 260;
+    instructions.y = 350;
+    instructions.gotoAndStop("instructionsText");
+    stage.addChild(instructions);
+    // setup event listener to instructions
+    instructions.addEventListener("click", onInstructions);
+
+    developerCredits = assetManager.getSprite("assets");
+    developerCredits.x = 235;
+    developerCredits.y = 575;
+    developerCredits.gotoAndStop("developerText");
+    stage.addChild(developerCredits);
 }
+function loadArenaScreen(){
+    //remove and reset assets
+    stage.removeAllChildren();
+    clearInterval(infoCloudInterval);
+    clearInterval(infoBirdInterval);
+
+    arenaBackground = assetManager.getSprite("assets");
+    arenaBackground.gotoAndStop("arenaBackground");
+    stage.addChild(arenaBackground);
+    
+    //add clouds
+    addCloudsArenaScreen(4);
+
+    // -- Stats Assets
+    livesText = assetManager.getSprite("assets");
+    livesText.x = 50;
+    livesText.y = 10;
+    livesText.gotoAndStop("livesText");
+    stage.addChild(livesText);
+
+    killsText = assetManager.getSprite("assets");
+    killsText.x = 125;
+    killsText.y = 10;
+    killsText.gotoAndStop("killsText");
+    stage.addChild(killsText);
+
+    enemiesText = assetManager.getSprite("assets");
+    enemiesText.x = 200;
+    enemiesText.y = 10;
+    enemiesText.gotoAndStop("birdsText");
+    stage.addChild(enemiesText);
+
+    waveText = assetManager.getSprite("assets");
+    waveText.x = 375;
+    waveText.y = 11;
+    waveText.gotoAndStop("waveText");
+    stage.addChild(waveText);
+
+    scoreText = assetManager.getSprite("assets");
+    scoreText.x = 200;
+    scoreText.y = 500;
+    scoreText.gotoAndStop("scoreText");
+    stage.addChild(scoreText);
+
+    // -- Health Elements
+    healthIcon = assetManager.getSprite("assets");
+    healthIcon.x = 125;
+    healthIcon.y = 500;
+    healthIcon.gotoAndStop("heartIcon");
+    stage.addChild(healthIcon);
+
+    healthBar = assetManager.getSprite("assets");
+    healthBar.x = 200;
+    healthBar.y = 525;
+    healthBar.gotoAndStop("healthBarFull");
+    stage.addChild(healthBar);
+
+    btnMenu = assetManager.getSprite("assets");
+    btnMenu.x = 500;
+    btnMenu.y = 515;
+    btnMenu.gotoAndStop("menuButtonUp");
+    stage.addChild(btnMenu);
+    // setup event listener to go to pause screen
+    btnMenu.addEventListener("click", onMenu);
+    //btnMenu.addEventListener("mouseover", onMenuHover);
+
+    stage.addChild(developerCredits);
+}
+function loadPauseScreen(){
+
+    //new background
+    infoBackground = assetManager.getSprite("assets");
+    infoBackground.gotoAndStop("infoBackground");
+    stage.addChild(infoBackground);
+
+    addCloudsInfoScreen(4);   
+    addBirdsInfoScreen(4);
+
+    pauseTitle = assetManager.getSprite("assets");
+    pauseTitle.x = 200;
+    pauseTitle.y = 75;
+    pauseTitle.gotoAndStop("pauseText");
+    stage.addChild(pauseTitle);
+
+    stage.addChild(arrowPointer);
+    arrowPointer.x = 220;
+    arrowPointer.y = 311;
+
+    resumeGame = assetManager.getSprite("assets");
+    resumeGame.x = 260;
+    resumeGame.y = 300;
+    resumeGame.gotoAndStop("resumeText");
+    stage.addChild(resumeGame);
+    // setup event listener to Resume Game
+    resumeGame.addEventListener("click", onResumeGame);
+
+    restartText = assetManager.getSprite("assets");
+    restartText.x = 260;
+    restartText.y = 325;
+    restartText.gotoAndStop("restartText");
+    stage.addChild(restartText);
+    // setup event listener to Resume Game
+    resumeGame.addEventListener("click", onResumeGame);    
+
+    // Add Instructions Back In
+    stage.addChild(instructions);
+
+    quitGame = assetManager.getSprite("assets");
+    quitGame.x = 260;
+    quitGame.y = 375;
+    quitGame.gotoAndStop("quitText");
+    stage.addChild(quitGame);
+    // setup event listener to Quit Game
+    quitGame.addEventListener("click", onQuitGame);
+
+    stage.addChild(developerCredits);
+}
+function loadGameOverScreen(){
+
+
+}
+// --------- END LOAD SCREEN ASSETS --------
+// --------- SCREEN KEYDOWN FUNCTIONS --------
+function onKeyDownStartScreen(e) {
+    // keystroke for "P" Button activating the menu screen
+    if (e.keyCode == 78) onNewGame();
+    if (e.keyCode == 73) onInstructions();
+    if(e.keyCode == "38"){
+        //direction = "up"; 
+        arrowPointer.y = 339;
+        e.preventDefault();
+    } else if(e.keyCode == "40"){
+        //direction = "down"; 
+        arrowPointer.y = 364;
+        e.preventDefault();
+    }
+    if(e.keyCode == "13" && arrowPointer.y === 339){
+        onNewGame();
+    }
+    if(e.keyCode == "13" && arrowPointer.y === 364){
+        onInstructions();
+    }    
+}
+function onKeyDownArenaScreen(e) {
+    // keystroke for "P" Button activating the menu screen
+    if (e.keyCode == 77) onMenu();
+    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
+}
+function onKeyDownPauseScreen(e) {
+    var textArray = [311, 336, 361, 386];
+    // keystroke for "P" Button activating the menu screen
+    if (e.keyCode == 81) onReady();
+    if (e.keyCode == 73) onInstructions();
+    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
+    // if(e.keyCode == "38"){
+    //     //direction = "up";
+    //     if(infoScreenIndex >= 0 ){
+    //         arrowPointer.y = textArray[infoScreenIndex];
+    //         infoScreenIndex--;
+    //         console.log(textArray[infoScreenIndex] + " : " + infoScreenIndex--);
+    //     } 
+    //     e.preventDefault();
+    // } else if(e.keyCode == "40"){
+    //     //direction = "down";
+    //     if(infoScreenIndex <= 3){ 
+    //         arrowPointer.y = textArray[infoScreenIndex];
+    //         infoScreenIndex++;            
+    //         console.log(textArray[infoScreenIndex] + " : " + infoScreenIndex++);           
+    //     }
+
+    //     e.preventDefault();
+    // }
+    // if(e.keyCode == "13" && arrowPointer.y === 339){
+    //     onNewGame();
+    // }
+    // if(e.keyCode == "13" && arrowPointer.y === 364){
+    //     onInstructions();
+    // } 
+}
+function onKeyDownGameOverScreen(e){
+}
+// --------- END KEYDOWN FUNCTIONS --------
 // --------- CLOUDS --------
 
-// --------- BUG : If user clicks new game before all clouds are displayed on start screen, they will appear on the arena screen --------
 function addCloudsInfoScreen(numClouds){
+    infoCloudCount = 1;
     // set interval
-    var cloudInterval = setInterval(addInfoCloud, 5000);
-    var cloudCount = 1;
+    infoCloudInterval = setInterval(addInfoCloud, 6000);
     function addInfoCloud() {
-        var cloud = new Cloud(stage, assetManager);
-        cloud.getInfoScreenClouds();
-        if(cloudCount === numClouds){
-            clearInterval(cloudInterval);
+        if(infoCloudCount <= numClouds){
+            var cloud = new Cloud(stage, assetManager);
+            cloud.getInfoScreenClouds();            
+            //console.log(infoCloudCount + "/" + numClouds +  " Cloud Info Function");
+            infoCloudCount ++;
         }else{        
-            cloudCount ++;
-            console.log(cloudCount + "Info Function");
+            clearInterval(infoCloudInterval);
         }     
     }
 };
 function addCloudsArenaScreen(numClouds){
+    arenaCloudCount = 1;
     // set interval
-    var cloudInterval = setInterval(addArenaCloud, 5000);
-    var cloudCount = 1;
+    arenaCloudInterval = setInterval(addArenaCloud, 5000);
     function addArenaCloud() {
-        var cloud = new Cloud(stage, assetManager);
-        cloud.getArenaClouds(); 
-        if(cloudCount === numClouds){
-            clearInterval(cloudInterval);
-        }else{        
-            cloudCount ++;
-            console.log(cloudCount + "Arena Function");
+        if(arenaCloudCount <= numClouds){
+            var cloud = new Cloud(stage, assetManager);
+            cloud.getArenaClouds(); 
+            //console.log(arenaCloudCount + "/" + numClouds + " Cloud Arena Function");
+            arenaCloudCount ++;
+        }else{
+            clearInterval(arenaCloudInterval);                
         } 
     }
 };
 // --------- END CLOUDS --------
+
+// --------- BIRDS --------
+function addBirdsInfoScreen(numBirds){
+    infoBirdCount = 1;
+    // set interval
+    infoBirdInterval = setInterval(addInfoBird, 4000);
+    function addInfoBird() {  
+        if(infoBirdCount <= numBirds){
+            var bird = new Bird(stage, assetManager);
+            bird.getInfoScreenBirds();        
+            //console.log(infoBirdCount + "/" + numBirds + " Bird Info Function");
+            infoBirdCount ++;
+        }else{        
+            clearInterval(infoBirdInterval);            
+        } 
+    }
+}
+// --------- END BIRDS --------
 // --------- TICK --------
 function onTick(e) {
     // TESTING FPS

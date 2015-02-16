@@ -26,19 +26,15 @@ var Cloud = function(stage, assetManager) {
     this.getInfoScreenClouds = function(){
         rdmCloud = getRandomCloud();
         clip.gotoAndStop(rdmCloud);
-        clip.x = getRandomNum(-100, -200);
-        xPos = clip.x;
+        clip.x = getRandomNum(-100, -150);
         clip.y = getRandomNum(0, 250);
-        yPos = clip.y;
         createjs.Ticker.addEventListener("tick", onMove);
         stage.addChild(clip);
     }
     this.getArenaClouds = function(){
         clip.gotoAndStop("cloud1");
-        clip.x = getRandomNum(-50, -400);
-        xPos = clip.x;
+        clip.x = getRandomNum(-100, -300);
         clip.y = getRandomNum(0, 50);
-        yPos = clip.y;
         createjs.Ticker.addEventListener("tick", onMove);
         stage.addChild(clip);
     }
@@ -69,7 +65,7 @@ var Cloud = function(stage, assetManager) {
     function onMove(e) {
         
         if(clip.x > stage.canvas.width){
-            clip.x = xPos;
+            clip.x = -100;
         }else{
            clip.x ++; 
         }
