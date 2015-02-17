@@ -122,6 +122,8 @@ function onReady(e) {
 }
 function onNewGame(e) {
 
+    stage.removeAllChildren();
+
     // remove/setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
     document.removeEventListener("keydown", onKeyDownPauseScreen);
@@ -176,7 +178,6 @@ function onNewGame(e) {
     direction = "right";
 }
 function onMenu(e){
-
     //remove all assets and intervals
     stage.removeAllChildren();
     clearInterval(arenaCloudInterval);
