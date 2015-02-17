@@ -5,9 +5,7 @@ var infoCloudInterval;
 var infoBirdCount;
 var infoBirdInterval;
 var arenaCloudCount;
-var arenaCloudInterval;
-
-var infoScreenIndex = 0;    
+var arenaCloudInterval; 
 
 // game variables
 var stage = null;
@@ -24,7 +22,10 @@ var frameRate = 30;
 // game objects
 var assetManager = null;
 var bird = null;
-var willy = null;
+var birdDelay;
+var birdTimer;
+var birdsShot;
+//var willy = null;
 var willy2 = null;
 var cloud;
 
@@ -157,22 +158,31 @@ function onNewGame(e) {
         }
     });
 
+    // construct and setup bugtimer to drop bugs on displaylist
+    birdDelay = 2000;
+    birdTimer = window.setInterval(onAddBird, birdDelay);
+
     // --- SHOOTING FUNCTION - Mouse Pointer ----
-     
-    $( "canvas" ).bind("click", function() {
-        //console.log("Shoot Button Clicked.");
-        //alert( "Clicked over Canvas element." );
-    });
+        $('#stage').click(function(){
+            $('#stage').mousemove(function(e){
+                console.log((e.pageX - 413) + " : " + (e.pageY - 385));
+            });
+        });
+        stage.addEventListener("click", function(e) {
+            console.log("Arrow Added " + Math.floor(e.stageX) + " : " + Math.floor(e.stageY));
+            shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
+        });        
 
     direction = "right";
 }
 function onMenu(e){
+
     //remove all assets and intervals
     stage.removeAllChildren();
     clearInterval(arenaCloudInterval);
+    clearInterval(birdTimer);
     document.removeEventListener("keydown", onKeyDownArenaScreen);
     document.addEventListener("keydown", onKeyDownPauseScreen);
-    
     //load Pause screen assets
     loadPauseScreen();
 
@@ -413,35 +423,59 @@ function onKeyDownArenaScreen(e) {
     if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
 }
 function onKeyDownPauseScreen(e) {
-    var textArray = [311, 336, 361, 386];
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 81) onReady();
     if (e.keyCode == 73) onInstructions();
-    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
-    // if(e.keyCode == "38"){
-    //     //direction = "up";
-    //     if(infoScreenIndex >= 0 ){
-    //         arrowPointer.y = textArray[infoScreenIndex];
-    //         infoScreenIndex--;
-    //         console.log(textArray[infoScreenIndex] + " : " + infoScreenIndex--);
-    //     } 
-    //     e.preventDefault();
-    // } else if(e.keyCode == "40"){
-    //     //direction = "down";
-    //     if(infoScreenIndex <= 3){ 
-    //         arrowPointer.y = textArray[infoScreenIndex];
-    //         infoScreenIndex++;            
-    //         console.log(textArray[infoScreenIndex] + " : " + infoScreenIndex++);           
-    //     }
+    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();    
 
-    //     e.preventDefault();
-    // }
-    // if(e.keyCode == "13" && arrowPointer.y === 339){
-    //     onNewGame();
-    // }
-    // if(e.keyCode == "13" && arrowPointer.y === 364){
-    //     onInstructions();
-    // } 
+    if(e.keyCode == "38"){
+        //direction = "up";
+        switch (arrowPointer.y){
+            case 386:
+                arrowPointer.y = 361;
+                break;
+            case 361:
+                arrowPointer.y = 336;
+                break;
+            case 336:
+                arrowPointer.y = 311;
+                break;        
+            default:
+        }
+        e.preventDefault();
+    } else if(e.keyCode == "40"){
+        //direction = "down";
+        switch (arrowPointer.y){
+            case 311:
+                arrowPointer.y = 336;
+                break;
+            case 336:
+                arrowPointer.y = 361;
+                break;
+            case 361:
+                arrowPointer.y = 386;
+                break;        
+            default:
+        }
+        e.preventDefault();
+    } else if(e.keyCode == "13"){
+        //direction = "down";
+        //var textArray = [311, 336, 361, 386];
+        switch (arrowPointer.y){
+            case 311:
+                onResumeGame();
+                break;
+            case 336:
+                onResumeGame();;
+                break;
+            case 361:
+                onInstructions();
+                break;        
+            default:
+                onReady();
+        }        
+    }
+
 }
 function onKeyDownGameOverScreen(e){
 }
@@ -496,7 +530,21 @@ function addBirdsInfoScreen(numBirds){
         } 
     }
 }
+function onAddBird(e) {
+    // add bug to the stage
+    var arenaBird = new Bird(stage, assetManager);
+    arenaBird.setupMe();
+    console.log("Bird Added");
+}
 // --------- END BIRDS --------
+// --------- WILLY --------
+function shootProjectile(mouseX, mouseY, willy){
+    // add arrow on button click to the stage
+    //willy.shoot();
+    var arrow = new Projectile(stage, assetManager);
+    arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
+}
+// --------- END WILLY --------
 // --------- TICK --------
 function onTick(e) {
     // TESTING FPS
