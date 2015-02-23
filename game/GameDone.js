@@ -47,6 +47,7 @@ var restartText;
 var startBackground;
 var arenaBackground;
 var infoBackground;
+var instructionsBackground;
 var gameTitle;
 var pauseTitle;
 var newGame;
@@ -54,6 +55,7 @@ var resumeGame;
 var quitGame;
 var instructions;
 var btnMenu;
+var btnThanks;
 var developerCredits;
 
 // -- Arena variables
@@ -215,7 +217,20 @@ function onGameOver(e){
 
 }
 function onInstructions(e){
-    alert("Instructions Screen will pop up.");
+    instructionsBackground = assetManager.getSprite("assets");
+    instructionsBackground.gotoAndStop("instructionsBackground");
+    stage.addChild(instructionsBackground);
+
+    btnThanks = assetManager.getSprite("assets");
+    btnThanks.x = 210;
+    btnThanks.y = 450;
+    btnThanks.gotoAndStop("btnThanks");
+    stage.addChild(btnThanks);
+    btnThanks.addEventListener("click", function(){
+        stage.removeChild(instructionsBackground);
+        stage.removeChild(btnThanks);
+    });
+    addMousePointer();
 }
 function onMenuHover(e){
     //alert("Menu Hover Button");
