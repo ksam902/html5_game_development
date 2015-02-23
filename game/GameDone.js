@@ -5,7 +5,9 @@ var infoCloudInterval;
 var infoBirdCount;
 var infoBirdInterval;
 var arenaCloudCount;
-var arenaCloudInterval; 
+var arenaCloudInterval;
+var mouseX;
+var mouseY; 
 
 // game variables
 var stage = null;
@@ -142,7 +144,8 @@ function onNewGame(e) {
         var key = e.which;
         //We will add another clause to prevent reverse gear
         if(key == "37"){
-            //direction = "left"; 
+            //direction = "left";
+            //willy.scaleY = -1; 
             willy.moveLeft();
             e.preventDefault(); 
         } else if(key == "38"){
@@ -150,7 +153,8 @@ function onNewGame(e) {
             willy.moveUp();
             e.preventDefault();
         }else if(key == "39"){
-            //direction = "left";
+            //direction = "right";
+            //willy.scaleY = 1;
             willy.moveRight();
             e.preventDefault();
         }else if(key == "40"){
@@ -167,14 +171,21 @@ function onNewGame(e) {
     // --- SHOOTING FUNCTION - Mouse Pointer ----
         $('#stage').click(function(){
             $('#stage').mousemove(function(e){
-                console.log((e.pageX - 413) + " : " + (e.pageY - 385));
+                //console.log((e.pageX - 413) + " : " + (e.pageY - 385));
             });
         });
         stage.addEventListener("click", function(e) {
+            mouseX = Math.floor(e.stageX);
+            mouseY = Math.floor(e.stageY);
             console.log("Arrow Added " + Math.floor(e.stageX) + " : " + Math.floor(e.stageY));
             shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
-        });        
-
+        });
+        // document.addEventListener("keydown", function(e){
+        //         if (e.keyCode == 32) {
+        //           shootProjectile(mouseX, mouseY, willy);
+        //         }
+        // });        
+        
     direction = "right";
 }
 function onMenu(e){
@@ -225,6 +236,7 @@ function removeMousePointer(){
 
 function loadStartScreen(){
 
+    //Add in Clear Interval Function and pass it desired interval
     clearInterval(infoCloudInterval);
     clearInterval(infoBirdInterval);
     clearInterval(arenaCloudInterval);
@@ -320,11 +332,16 @@ function loadArenaScreen(){
     stage.addChild(scoreText);
 
     // -- Health Elements
-    healthIcon = assetManager.getSprite("assets");
+    healthIcon = assetManager.getSprite("assetsCharacters");
     healthIcon.x = 125;
     healthIcon.y = 500;
-    healthIcon.gotoAndStop("heartIcon");
+    healthIcon.gotoAndPlay("heartBeat");
     stage.addChild(healthIcon);
+    // healthIcon = assetManager.getSprite("assets");
+    // healthIcon.x = 125;
+    // healthIcon.y = 500;
+    // healthIcon.gotoAndPlay("heartPulse");
+    // stage.addChild(healthIcon);
 
     healthBar = assetManager.getSprite("assets");
     healthBar.x = 200;
@@ -421,7 +438,8 @@ function onKeyDownStartScreen(e) {
 function onKeyDownArenaScreen(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 77) onMenu();
-    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
+    // if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
+
 }
 function onKeyDownPauseScreen(e) {
     // keystroke for "P" Button activating the menu screen
@@ -535,7 +553,7 @@ function onAddBird(e) {
     // add bug to the stage
     var arenaBird = new Bird(stage, assetManager);
     arenaBird.setupMe();
-    console.log("Bird Added");
+    //console.log("Bird Added");
 }
 // --------- END BIRDS --------
 // --------- WILLY --------

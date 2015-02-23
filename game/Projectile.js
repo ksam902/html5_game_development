@@ -23,21 +23,21 @@ var Projectile = function(stage, assetManager) {
         //placing arrow based on willy's whereabouts
         arrow.x = willyX + 40;
         arrow.y = willyY + 20;
-        arrow.rotation = mouseX;        
+
+        var deltaX = mouseX - arrow.x;
+        var deltaY = mouseY - arrow.y;
+        var rad = Math.atan2(deltaX,deltaY);
+        var deg = rad * (Math.PI/180);
+        console.log("Radians : " + rad + " - Degrees : " + deg);
+        console.log("Willy X : " + arrow.x + " - Mouse X position : " + mouseX);
+        console.log("Willy Y : " + arrow.y + " - Mouse Y position : " + mouseY);
+        arrow.rotation = rad;
         //arrow.rotation = getRandomNum(45, -45);
 
-        // fire startMe again to take the new rotation of the bug
         arrow.gotoAndStop("arrowPointer");
         arrowMover.startMe();
         stage.addChild(arrow);
-        // setup listener to listen for ticker to monitor collisions
-        //createjs.Ticker.addEventListener("tick", onCollisionTest);
-        
-        // add bugs so they are below the snake (snake)
-        //stage.addChildAt(clip, stage.getChildIndex(snakeClip));     
 
-        // listen for when my bug goes off the screen and kill it if it does
-        //clip.addEventListener("onMovingDiagonalOffStage", onKillMe);
     };
     function getRandomNum(min, max){
         return Math.floor(Math.random() * (max-min+1) + min);
@@ -45,13 +45,4 @@ var Projectile = function(stage, assetManager) {
 
     // ----------------------------------------------- event handlers
     
-    function onMove(e) {
-        
-        if(clip.x > stage.canvas.width){
-            clip.x = -50;
-        }else{
-           clip.x ++; 
-        }
-
-    };
 };
