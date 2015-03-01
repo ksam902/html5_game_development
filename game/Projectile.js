@@ -1,41 +1,44 @@
 //Class for Arrow
 var Projectile = function(stage, assetManager) {
     // initialization
-    var xPos;
-    var yPos;
+    var targetX;
+    var targetY;
+    var angle = 0;
     var arrowCount = 0;
-    // to keep track of scope
-    var myScope = this;
+    var speed = 3;
+    var moving = false;
+    // private variables
+    var xDisplace = -1;
+    var yDisplace = -1;
 
     //get arrw
     var arrow = assetManager.getSprite("assets");
-    var arrowMover = new MoverDiagonal(arrow, stage);;
+    //var arrowMover = new MoverDiagonal(arrow, stage);;
     // ---------------------------------------------- get/set methods
-
+    this.getClip = function() {
+        return clip;
+    };
     // ---------------------------------------------- private methods
     this.setupMe = function(mouseX, mouseY, willyX, willyY) {
-        // random selection of speed of bug
-        arrowMover.setSpeed(3);
-
-        // get bounds of sprite so we can determine width / height
-        var dimensions = arrow.getBounds();
 
         //placing arrow based on willy's whereabouts
-        arrow.x = willyX + 40;
-        arrow.y = willyY + 20;
-
-        var deltaX = mouseX - arrow.x;
-        var deltaY = mouseY - arrow.y;
-        var rad = Math.atan2(deltaX,deltaY);
-        var deg = rad * (Math.PI/180);
-        console.log("Radians : " + rad + " - Degrees : " + deg);
-        console.log("Willy X : " + arrow.x + " - Mouse X position : " + mouseX);
-        console.log("Willy Y : " + arrow.y + " - Mouse Y position : " + mouseY);
-        arrow.rotation = rad;
-        //arrow.rotation = getRandomNum(45, -45);
+        if(willy.getDirection() == "left"){
+            arrow.x = willyX - 40;
+            arrow.y = willyY + 20;
+        }else{
+            arrow.x = willyX + 40;
+            arrow.y = willyY + 20;
+        }
+        targetX = mouseX - arrow.x;
+        targetY = mouseY - arrow.y;
+        angle = Math.atan2(targetY, targetX);
+        console.log(angle);
+        // console.log("Willy X : " + arrow.x + " - Mouse X position : " + mouseX);
+        // console.log("Willy Y : " + arrow.y + " - Mouse Y position : " + mouseY);
+        arrow.rotation = angle;
 
         arrow.gotoAndStop("arrowPointer");
-        arrowMover.startMe();
+        startArrow();
         stage.addChild(arrow);
 
     };
@@ -43,6 +46,28 @@ var Projectile = function(stage, assetManager) {
         return Math.floor(Math.random() * (max-min+1) + min);
     }
 
-    // ----------------------------------------------- event handlers
-    
+    // -------------------------------------------------- private methods
+    function radianMe(degrees) {
+        return (degrees * (Math.PI / 180));
+    }    
+    function startArrow(){
+        if (!moving) {
+            // convert current rotation of object to radians
+            //var radians = radianMe(arrow.rotation);
+            // calculating X and Y displacement
+            xDisplace = Math.cos(arrow.rotation) * speed;
+            yDisplace = Math.sin(arrow.rotation) * speed;
+            arrow.play();
+            // setup listener to listen for ticker to control animation
+            createjs.Ticker.addEventListener("tick", onMove);
+            moving = true;
+        }       
+    }
+    // -------------------------------------------------- event handlers
+    function onMove(e) {
+        // move sprite
+        arrow.x = arrow.x + xDisplace;
+        arrow.y = arrow.y + yDisplace;
+        
+    }
 };

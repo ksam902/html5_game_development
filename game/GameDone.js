@@ -43,6 +43,10 @@ var enemiesText;
 var waveText;
 var scoreText;
 
+var arrowsText;
+var arrowsNumText;
+var arrowCount;
+
 //pause assets
 var resumeText;
 var restartText;
@@ -157,16 +161,12 @@ function onNewGame(e) {
             });
         });
         stage.addEventListener("click", function(e) {
+            willy.increaseArrowCount();
             mouseX = Math.floor(e.stageX);
             mouseY = Math.floor(e.stageY);
-            console.log("Arrow Added " + Math.floor(e.stageX) + " : " + Math.floor(e.stageY));
+            //console.log("Arrow Added " + Math.floor(e.stageX) + " : " + Math.floor(e.stageY));
             shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
-        });
-        // document.addEventListener("keydown", function(e){
-        //         if (e.keyCode == 32) {
-        //           shootProjectile(mouseX, mouseY, willy);
-        //         }
-        // });        
+        });      
         
     direction = "right";
 }
@@ -334,25 +334,37 @@ function loadArenaScreen(){
 
     // -- Stats Assets
     livesText = assetManager.getSprite("assets");
-    livesText.x = 50;
+    livesText.x = 25;
     livesText.y = 10;
     livesText.gotoAndStop("livesText");
     stage.addChild(livesText);
 
     killsText = assetManager.getSprite("assets");
-    killsText.x = 125;
+    killsText.x = 100;
     killsText.y = 10;
     killsText.gotoAndStop("killsText");
     stage.addChild(killsText);
 
     enemiesText = assetManager.getSprite("assets");
-    enemiesText.x = 200;
+    enemiesText.x = 175;
     enemiesText.y = 10;
     enemiesText.gotoAndStop("birdsText");
     stage.addChild(enemiesText);
 
+    arrowsText = assetManager.getSprite("assets");
+    arrowsText.x = 340;
+    arrowsText.y = 11;
+    arrowsText.gotoAndStop("arrowsText");
+    stage.addChild(arrowsText);
+
+    arrowsNumText = assetManager.getSprite("assets");
+    arrowsNumText.x = 465;
+    arrowsNumText.y = 13;
+    arrowsNumText.gotoAndStop("zero");
+    stage.addChild(arrowsNumText);
+
     waveText = assetManager.getSprite("assets");
-    waveText.x = 375;
+    waveText.x = 480;
     waveText.y = 11;
     waveText.gotoAndStop("waveText");
     stage.addChild(waveText);
@@ -369,11 +381,6 @@ function loadArenaScreen(){
     healthIcon.y = 500;
     healthIcon.gotoAndPlay("heartBeat");
     stage.addChild(healthIcon);
-    // healthIcon = assetManager.getSprite("assets");
-    // healthIcon.x = 125;
-    // healthIcon.y = 500;
-    // healthIcon.gotoAndPlay("heartPulse");
-    // stage.addChild(healthIcon);
 
     healthBar = assetManager.getSprite("assets");
     healthBar.x = 200;
@@ -530,6 +537,14 @@ function onKeyDownPauseScreen(e) {
 function onKeyDownGameOverScreen(e){
 }
 // --------- END KEYDOWN FUNCTIONS --------
+// --------- UPDATE ARENA STATS --------
+function updateArrowCount(){
+    
+    arrowCount = willy.getArrowCount();
+    //console.log(arrowCount);
+}
+
+// --------- END UPDATE ARENA STATS --------
 // --------- CLOUDS --------
 
 function addCloudsInfoScreen(numClouds){
@@ -590,7 +605,7 @@ function onAddBird(e) {
 // --------- WILLY --------
 function shootProjectile(mouseX, mouseY, willy){
     // add arrow on button click to the stage
-    //willy.shoot();
+    updateArrowCount();
     var arrow = new Projectile(stage, assetManager);
     arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
 }
@@ -599,7 +614,6 @@ function shootProjectile(mouseX, mouseY, willy){
 function onTick(e) {
     // TESTING FPS
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
-
     moveWilly();
 
     // update the stage!

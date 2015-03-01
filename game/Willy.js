@@ -4,8 +4,10 @@ var Willy = function(stage, assetManager) {
     var xPos = 0;
     var yPos = 0;
     var killed = false;
+    var direction = "";
     var arrow;
     var arrowMover;
+    var arrowCount = 0;
     // to keep track of scope
     var myScope = this;
 
@@ -20,6 +22,12 @@ var Willy = function(stage, assetManager) {
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return clip;
+    };
+    this.getDirection = function() {
+        return direction;
+    };
+    this.getArrowCount = function() {
+        return arrowCount;
     };
     this.getKilled = function() {
         return killed;
@@ -36,6 +44,9 @@ var Willy = function(stage, assetManager) {
 
         //clipMover.setSpeed(maxSpeed);
     };
+    this.increaseArrowCount = function(){
+        arrowCount+=1;
+    }
     this.shoot = function(){
 
 
@@ -57,13 +68,15 @@ var Willy = function(stage, assetManager) {
     }
     this.moveRight = function(){
         clip.scaleX = 1;
-        if(clip.x < (stage.canvas.width - 40)){   
+        direction = "right";
+        if(clip.x < (stage.canvas.width - 55)){   
             clip.x += 5;
         }
     }
     this.moveLeft = function(){
         clip.scaleX = -1;
-        if(clip.x > 0){   
+        direction = "left";
+        if(clip.x > 55){   
             clip.x -= 5;
         }
     }
