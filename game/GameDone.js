@@ -12,11 +12,13 @@ var mouseY;
 // game variables
 var stage = null;
 var canvas = null;
+var mousePointer;
+// Keys
 var downKey = false;
 var upKey = false;
 var leftKey = false;
 var rightKey = false;
-var mousePointer;
+var key;
 
 // frame rate of game
 var frameRate = 30;
@@ -27,7 +29,7 @@ var bird = null;
 var birdDelay;
 var birdTimer;
 var birdsShot;
-//var willy = null;
+var willy = null;
 var willy2 = null;
 var cloud;
 
@@ -138,33 +140,11 @@ function onNewGame(e) {
     addMousePointer();
 
     // -- WILLY --
-    var willy = new Willy(stage, assetManager);
+    willy = new Willy(stage, assetManager);
     willy.resetMe();
     willy.setXPosYPos(275, 350);
-    //Lets add the keyboard controls now
-    $(document).keydown(function(e){
-        var key = e.which;
-        //We will add another clause to prevent reverse gear
-        if(key == "37"){
-            //direction = "left";
-            //willy.scaleY = -1; 
-            willy.moveLeft();
-            e.preventDefault(); 
-        } else if(key == "38"){
-            //direction = "up"; 
-            willy.moveUp();
-            e.preventDefault();
-        }else if(key == "39"){
-            //direction = "right";
-            //willy.scaleY = 1;
-            willy.moveRight();
-            e.preventDefault();
-        }else if(key == "40"){
-            //direction = "down"; 
-            willy.moveDown();
-            e.preventDefault();
-        }
-    });
+    document.addEventListener("keydown", keyDownMove);
+    document.addEventListener("keyup", keyUpMove);
 
     // construct and setup bugtimer to drop bugs on displaylist
     birdDelay = 2000;
@@ -189,6 +169,43 @@ function onNewGame(e) {
         // });        
         
     direction = "right";
+}
+function keyDownMove(e){   
+    key = e.which;    
+    if(key == "37"){
+        //direction = "left";
+        leftKey = true;
+        e.preventDefault();
+    } else if(key == "38"){
+        //direction = "up"; 
+        upKey = true;
+        e.preventDefault();
+    }else if(key == "39"){
+        //direction = "right";
+        rightKey = true;
+        e.preventDefault();
+    }else if(key == "40"){
+        //direction = "down"; 
+        downKey = true;
+        e.preventDefault();
+    }
+}
+function keyUpMove(e){
+    downKey = false;
+    upKey = false;
+    leftKey = false;
+    rightKey = false;
+}
+function moveWilly(){
+    if(leftKey){
+        willy.moveLeft();
+    } else if(upKey){
+        willy.moveUp();
+    }else if(rightKey){
+        willy.moveRight();
+    }else if(downKey){
+        willy.moveDown();
+    }
 }
 function onMenu(e){
     //remove all assets and intervals
@@ -260,6 +277,10 @@ function loadStartScreen(){
     startBackground.gotoAndStop("startBackground");
     stage.addChild(startBackground);
 
+    willy = new Willy(stage, assetManager);
+    willy.resetMe();
+    willy.setXPosYPos(275, 450);
+
     //add clouds and backgrounds
     addBirdsInfoScreen(5); 
     addCloudsInfoScreen(5);   
@@ -269,10 +290,6 @@ function loadStartScreen(){
     gameTitle.y = 125;
     gameTitle.gotoAndStop("gameTitleText");
     stage.addChild(gameTitle);
-
-    var willy2 = new Willy(stage, assetManager);
-    willy2.resetMe();
-    willy2.setXPosYPos(275, 450);
 
     arrowPointer = assetManager.getSprite("assets");
     arrowPointer.x = 220;
@@ -372,7 +389,6 @@ function loadArenaScreen(){
     // setup event listener to go to pause screen
     btnMenu.addEventListener("click", onMenu);
     //btnMenu.addEventListener("mouseover", onMenuHover);
-
     stage.addChild(developerCredits);
 }
 function loadPauseScreen(){
@@ -555,7 +571,7 @@ function addBirdsInfoScreen(numBirds){
     infoBirdInterval = setInterval(addInfoBird, 4000);
     function addInfoBird() {  
         if(infoBirdCount <= numBirds){
-            var bird = new Bird(stage, assetManager);
+            var bird = new Bird(stage, assetManager, willy);
             bird.getInfoScreenBirds();        
             //console.log(infoBirdCount + "/" + numBirds + " Bird Info Function");
             infoBirdCount ++;
@@ -566,7 +582,7 @@ function addBirdsInfoScreen(numBirds){
 }
 function onAddBird(e) {
     // add bug to the stage
-    var arenaBird = new Bird(stage, assetManager);
+    var arenaBird = new Bird(stage, assetManager, willy);
     arenaBird.setupMe();
     //console.log("Bird Added");
 }
@@ -583,6 +599,8 @@ function shootProjectile(mouseX, mouseY, willy){
 function onTick(e) {
     // TESTING FPS
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
+
+    moveWilly();
 
     // update the stage!
     stage.update();

@@ -10,7 +10,7 @@ var Willy = function(stage, assetManager) {
     var myScope = this;
 
     //get Willy
-    var clip = assetManager.getSprite("assets");
+    var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
     var clipMover = new MoverDiagonal(clip, stage);
 
@@ -18,6 +18,9 @@ var Willy = function(stage, assetManager) {
     //arrowMover = new MoverDiagonal(clip, stage);
     
     // ---------------------------------------------- get/set methods
+    this.getClip = function() {
+        return clip;
+    };
     this.getKilled = function() {
         return killed;
     };
@@ -29,7 +32,7 @@ var Willy = function(stage, assetManager) {
     };
     // ---------------------------------------------- public methods
     this.resetMe = function() {
-        clip.gotoAndStop("worm");
+        clip.gotoAndStop("wormAlive");
 
         //clipMover.setSpeed(maxSpeed);
     };

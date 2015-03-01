@@ -1,5 +1,5 @@
 //Class for Bird
-var Bird = function(stage, assetManager) {
+var Bird = function(stage, assetManager, willy) {
     // initialization
     var xPos;
     var yPos;
@@ -7,11 +7,16 @@ var Bird = function(stage, assetManager) {
     // to keep track of scope
     var myScope = this;
 
+    //get willy
+    var willyClip = willy.getClip();
+
     //get bird
     var clip = assetManager.getSprite("assetsCharacters");
     var clipMover = new MoverDiagonal(clip, stage);;
     // ---------------------------------------------- get/set methods
-
+    this.getClip = function() {
+        return clip;
+    };
 
     // ---------------------------------------------- private methods
     this.getInfoScreenBirds = function(){
@@ -51,6 +56,9 @@ var Bird = function(stage, assetManager) {
         // fire startMe again to take the new rotation of the bug
         clip.gotoAndPlay("birdAlive");
         clipMover.startMe();
+
+        // setup listener to listen for ticker to monitor collisions
+        createjs.Ticker.addEventListener("tick", onWilyCollisionTest);
         stage.addChild(clip);
 
     };
@@ -59,7 +67,73 @@ var Bird = function(stage, assetManager) {
     }
 
     // ----------------------------------------------- event handlers
-    
+     function onWilyCollisionTest(e) {
+            // only do collision test on every other tick to save on processing
+            // if ((createjs.Ticker.getTicks() % 2 === 0) && (!snake.getKilled())) {
+                if ((createjs.Ticker.getTicks() % 2 === 0)) {
+
+                /*
+                // HITTEST APPROACH
+                var point = clip.globalToLocal(snakeClip.x, snakeClip.y);
+                if (clip.hitTest(point.x, point.y)) {
+                    console.log("collision!");
+                }
+                */
+
+                // LESSON COLLISION DETECTION
+                // radius collision detection
+                // Calculate difference between centres
+                var a = willyClip.x - clip.x;
+                var b = willyClip.y - clip.y;
+                // Get distance with Pythagoras
+                var c = Math.sqrt((a * a) + (b * b));
+                // bug has a radius of 20
+                // snake has a radius of 75
+                // force the radius of the circle on the snake to only be 5
+                // sum of 5 + 20 = 25
+                if (c <= 25) {
+                    // collision detection with snake
+                    //clip.dispatchEvent(eventBugEaten);
+                    alert("HIT WILLY");
+                }
+
+                /*
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! CHALLENGE SOLUTION
+                // radius collision detection
+                // Calculate difference between centres
+                var distX = 0;
+                var distY = 0;
+                var direction = snakeClip.direction;
+                // transform circle depending on direction of snake so it is always over the head
+                if (direction == MoverDirection.LEFT) {
+                    distX = snakeClip.x - 30 - clip.x;
+                    distY = snakeClip.y - clip.y;
+                } else if (direction == MoverDirection.RIGHT) {
+                    distX = snakeClip.x + 30 - clip.x;
+                    distY = snakeClip.y - clip.y;
+                } else if (direction == MoverDirection.UP) {
+                    distX = snakeClip.x - clip.x;
+                    distY = snakeClip.y - 30 - clip.y;
+                } else {
+                    distX = snakeClip.x - clip.x;
+                    distY = snakeClip.y + 30 - clip.y;
+                }
+
+                // Get distance with Pythagoras
+                var dist = Math.sqrt((distX * distX) + (distY * distY));
+                // bug has a radius of 19
+                // snake has a radius of 75
+                // force the radius of the circle on the snake to only be 5
+                // sum of 5 + 19 = 24
+                if (dist <= 24) {
+                    // collision detection with snake
+                    clip.dispatchEvent(eventBugEaten);
+                    onKillMe();
+                }
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                */
+            }
+        }   
     function onMove(e) {
         
         if(clip.x > stage.canvas.width){
