@@ -82,6 +82,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
             var c = Math.sqrt((a * a) + (b * b));
             if (c <= 25) {
                 alert("HIT ARROW");
+                onKillBird();
             }
         }
     }   
@@ -100,7 +101,19 @@ var Bird = function(stage, assetManager, willy, arrow) {
                 }
             }
         }
+    function onKillBird(e) {
+        createjs.Ticker.removeEventListener("tick", onArrowCollisionTest);
+        clipMover.stopMe();
+        clip.gotoAndPlay("birdDead");
+        clip.addEventListener("animationend", onKilledBird);
+    }
 
+    function onKilledBird(e) {
+        // cleanup event listeners
+        clip.removeEventListener("animationend", onKilledBird);
+        // remove displayobject
+        stage.removeChild(clip);
+    } 
     function onKillWilly(e) {
         createjs.Ticker.removeEventListener("tick", onWillyCollisionTest);
         clipMover.stopMe();
