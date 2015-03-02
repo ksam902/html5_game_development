@@ -16,7 +16,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
 
     //get bird
     var clip = assetManager.getSprite("assetsCharacters");
-    var clipMover = new MoverDiagonal(clip, stage);;
+    var clipMover = new MoverDiagonal(clip, stage);
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return clip;
@@ -28,7 +28,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
 
         clip.x = getRandomNum(-50, -200);
         clip.y = getRandomNum(0, 250);
-        createjs.Ticker.addEventListener("tick", onMove);
+        createjs.Ticker.addEventListener("tick", onInfoMove);
         stage.addChild(clip);
         birdCount++;
         //console.log(birdCount);    
@@ -40,7 +40,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
         // get bounds of sprite so we can determine width / height
         var dimensions = clip.getBounds();
 
-        // bug starts on left or right of stage?
+        // bird starts on left or right of stage?
         if (getRandomNum(1, 2) == 1) {
             // move bird right
             clip.x = -dimensions.width;
@@ -88,7 +88,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
     }   
      function onWillyCollisionTest(e) {
             // only do collision test on every other tick to save on processing
-            // if ((createjs.Ticker.getTicks() % 2 === 0) && (!snake.getKilled())) {
                 if ((createjs.Ticker.getTicks() % 2 === 0)) {
                 // radius collision detection
                 // Calculate difference between centres
@@ -118,7 +117,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
         createjs.Ticker.removeEventListener("tick", onWillyCollisionTest);
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
-        // play death sequence of bug
         willyClip.gotoAndPlay("wormDead");
         willyClip.addEventListener("animationend", onKilledWilly);
     }
@@ -126,18 +124,31 @@ var Bird = function(stage, assetManager, willy, arrow) {
     function onKilledWilly(e) {
         // cleanup event listeners
         willyClip.removeEventListener("animationend", onKilledWilly);
-        // remove displayobject
         stage.removeChild(clip);
         stage.removeChild(willyClip);
+        //update willy's lives
+        willy.setLives((willy.getLives() - 1));
+        //re-add willy to stage
         willyClip.gotoAndPlay("wormAlive");
+        alert(willy.getLives());
         stage.addChild(willyClip);
         console.log("Willy killed");
-    }  
-    function onMove(e) {
+    }
+    function onInfoMove(e) {
         
         if(clip.x > stage.canvas.width){
             clip.x = -50;
-        }else{
+        }else{;
+           clip.x ++; 
+        }
+
+    };  
+    function onMove(e) {
+        
+        if(clip.x > stage.canvas.width){
+            //if bird is off screen, remove bird from stage
+            stage.removeChild(clip);
+        }else{;
            clip.x ++; 
         }
 

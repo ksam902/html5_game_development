@@ -1,21 +1,15 @@
 //Class for Willy
 var Willy = function(stage, assetManager) {
     // initialization
-    var killed = false;
+    var isKilled = false;
+    var isDead = false;
     var lives = 3;
     var direction = "";
-    var arrow;
-    var arrowMover;
     var arrowCount = 0;
-
-
     //get Willy
     var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
     var clipMover = new MoverDiagonal(clip, stage);
-
-    arrow = assetManager.getSprite("assets");
-    //arrowMover = new MoverDiagonal(clip, stage);
     
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
@@ -30,8 +24,12 @@ var Willy = function(stage, assetManager) {
     this.getLives = function() {
         return lives;
     };
-    this.getKilled = function() {
-        return killed;
+    this.setLives = function(value) {
+        lives = value;
+        isKilled = true;
+    };
+    this.getIsKilled = function() {
+        return isKilled;
     };
     this.getWillyX = function(){
         return clip.x;
@@ -42,8 +40,6 @@ var Willy = function(stage, assetManager) {
     // ---------------------------------------------- public methods
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
-
-        //clipMover.setSpeed(maxSpeed);
     };
     this.increaseArrowCount = function(){
         arrowCount+=1;

@@ -264,9 +264,7 @@ function onInstructions(e){
     addMousePointer();
 }
 function onMenuHover(e){
-    //alert("Menu Hover Button");
     stage.removeChild("btnMenu");
-
 }
 function addMousePointer(){
     $( "#stage" ).mousemove(function( event ) {
@@ -466,8 +464,6 @@ function loadPauseScreen(){
     stage.addChild(developerCredits);
 }
 function loadGameOverScreen(){
-
-
 }
 // --------- END LOAD SCREEN ASSETS --------
 // --------- SCREEN KEYDOWN FUNCTIONS --------
@@ -563,6 +559,14 @@ function updateArrowCount(){
     arrowCount.x = 460;
     arrowCount.y = 14;
     stage.addChild(arrowCount);
+}
+function updateLivesCount(){
+    
+    stage.removeChild(livesCount);
+    livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+    livesCount.x = 85;
+    livesCount.y = 14;
+    stage.addChild(livesCount);
 }
 
 // --------- END UPDATE ARENA STATS --------
