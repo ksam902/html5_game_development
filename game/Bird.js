@@ -150,9 +150,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
                 // Get distance with Pythagoras
                 var c = Math.sqrt((a * a) + (b * b));
                 if (c <= 40) {
-                    // collision detection with snake
-                    //clip.dispatchEvent(eventBugEaten);
-                    //console.log("C : "+c+" WILLY : collision!");
                     onKillWilly();
                 }
             }

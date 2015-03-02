@@ -157,18 +157,15 @@ function onNewGame(e) {
     // --- SHOOTING FUNCTION - Mouse Pointer ----
         $('#stage').click(function(){
             $('#stage').mousemove(function(e){
-                //console.log((e.pageX - 413) + " : " + (e.pageY - 385));
             });
         });
         stage.addEventListener("click", function(e) {
             willy.increaseArrowCount();
             mouseX = Math.floor(e.stageX);
             mouseY = Math.floor(e.stageY);
-            //console.log("Arrow Added " + Math.floor(e.stageX) + " : " + Math.floor(e.stageY));
-            shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
-        });      
-        
-    direction = "right";
+            // shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
+        });
+        stage.addEventListener("click", shootProjectile);        
 }
 function keyDownMove(e){   
     key = e.which;    
@@ -208,6 +205,7 @@ function moveWilly(){
     }
 }
 function onMenu(e){
+    stage.removeEventListener("click", shootProjectile);
     //remove all assets and intervals
     stage.removeAllChildren();
     clearInterval(arenaCloudInterval);
@@ -218,7 +216,6 @@ function onMenu(e){
     loadPauseScreen();
 
     addMousePointer();
-
     // setup event listeners for keyboard keys
     document.addEventListener("keydown", onKeyDownPauseScreen);
     console.log("Menu Button Clicked");
@@ -603,7 +600,7 @@ function onAddBird(e) {
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
-function shootProjectile(mouseX, mouseY, willy){
+function shootProjectile(){
     // add arrow on button click to the stage
     updateArrowCount();
     var arrow = new Projectile(stage, assetManager);
