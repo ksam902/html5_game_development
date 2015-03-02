@@ -5,7 +5,7 @@ var Projectile = function(stage, assetManager) {
     var targetY;
     var angle = 0;
     var arrowCount = 0;
-    var speed = 3;
+    var speed = 4;
     var moving = false;
     // private variables
     var xDisplace = -1;
@@ -32,11 +32,7 @@ var Projectile = function(stage, assetManager) {
         targetX = mouseX - arrow.x;
         targetY = mouseY - arrow.y;
         angle = Math.atan2(targetY, targetX);
-        console.log(angle);
-        // console.log("Willy X : " + arrow.x + " - Mouse X position : " + mouseX);
-        // console.log("Willy Y : " + arrow.y + " - Mouse Y position : " + mouseY);
-        arrow.rotation = angle;
-
+        arrow.rotation = angle * (180/Math.PI);
         arrow.gotoAndStop("arrowPointer");
         startArrow();
         stage.addChild(arrow);
@@ -46,22 +42,15 @@ var Projectile = function(stage, assetManager) {
         return Math.floor(Math.random() * (max-min+1) + min);
     }
 
-    // -------------------------------------------------- private methods
-    function radianMe(degrees) {
-        return (degrees * (Math.PI / 180));
-    }    
+    // -------------------------------------------------- private methods  
     function startArrow(){
-        if (!moving) {
-            // convert current rotation of object to radians
-            //var radians = radianMe(arrow.rotation);
-            // calculating X and Y displacement
-            xDisplace = Math.cos(arrow.rotation) * speed;
-            yDisplace = Math.sin(arrow.rotation) * speed;
-            arrow.play();
-            // setup listener to listen for ticker to control animation
-            createjs.Ticker.addEventListener("tick", onMove);
-            moving = true;
-        }       
+
+        // calculating X and Y displacement
+        xDisplace = Math.cos(angle) * speed;
+        yDisplace = Math.sin(angle) * speed;
+        arrow.play();
+        // setup listener to listen for ticker to control animation
+        createjs.Ticker.addEventListener("tick", onMove);    
     }
     // -------------------------------------------------- event handlers
     function onMove(e) {
