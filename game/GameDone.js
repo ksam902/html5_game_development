@@ -367,11 +367,11 @@ function loadArenaScreen(){
     arrowsText.gotoAndStop("arrowsText");
     stage.addChild(arrowsText);
 
-    arrowsNumText = assetManager.getSprite("assets");
-    arrowsNumText.x = 465;
-    arrowsNumText.y = 13;
-    arrowsNumText.gotoAndStop("zero");
-    stage.addChild(arrowsNumText);
+    // arrowsNumText = assetManager.getSprite("assets");
+    // arrowsNumText.x = 465;
+    // arrowsNumText.y = 13;
+    // arrowsNumText.gotoAndStop("zero");
+    // stage.addChild(arrowsNumText);
 
     waveText = assetManager.getSprite("assets");
     waveText.x = 480;
@@ -550,9 +550,11 @@ function onKeyDownGameOverScreen(e){
 // --------- UPDATE ARENA STATS --------
 function updateArrowCount(){
     
-    arrowCount = willy.getArrowCount();
-
-    //console.log(arrowCount);
+    stage.removeChild(arrowCount);
+    arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
+    arrowCount.x = 462;
+    arrowCount.y = 14;
+    stage.addChild(arrowCount);
 }
 
 // --------- END UPDATE ARENA STATS --------
