@@ -1,15 +1,13 @@
 //Class for Willy
 var Willy = function(stage, assetManager) {
     // initialization
-    var xPos = 0;
-    var yPos = 0;
     var killed = false;
+    var lives = 3;
     var direction = "";
     var arrow;
     var arrowMover;
     var arrowCount = 0;
-    // to keep track of scope
-    var myScope = this;
+
 
     //get Willy
     var clip = assetManager.getSprite("assetsCharacters");
@@ -28,6 +26,9 @@ var Willy = function(stage, assetManager) {
     };
     this.getArrowCount = function() {
         return arrowCount;
+    };
+    this.getLives = function() {
+        return lives;
     };
     this.getKilled = function() {
         return killed;

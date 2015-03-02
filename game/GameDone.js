@@ -47,6 +47,9 @@ var arrowsText;
 var arrowsNumText;
 var arrowCount;
 
+var waveCount;
+var livesCount;
+
 //pause assets
 var resumeText;
 var restartText;
@@ -220,6 +223,7 @@ function moveWilly(){
 }
 function onMenu(e){
     stage.removeEventListener("click", shootProjectile);
+    stage.removeEventListener("click", updateArrowCount);
     //remove all assets and intervals
     stage.removeAllChildren();
     clearInterval(arenaCloudInterval);
@@ -349,6 +353,11 @@ function loadArenaScreen(){
     livesText.gotoAndStop("livesText");
     stage.addChild(livesText);
 
+    livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+    livesCount.x = 85;
+    livesCount.y = 14;
+    stage.addChild(livesCount);
+
     killsText = assetManager.getSprite("assets");
     killsText.x = 100;
     killsText.y = 10;
@@ -367,17 +376,16 @@ function loadArenaScreen(){
     arrowsText.gotoAndStop("arrowsText");
     stage.addChild(arrowsText);
 
-    // arrowsNumText = assetManager.getSprite("assets");
-    // arrowsNumText.x = 465;
-    // arrowsNumText.y = 13;
-    // arrowsNumText.gotoAndStop("zero");
-    // stage.addChild(arrowsNumText);
-
     waveText = assetManager.getSprite("assets");
     waveText.x = 480;
     waveText.y = 11;
     waveText.gotoAndStop("waveText");
     stage.addChild(waveText);
+
+    waveCount = new createjs.Text("1", "14px Noteworthy", "FF7700");
+    waveCount.x = 550;
+    waveCount.y = 14;
+    stage.addChild(waveCount);
 
     scoreText = assetManager.getSprite("assets");
     scoreText.x = 200;
@@ -552,7 +560,7 @@ function updateArrowCount(){
     
     stage.removeChild(arrowCount);
     arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
-    arrowCount.x = 462;
+    arrowCount.x = 460;
     arrowCount.y = 14;
     stage.addChild(arrowCount);
 }
