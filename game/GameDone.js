@@ -32,7 +32,7 @@ var birdsShot;
 var willy = null;
 var willy2 = null;
 var cloud;
-
+var arrow = null;
 //START SCREEN ASSETS
 var arrowPointer;
 
@@ -163,9 +163,9 @@ function onNewGame(e) {
             willy.increaseArrowCount();
             mouseX = Math.floor(e.stageX);
             mouseY = Math.floor(e.stageY);
-            // shootProjectile(Math.floor(e.stageX), Math.floor(e.stageY), willy);
         });
-        stage.addEventListener("click", shootProjectile);        
+        stage.addEventListener("click", shootProjectile);
+        stage.addEventListener("click", updateArrowCount);        
 }
 function keyDownMove(e){   
     key = e.which;    
@@ -188,10 +188,24 @@ function keyDownMove(e){
     }
 }
 function keyUpMove(e){
-    downKey = false;
-    upKey = false;
-    leftKey = false;
-    rightKey = false;
+    key = e.which;    
+    if(key == "37"){
+        //direction = "left";
+        leftKey = false;
+        e.preventDefault();
+    } else if(key == "38"){
+        //direction = "up"; 
+        upKey = false;
+        e.preventDefault();
+    }else if(key == "39"){
+        //direction = "right";
+        rightKey = false;
+        e.preventDefault();
+    }else if(key == "40"){
+        //direction = "down"; 
+        downKey = false;
+        e.preventDefault();
+    }
 }
 function moveWilly(){
     if(leftKey){
@@ -218,7 +232,6 @@ function onMenu(e){
     addMousePointer();
     // setup event listeners for keyboard keys
     document.addEventListener("keydown", onKeyDownPauseScreen);
-    console.log("Menu Button Clicked");
 }
 function onResumeGame(e){
     onNewGame();
@@ -538,6 +551,7 @@ function onKeyDownGameOverScreen(e){
 function updateArrowCount(){
     
     arrowCount = willy.getArrowCount();
+
     //console.log(arrowCount);
 }
 
@@ -593,17 +607,14 @@ function addBirdsInfoScreen(numBirds){
     }
 }
 function onAddBird(e) {
-    // add bug to the stage
-    var arenaBird = new Bird(stage, assetManager, willy);
+    var arenaBird = new Bird(stage, assetManager, willy, arrow);
     arenaBird.setupMe();
-    //console.log("Bird Added");
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
 function shootProjectile(){
-    // add arrow on button click to the stage
-    updateArrowCount();
-    var arrow = new Projectile(stage, assetManager);
+    // add arrow on mouse click to the stage
+    arrow = new Projectile(stage, assetManager);
     arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
 }
 // --------- END WILLY --------

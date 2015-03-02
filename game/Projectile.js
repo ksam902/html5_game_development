@@ -16,7 +16,7 @@ var Projectile = function(stage, assetManager) {
     //var arrowMover = new MoverDiagonal(arrow, stage);;
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
-        return clip;
+        return arrow;
     };
     // ---------------------------------------------- private methods
     this.setupMe = function(mouseX, mouseY, willyX, willyY) {

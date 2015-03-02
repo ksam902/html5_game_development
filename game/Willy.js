@@ -47,10 +47,6 @@ var Willy = function(stage, assetManager) {
     this.increaseArrowCount = function(){
         arrowCount+=1;
     }
-    this.shoot = function(){
-
-
-    }
     this.setXPosYPos = function(xPos, yPos){
         clip.x = xPos;
         clip.y = yPos;
