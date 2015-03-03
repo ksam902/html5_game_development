@@ -7,6 +7,9 @@ var Bird = function(stage, assetManager, willy, arrow) {
     // to keep track of scope
     var myScope = this;
 
+    collisionMethod = ndgmr.checkPixelCollision;
+    window.alphaThresh = 0.75;
+
     //get willy
     var willyClip = willy.getClip();
     if(arrow != null){
@@ -65,6 +68,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
         if(arrow != null){
             createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
         }
+
         createjs.Ticker.addEventListener("tick", onWillyCollisionTest);
         stage.addChild(clip);
 
@@ -88,16 +92,11 @@ var Bird = function(stage, assetManager, willy, arrow) {
     }   
      function onWillyCollisionTest(e) {
             // only do collision test on every other tick to save on processing
-                if ((createjs.Ticker.getTicks() % 2 === 0)) {
-                // radius collision detection
-                // Calculate difference between centres
-                var a = willyClip.x - clip.x;
-                var b = willyClip.y - clip.y;
-                // Get distance with Pythagoras
-                var c = Math.sqrt((a * a) + (b * b));
-                if (c <= 40) {
-                    onKillWilly();
-                }
+            if ((createjs.Ticker.getTicks() % 2 === 0)) {
+                  var intersection = collisionMethod(willyClip,clip,window.alphaThresh);
+                  if ( intersection ) {
+                        onKillWilly();
+                  }
             }
         }
     function onKillBird(e) {
@@ -130,7 +129,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
         willy.setLives((willy.getLives() - 1));
         //re-add willy to stage
         willyClip.gotoAndPlay("wormAlive");
-        alert(willy.getLives());
+        //alert(willy.getLives());
         stage.addChild(willyClip);
         console.log("Willy killed");
     }
