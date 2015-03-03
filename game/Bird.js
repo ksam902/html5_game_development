@@ -12,10 +12,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
 
     //get willy
     var willyClip = willy.getClip();
-    if(arrow != null){
-        //get arrow
-        var arrowClip = arrow.getClip();
-    }
 
     //get bird
     var clip = assetManager.getSprite("assetsCharacters");
@@ -65,10 +61,10 @@ var Bird = function(stage, assetManager, willy, arrow) {
         clipMover.startMe();
 
         // setup listener to listen for ticker to monitor collisions
-        if(arrow != null){
-            createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
-        }
-
+        // if(arrow != null){
+        //     createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
+        // }
+        createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
         createjs.Ticker.addEventListener("tick", onWillyCollisionTest);
         stage.addChild(clip);
 
@@ -78,18 +74,19 @@ var Bird = function(stage, assetManager, willy, arrow) {
     }
 
     // ----------------------------------------------- event handlers
-     function onArrowCollisionTest(e) {
+    function onArrowCollisionTest(){
         if ((createjs.Ticker.getTicks() % 2 === 0)) {
-            var a = arrowClip.x - clip.x;
-            var b = arrowClip.y - clip.y;
-            // Get distance with Pythagoras
-            var c = Math.sqrt((a * a) + (b * b));
-            if (c <= 25) {
-                alert("HIT ARROW");
-                onKillBird();
-            }
+           for ( var c = 0; c < arrows.length; c++ ) {
+              var a = arrows[c];
+              a = a.getClip();
+                  var intersection = collisionMethod(clip,a,window.alphaThresh);
+                  if ( intersection ) {
+                    onKillBird();
+                    console.log("HIT ZEE BIRD");
+                  }
+           }
         }
-    }   
+    }  
      function onWillyCollisionTest(e) {
             // only do collision test on every other tick to save on processing
             if ((createjs.Ticker.getTicks() % 2 === 0)) {

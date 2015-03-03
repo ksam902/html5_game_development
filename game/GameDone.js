@@ -25,7 +25,9 @@ var frameRate = 30;
 
 // game objects
 var assetManager = null;
+var arenaBird;
 var bird = null;
+var birds=[];
 var birdDelay;
 var birdTimer;
 var birdsShot;
@@ -33,6 +35,7 @@ var willy = null;
 var willy2 = null;
 var cloud;
 var arrow = null;
+var arrows=[];
 //START SCREEN ASSETS
 var arrowPointer;
 
@@ -71,8 +74,10 @@ var developerCredits;
 var healthIcon;
 var healthBar;
 
-
 var direction;
+
+collisionMethod = ndgmr.checkPixelCollision;
+window.alphaThresh = 0.75;
 
 // ------------------------------------------------------------ event handlers
 function onInit() {
@@ -168,7 +173,7 @@ function onNewGame(e) {
             mouseY = Math.floor(e.stageY);
         });
         stage.addEventListener("click", shootProjectile);
-        stage.addEventListener("click", updateArrowCount);        
+        stage.addEventListener("click", updateArrowCount);       
 }
 function keyDownMove(e){   
     key = e.which;    
@@ -621,8 +626,11 @@ function addBirdsInfoScreen(numBirds){
     }
 }
 function onAddBird(e) {
-    var arenaBird = new Bird(stage, assetManager, willy, arrow);
+    arenaBird = new Bird(stage, assetManager, willy, arrows);
     arenaBird.setupMe();
+    birds.push(arenaBird);
+    console.log(birds);
+    // createjs.Ticker.addEventListener("tick", onBirdCollisionTest); 
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
@@ -630,9 +638,22 @@ function shootProjectile(){
     // add arrow on mouse click to the stage
     arrow = new Projectile(stage, assetManager);
     arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
+    arrows.push(arrow);
 }
 // --------- END WILLY --------
 // --------- TICK --------
+// function onBirdCollisionTest(){
+//     if ((createjs.Ticker.getTicks() % 2 === 0)) {
+//        for ( var c = 0; c < birds.length; c++ ) {
+//           var b = birds[c];
+
+//               var intersection = collisionMethod(arrow,b,window.alphaThresh);
+//               if ( intersection ) {
+//                 console.log("HIT ZEE BIRD");
+//               }
+//        }
+//     }
+// }
 function onTick(e) {
     // TESTING FPS
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
