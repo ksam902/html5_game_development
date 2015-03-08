@@ -630,7 +630,6 @@ function onAddBird(e) {
     arenaBird.setupMe();
     birds.push(arenaBird);
     console.log(birds);
-    // createjs.Ticker.addEventListener("tick", onBirdCollisionTest); 
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
@@ -642,18 +641,7 @@ function shootProjectile(){
 }
 // --------- END WILLY --------
 // --------- TICK --------
-// function onBirdCollisionTest(){
-//     if ((createjs.Ticker.getTicks() % 2 === 0)) {
-//        for ( var c = 0; c < birds.length; c++ ) {
-//           var b = birds[c];
 
-//               var intersection = collisionMethod(arrow,b,window.alphaThresh);
-//               if ( intersection ) {
-//                 console.log("HIT ZEE BIRD");
-//               }
-//        }
-//     }
-// }
 function onTick(e) {
     // TESTING FPS
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();

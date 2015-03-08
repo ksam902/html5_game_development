@@ -60,12 +60,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
         clip.gotoAndPlay("birdAlive");
         clipMover.startMe();
 
-        // setup listener to listen for ticker to monitor collisions
-        // if(arrow != null){
-        //     createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
-        // }
-        createjs.Ticker.addEventListener("tick", onArrowCollisionTest);
-        createjs.Ticker.addEventListener("tick", onWillyCollisionTest);
+        createjs.Ticker.addEventListener("tick", onCollisionTest);
         stage.addChild(clip);
 
     };
@@ -74,30 +69,30 @@ var Bird = function(stage, assetManager, willy, arrow) {
     }
 
     // ----------------------------------------------- event handlers
-    function onArrowCollisionTest(){
-        if ((createjs.Ticker.getTicks() % 2 === 0)) {
-           for ( var c = 0; c < arrows.length; c++ ) {
-              var a = arrows[c];
-              a = a.getClip();
-                  var intersection = collisionMethod(clip,a,window.alphaThresh);
-                  if ( intersection ) {
-                    onKillBird();
-                    console.log("HIT ZEE BIRD");
-                  }
-           }
-        }
-    }  
-     function onWillyCollisionTest(e) {
+    function onCollisionTest(){
             // only do collision test on every other tick to save on processing
             if ((createjs.Ticker.getTicks() % 2 === 0)) {
                   var intersection = collisionMethod(willyClip,clip,window.alphaThresh);
                   if ( intersection ) {
                         onKillWilly();
+                        onKillBird();
                   }
+            }else{
+                for ( var c = 0; c < arrows.length; c++ ) {
+                    var a = arrows[c];
+                    a = a.getClip();
+                    intersection = collisionMethod(clip,a,window.alphaThresh);
+                    if ( intersection ) {
+                        onKillBird();
+                        stage.removeChild(a);
+                        console.log("HIT ZEE BIRD");
+                    }
+                }  
             }
-        }
+ 
+    }
     function onKillBird(e) {
-        createjs.Ticker.removeEventListener("tick", onArrowCollisionTest);
+        createjs.Ticker.removeEventListener("tick", onCollisionTest);
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
         clip.addEventListener("animationend", onKilledBird);
@@ -110,9 +105,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
         stage.removeChild(clip);
     } 
     function onKillWilly(e) {
-        createjs.Ticker.removeEventListener("tick", onWillyCollisionTest);
-        clipMover.stopMe();
-        clip.gotoAndPlay("birdDead");
         willyClip.gotoAndPlay("wormDead");
         willyClip.addEventListener("animationend", onKilledWilly);
     }
