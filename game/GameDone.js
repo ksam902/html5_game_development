@@ -58,6 +58,7 @@ var waveCount;
 var livesCount;
 
 //pause assets
+var accuracy;
 var resumeText;
 var restartText;
 var startBackground;
@@ -479,6 +480,21 @@ function loadPauseScreen(){
     stage.addChild(quitGame);
     // setup event listener to Quit Game
     quitGame.addEventListener("click", onQuitGame);
+
+    numKills = new createjs.Text(willy.getKillCount().toString(), "12px Noteworthy", "FF7700");
+    numKills.x = 175;
+    numKills.y = 265;
+    stage.addChild(numKills);
+
+    accuracy = new createjs.Text(willy.getAccuracy().toString(), "12px Noteworthy", "FF7700");
+    accuracy.x = 175;
+    accuracy.y = 290;
+    stage.addChild(accuracy);
+
+    waveCount = new createjs.Text("1", "12px Noteworthy", "FF7700");
+    waveCount.x = 175;
+    waveCount.y = 315;
+    stage.addChild(waveCount);
 
     stage.addChild(developerCredits);
 }

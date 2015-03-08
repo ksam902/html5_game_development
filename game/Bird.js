@@ -94,6 +94,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
     }
     function onKillBird(e) {
         willy.increaseKillCount();
+        console.log(willy.getAccuracy());
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
         clip.addEventListener("animationend", onKilledBird);

@@ -5,9 +5,11 @@ var Willy = function(stage, assetManager) {
     var isDead = false;
     var lives = 3;
     var direction = "";
+
+    var accuracy = 0;
+    var arrowCount = 0;
     var killCount = 0;
     var isBirdKilled = false;
-    var arrowCount = 0;
     //get Willy
     var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
@@ -19,9 +21,6 @@ var Willy = function(stage, assetManager) {
     };
     this.getDirection = function() {
         return direction;
-    };
-    this.getArrowCount = function() {
-        return arrowCount;
     };
     this.getLives = function() {
         return lives;
@@ -51,6 +50,19 @@ var Willy = function(stage, assetManager) {
     this.setKillCount = function(value) {
         killCount = value;
     };
+    this.getArrowCount = function() {
+        return arrowCount;
+    };
+    this.setArrowCount = function(value){
+        arrowCount = value;
+    }
+    this.getAccuracy = function() {
+        accuracy = Math.floor((killCount/arrowCount)*100);
+        return accuracy;
+    };
+    this.setAccuracy = function(value){
+        accuracy = value;
+    }    
     this.getIsKilled = function() {
         return isKilled;
     };
