@@ -1,10 +1,12 @@
 //Class for Willy
 var Willy = function(stage, assetManager) {
     // initialization
-    var isKilled = false;
+    var isWillyKilled = false;
     var isDead = false;
     var lives = 3;
     var direction = "";
+    var killCount = 0;
+    var isBirdKilled = false;
     var arrowCount = 0;
     //get Willy
     var clip = assetManager.getSprite("assetsCharacters");
@@ -28,6 +30,27 @@ var Willy = function(stage, assetManager) {
         lives = value;
         isKilled = true;
     };
+    this.decreaseLivesCount = function(value) {
+        lives -= 1;
+    };
+    this.getIsWillyKilled = function() {
+        return isWillyKilled;
+    };
+    this.setIsWillyKilled = function(value) {
+        isWillyKilled = value;
+    };  
+    this.getIsBirdKilled = function() {
+        return isBirdKilled;
+    };
+    this.setIsBirdKilled = function(value) {
+        isBirdKilled = value;
+    };    
+    this.getKillCount = function() {
+        return killCount;
+    };    
+    this.setKillCount = function(value) {
+        killCount = value;
+    };
     this.getIsKilled = function() {
         return isKilled;
     };
@@ -43,6 +66,11 @@ var Willy = function(stage, assetManager) {
     };
     this.increaseArrowCount = function(){
         arrowCount+=1;
+    }
+    this.increaseKillCount = function(){
+        killCount+=1;
+        isBirdKilled = true;
+        console.log(killCount);
     }
     this.setXPosYPos = function(xPos, yPos){
         clip.x = xPos;

@@ -72,11 +72,11 @@ var Bird = function(stage, assetManager, willy, arrow) {
     function onCollisionTest(){
             // only do collision test on every other tick to save on processing
             if ((createjs.Ticker.getTicks() % 2 === 0)) {
-                  var intersection = collisionMethod(willyClip,clip,window.alphaThresh);
-                  if ( intersection ) {
-                        onKillWilly();
-                        onKillBird();
-                  }
+                var intersection = collisionMethod(willyClip,clip,window.alphaThresh);
+                if ( intersection ) {
+                    onKillWilly();
+                    createjs.Ticker.removeEventListener("tick", onCollisionTest);
+                }
             }else{
                 for ( var c = 0; c < arrows.length; c++ ) {
                     var a = arrows[c];
@@ -93,6 +93,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
  
     }
     function onKillBird(e) {
+        willy.increaseKillCount();
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
         clip.addEventListener("animationend", onKilledBird);
@@ -105,6 +106,12 @@ var Bird = function(stage, assetManager, willy, arrow) {
         stage.removeChild(clip);
     } 
     function onKillWilly(e) {
+        clipMover.stopMe();
+        //add in animation for bird eating willy
+        clip.gotoAndPlay("birdDead");
+        clip.addEventListener("animationend", onKilledBird);
+        //update willy's lives
+        willy.setIsWillyKilled(true);
         willyClip.gotoAndPlay("wormDead");
         willyClip.addEventListener("animationend", onKilledWilly);
     }
@@ -114,8 +121,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
         willyClip.removeEventListener("animationend", onKilledWilly);
         stage.removeChild(clip);
         stage.removeChild(willyClip);
-        //update willy's lives
-        willy.setLives((willy.getLives() - 1));
         //re-add willy to stage
         willyClip.gotoAndPlay("wormAlive");
         //alert(willy.getLives());
