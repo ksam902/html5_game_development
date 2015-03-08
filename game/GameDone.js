@@ -177,19 +177,19 @@ function onNewGame(e) {
 }
 function keyDownMove(e){   
     key = e.which;    
-    if(key == "37"){
+    if(key == "37" || key == "65"){
         //direction = "left";
         leftKey = true;
         e.preventDefault();
-    } else if(key == "38"){
+    } else if(key == "38" || key == "87"){
         //direction = "up"; 
         upKey = true;
         e.preventDefault();
-    }else if(key == "39"){
+    }else if(key == "39" || key == "68"){
         //direction = "right";
         rightKey = true;
         e.preventDefault();
-    }else if(key == "40"){
+    }else if(key == "40" || key == "83"){
         //direction = "down"; 
         downKey = true;
         e.preventDefault();
@@ -197,19 +197,19 @@ function keyDownMove(e){
 }
 function keyUpMove(e){
     key = e.which;    
-    if(key == "37"){
+    if(key == "37" || key == "65"){
         //direction = "left";
         leftKey = false;
         e.preventDefault();
-    } else if(key == "38"){
+    } else if(key == "38" || key == "87"){
         //direction = "up"; 
         upKey = false;
         e.preventDefault();
-    }else if(key == "39"){
+    }else if(key == "39" || key == "68"){
         //direction = "right";
         rightKey = false;
         e.preventDefault();
-    }else if(key == "40"){
+    }else if(key == "40" || key == "83"){
         //direction = "down"; 
         downKey = false;
         e.preventDefault();
@@ -628,8 +628,8 @@ function addBirdsInfoScreen(numBirds){
 function onAddBird(e) {
     arenaBird = new Bird(stage, assetManager, willy, arrows);
     arenaBird.setupMe();
-    birds.push(arenaBird);
-    console.log(birds);
+    // birds.push(arenaBird);
+    // console.log(birds);
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
