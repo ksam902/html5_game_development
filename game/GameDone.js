@@ -36,6 +36,7 @@ var willy2 = null;
 var cloud;
 var arrow = null;
 var arrows=[];
+var shootInterval;
 //START SCREEN ASSETS
 var arrowPointer;
 
@@ -158,7 +159,7 @@ function onNewGame(e) {
     document.addEventListener("keydown", keyDownMove);
     document.addEventListener("keyup", keyUpMove);
 
-    // construct and setup bugtimer to drop bugs on displaylist
+    // construct and setup birdTimer to drop birds on displaylist
     birdDelay = 2000;
     birdTimer = window.setInterval(onAddBird, birdDelay);
 
@@ -167,13 +168,16 @@ function onNewGame(e) {
             $('#stage').mousemove(function(e){
             });
         });
-        stage.addEventListener("click", function(e) {
-            willy.increaseArrowCount();
-            mouseX = Math.floor(e.stageX);
-            mouseY = Math.floor(e.stageY);
-        });
-        stage.addEventListener("click", shootProjectile);
-        stage.addEventListener("click", updateArrowCount);       
+        shootInterval = setTimeout(function(){
+            stage.addEventListener("click", function(e) {
+                willy.increaseArrowCount();
+                mouseX = Math.floor(e.stageX);
+                mouseY = Math.floor(e.stageY);
+            });
+            stage.addEventListener("click", shootProjectile);
+            stage.addEventListener("click", updateArrowCount);
+            clearTimeout(shootInterval);
+        }, 1000);       
 }
 function keyDownMove(e){   
     key = e.which;    

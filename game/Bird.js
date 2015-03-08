@@ -84,6 +84,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
                     intersection = collisionMethod(clip,a,window.alphaThresh);
                     if ( intersection ) {
                         onKillBird();
+                        createjs.Ticker.removeEventListener("tick", onCollisionTest);
                         stage.removeChild(a);
                         console.log("HIT ZEE BIRD");
                     }
@@ -92,7 +93,6 @@ var Bird = function(stage, assetManager, willy, arrow) {
  
     }
     function onKillBird(e) {
-        createjs.Ticker.removeEventListener("tick", onCollisionTest);
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
         clip.addEventListener("animationend", onKilledBird);
