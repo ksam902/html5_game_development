@@ -88,7 +88,6 @@ window.alphaThresh = 0.75;
 function onInit() {
 
     //console.log(">> initializing");
-    console.log("git test");
 
     // get reference to canvas
     canvas = document.getElementById("stage");
