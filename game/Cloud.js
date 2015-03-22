@@ -1,5 +1,5 @@
 // Cloud Class
-var Cloud = function(stage, assetManager) {
+var Cloud = function(stage, cloudContainer, assetManager) {
     // initialization
     var xPos;
     var yPos;
@@ -18,9 +18,9 @@ var Cloud = function(stage, assetManager) {
     // ---------------------------------------------- public methods
     this.setupMe = function(){
 
-    };  
+    };
     this.onStartScreen = function(){
-        
+
     };
     // ---------------------------------------------- private methods
     this.getInfoScreenClouds = function(){
@@ -29,14 +29,14 @@ var Cloud = function(stage, assetManager) {
         clip.x = getRandomNum(-100, -150);
         clip.y = getRandomNum(0, 250);
         createjs.Ticker.addEventListener("tick", onMove);
-        stage.addChild(clip);
+        cloudContainer.addChild(clip);
     }
     this.getArenaClouds = function(){
         clip.gotoAndStop("cloud1");
         clip.x = getRandomNum(-100, -300);
         clip.y = getRandomNum(0, 50);
         createjs.Ticker.addEventListener("tick", onMove);
-        stage.addChild(clip);
+        cloudContainer.addChild(clip);
     }
     function getRandomCloud(){
         var cloud = "";
@@ -49,7 +49,7 @@ var Cloud = function(stage, assetManager) {
             case 1:
                 cloud = "cloud2";
                 break;
-            case 2: 
+            case 2:
                 cloud = "cloud3";
                 break;
             default:
@@ -63,11 +63,11 @@ var Cloud = function(stage, assetManager) {
 
     // ----------------------------------------------- event handlers
     function onMove(e) {
-        
+
         if(clip.x > stage.canvas.width){
             clip.x = -100;
         }else{
-           clip.x ++; 
+           clip.x ++;
         }
 
     };

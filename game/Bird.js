@@ -1,5 +1,5 @@
 //Class for Bird
-var Bird = function(stage, assetManager, willy, arrow) {
+var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
     // initialization
     var xPos;
     var yPos;
@@ -28,9 +28,9 @@ var Bird = function(stage, assetManager, willy, arrow) {
         clip.x = getRandomNum(-50, -200);
         clip.y = getRandomNum(0, 250);
         createjs.Ticker.addEventListener("tick", onInfoMove);
-        stage.addChild(clip);
+        infoBirdContainer.addChild(clip);
         birdCount++;
-        //console.log(birdCount);    
+        //console.log(birdCount);
     }
     this.setupMe = function() {
         // random selection of speed of bug
@@ -86,11 +86,13 @@ var Bird = function(stage, assetManager, willy, arrow) {
                         onKillBird();
                         createjs.Ticker.removeEventListener("tick", onCollisionTest);
                         stage.removeChild(a);
+                        //remove arow from array
+                        arrows.splice(c, 1);
                         console.log("HIT ZEE BIRD");
                     }
-                }  
+                }
             }
- 
+
     }
     function onKillBird(e) {
         willy.increaseKillCount();
@@ -105,7 +107,7 @@ var Bird = function(stage, assetManager, willy, arrow) {
         clip.removeEventListener("animationend", onKilledBird);
         // remove displayobject
         stage.removeChild(clip);
-    } 
+    }
     function onKillWilly(e) {
         clipMover.stopMe();
         //add in animation for bird eating willy
@@ -129,21 +131,21 @@ var Bird = function(stage, assetManager, willy, arrow) {
         console.log("Willy killed");
     }
     function onInfoMove(e) {
-        
+
         if(clip.x > stage.canvas.width){
             clip.x = -50;
         }else{;
-           clip.x ++; 
+           clip.x ++;
         }
 
-    };  
+    };
     function onMove(e) {
-        
+
         if(clip.x > stage.canvas.width){
             //if bird is off screen, remove bird from stage
             stage.removeChild(clip);
         }else{;
-           clip.x ++; 
+           clip.x ++;
         }
 
     };

@@ -2,12 +2,14 @@
 var btnBegin;
 var infoCloudCount;
 var infoCloudInterval;
+var cloudContainer;
 var infoBirdCount;
 var infoBirdInterval;
+var infoBirdContainer;
 var arenaCloudCount;
 var arenaCloudInterval;
 var mouseX;
-var mouseY; 
+var mouseY;
 
 // game variables
 var stage = null;
@@ -98,6 +100,9 @@ function onInit() {
     stage = new createjs.Stage(canvas);
     stage.enableMouseOver(10);
 
+    cloudContainer = new createjs.Container();
+    infoBirdContainer = new createjs.Container();
+
     // construct preloader object to load spritesheet and sound assets
     assetManager = new AssetManager();
     stage.addEventListener("onAssetLoaded", onProgress);
@@ -117,7 +122,7 @@ function onReady(e) {
     mousePointer.gotoAndStop("mousePointer");
     addMousePointer();
     canvas.addEventListener("mouseenter", addMousePointer);
-    canvas.addEventListener("mouseout", removeMousePointer);      
+    canvas.addEventListener("mouseout", removeMousePointer);
 
     //enable the begin button when the game is ready
     btnBegin.disabled = false;
@@ -137,7 +142,7 @@ function onReady(e) {
     loadStartScreen();
 
      // setup event listeners for keyboard keys
-    document.addEventListener("keydown", onKeyDownStartScreen);   
+    document.addEventListener("keydown", onKeyDownStartScreen);
     document.removeEventListener("keydown", onKeyDownPauseScreen);
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
@@ -146,6 +151,8 @@ function onReady(e) {
 function onNewGame(e) {
 
     stage.removeAllChildren();
+    infoBirdContainer.removeAllChildren();
+    cloudContainer.removeAllChildren();
 
     // remove/setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
@@ -178,16 +185,16 @@ function onNewGame(e) {
         stage.addEventListener("click", shootProjectile);
         //stage.addEventListener("click", updateArrowCount);
         clearTimeout(shootInterval);
-    }, 1000);       
+    }, 1000);
 }
-function keyDownMove(e){   
-    key = e.which;    
+function keyDownMove(e){
+    key = e.which;
     if(key == "37" || key == "65"){
         //direction = "left";
         leftKey = true;
         e.preventDefault();
     } else if(key == "38" || key == "87"){
-        //direction = "up"; 
+        //direction = "up";
         upKey = true;
         e.preventDefault();
     }else if(key == "39" || key == "68"){
@@ -195,19 +202,19 @@ function keyDownMove(e){
         rightKey = true;
         e.preventDefault();
     }else if(key == "40" || key == "83"){
-        //direction = "down"; 
+        //direction = "down";
         downKey = true;
         e.preventDefault();
     }
 }
 function keyUpMove(e){
-    key = e.which;    
+    key = e.which;
     if(key == "37" || key == "65"){
         //direction = "left";
         leftKey = false;
         e.preventDefault();
     } else if(key == "38" || key == "87"){
-        //direction = "up"; 
+        //direction = "up";
         upKey = false;
         e.preventDefault();
     }else if(key == "39" || key == "68"){
@@ -215,7 +222,7 @@ function keyUpMove(e){
         rightKey = false;
         e.preventDefault();
     }else if(key == "40" || key == "83"){
-        //direction = "down"; 
+        //direction = "down";
         downKey = false;
         e.preventDefault();
     }
@@ -236,6 +243,8 @@ function onMenu(e){
     stage.removeEventListener("click", updateArrowCount);
     //remove all assets and intervals
     stage.removeAllChildren();
+    infoBirdContainer.removeAllChildren();
+    cloudContainer.removeAllChildren();
     clearInterval(arenaCloudInterval);
     clearInterval(birdTimer);
     document.removeEventListener("keydown", onKeyDownArenaScreen);
@@ -299,13 +308,16 @@ function loadStartScreen(){
     startBackground.gotoAndStop("startBackground");
     stage.addChild(startBackground);
 
+    stage.addChild(cloudContainer);
+    stage.addChild(infoBirdContainer);
+
     willy = new Willy(stage, assetManager);
     willy.resetMe();
     willy.setXPosYPos(275, 450);
 
     //add clouds and backgrounds
-    addBirdsInfoScreen(5); 
-    addCloudsInfoScreen(5);   
+    addBirdsInfoScreen(5);
+    addCloudsInfoScreen(5);
 
     gameTitle = assetManager.getSprite("assets");
     gameTitle.x = 120;
@@ -350,8 +362,9 @@ function loadArenaScreen(){
     arenaBackground = assetManager.getSprite("assets");
     arenaBackground.gotoAndStop("arenaBackground");
     stage.addChild(arenaBackground);
-    
+
     //add clouds
+    stage.addChild(cloudContainer);
     addCloudsArenaScreen(4);
 
     // -- Stats Assets
@@ -441,7 +454,9 @@ function loadPauseScreen(){
     infoBackground.gotoAndStop("infoBackground");
     stage.addChild(infoBackground);
 
-    addCloudsInfoScreen(4);   
+    stage.addChild(cloudContainer);
+    stage.addChild(infoBirdContainer);
+    addCloudsInfoScreen(4);
     addBirdsInfoScreen(4);
 
     pauseTitle = assetManager.getSprite("assets");
@@ -468,7 +483,7 @@ function loadPauseScreen(){
     restartText.gotoAndStop("restartText");
     stage.addChild(restartText);
     // setup event listener to Resume Game
-    resumeGame.addEventListener("click", onResumeGame);    
+    resumeGame.addEventListener("click", onResumeGame);
 
     // Add Instructions Back In
     stage.addChild(instructions);
@@ -507,11 +522,11 @@ function onKeyDownStartScreen(e) {
     if (e.keyCode == 78) onNewGame();
     if (e.keyCode == 73) onInstructions();
     if(e.keyCode == "38"){
-        //direction = "up"; 
+        //direction = "up";
         arrowPointer.y = 339;
         e.preventDefault();
     } else if(e.keyCode == "40"){
-        //direction = "down"; 
+        //direction = "down";
         arrowPointer.y = 364;
         e.preventDefault();
     }
@@ -520,7 +535,7 @@ function onKeyDownStartScreen(e) {
     }
     if(e.keyCode == "13" && arrowPointer.y === 364){
         onInstructions();
-    }    
+    }
 }
 function onKeyDownArenaScreen(e) {
     // keystroke for "P" Button activating the menu screen
@@ -532,7 +547,7 @@ function onKeyDownPauseScreen(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 81) onReady();
     if (e.keyCode == 73) onInstructions();
-    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();    
+    if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
 
     if(e.keyCode == "38"){
         //direction = "up";
@@ -545,7 +560,7 @@ function onKeyDownPauseScreen(e) {
                 break;
             case 336:
                 arrowPointer.y = 311;
-                break;        
+                break;
             default:
         }
         e.preventDefault();
@@ -560,7 +575,7 @@ function onKeyDownPauseScreen(e) {
                 break;
             case 361:
                 arrowPointer.y = 386;
-                break;        
+                break;
             default:
         }
         e.preventDefault();
@@ -576,10 +591,10 @@ function onKeyDownPauseScreen(e) {
                 break;
             case 361:
                 onInstructions();
-                break;        
+                break;
             default:
                 onReady();
-        }        
+        }
     }
 
 }
@@ -588,7 +603,7 @@ function onKeyDownGameOverScreen(e){
 // --------- END KEYDOWN FUNCTIONS --------
 // --------- UPDATE ARENA STATS --------
 function updateArrowCount(){
-    
+
     stage.removeChild(arrowCount);
     arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
     arrowCount.x = 460;
@@ -596,7 +611,7 @@ function updateArrowCount(){
     stage.addChild(arrowCount);
 }
 function updateLivesCount(){
-    
+
     stage.removeChild(livesCount);
     livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
     livesCount.x = 85;
@@ -613,13 +628,13 @@ function addCloudsInfoScreen(numClouds){
     infoCloudInterval = setInterval(addInfoCloud, 6000);
     function addInfoCloud() {
         if(infoCloudCount <= numClouds){
-            var cloud = new Cloud(stage, assetManager);
-            cloud.getInfoScreenClouds();            
+            var cloud = new Cloud(stage, cloudContainer, assetManager);
+            cloud.getInfoScreenClouds();
             //console.log(infoCloudCount + "/" + numClouds +  " Cloud Info Function");
             infoCloudCount ++;
-        }else{        
+        }else{
             clearInterval(infoCloudInterval);
-        }     
+        }
     }
 };
 function addCloudsArenaScreen(numClouds){
@@ -628,13 +643,13 @@ function addCloudsArenaScreen(numClouds){
     arenaCloudInterval = setInterval(addArenaCloud, 5000);
     function addArenaCloud() {
         if(arenaCloudCount <= numClouds){
-            var cloud = new Cloud(stage, assetManager);
-            cloud.getArenaClouds(); 
+            var cloud = new Cloud(stage, cloudContainer, assetManager);
+            cloud.getArenaClouds();
             //console.log(arenaCloudCount + "/" + numClouds + " Cloud Arena Function");
             arenaCloudCount ++;
         }else{
-            clearInterval(arenaCloudInterval);                
-        } 
+            clearInterval(arenaCloudInterval);
+        }
     }
 };
 // --------- END CLOUDS --------
@@ -644,19 +659,19 @@ function addBirdsInfoScreen(numBirds){
     infoBirdCount = 1;
     // set interval
     infoBirdInterval = setInterval(addInfoBird, 4000);
-    function addInfoBird() {  
+    function addInfoBird() {
         if(infoBirdCount <= numBirds){
-            var bird = new Bird(stage, assetManager, willy);
-            bird.getInfoScreenBirds();        
+            var bird = new Bird(stage, infoBirdContainer, assetManager, willy);
+            bird.getInfoScreenBirds();
             //console.log(infoBirdCount + "/" + numBirds + " Bird Info Function");
             infoBirdCount ++;
-        }else{        
-            clearInterval(infoBirdInterval);            
-        } 
+        }else{
+            clearInterval(infoBirdInterval);
+        }
     }
 }
 function onAddBird(e) {
-    arenaBird = new Bird(stage, assetManager, willy, arrows);
+    arenaBird = new Bird(stage, infoBirdContainer, assetManager, willy, arrows);
     arenaBird.setupMe();
     // birds.push(arenaBird);
     // console.log(birds);
@@ -687,7 +702,7 @@ function onTick(e) {
         numKills = new createjs.Text(willy.getKillCount().toString(), "14px Noteworthy", "FF7700");
         numKills.x = 155;
         numKills.y = 14;
-        stage.addChild(numKills);            
+        stage.addChild(numKills);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
         willy.decreaseLivesCount();

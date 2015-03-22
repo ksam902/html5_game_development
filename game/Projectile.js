@@ -11,7 +11,7 @@ var Projectile = function(stage, assetManager) {
     var xDisplace = -1;
     var yDisplace = -1;
 
-    //get arrw
+    //get arrow
     var arrow = assetManager.getSprite("assets");
     //var arrowMover = new MoverDiagonal(arrow, stage);;
     // ---------------------------------------------- get/set methods
@@ -42,7 +42,7 @@ var Projectile = function(stage, assetManager) {
         return Math.floor(Math.random() * (max-min+1) + min);
     }
 
-    // -------------------------------------------------- private methods  
+    // -------------------------------------------------- private methods
     function startArrow(){
 
         // calculating X and Y displacement
@@ -50,13 +50,13 @@ var Projectile = function(stage, assetManager) {
         yDisplace = Math.sin(angle) * speed;
         arrow.play();
         // setup listener to listen for ticker to control animation
-        createjs.Ticker.addEventListener("tick", onMove);    
+        createjs.Ticker.addEventListener("tick", onMove);
     }
     // -------------------------------------------------- event handlers
     function onMove(e) {
         // move sprite
         arrow.x = arrow.x + xDisplace;
         arrow.y = arrow.y + yDisplace;
-        
+
     }
 };
