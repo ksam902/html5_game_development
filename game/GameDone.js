@@ -59,7 +59,7 @@ var arrowCount;
 var waveCount;
 var livesCount;
 
-//pause assets
+//info assets
 var accuracy;
 var resumeText;
 var restartText;
@@ -68,7 +68,7 @@ var arenaBackground;
 var infoBackground;
 var instructionsBackground;
 var gameTitle;
-var pauseTitle;
+var infoTitle;
 var newGame;
 var resumeGame;
 var quitGame;
@@ -77,11 +77,9 @@ var btnMenu;
 var btnThanks;
 var developerCredits;
 
-// -- Arena variables
-var healthIcon;
-var healthBar;
-
 var direction;
+//Gameplay Booleans
+var isGameOver = false;
 
 collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
@@ -143,7 +141,7 @@ function onReady(e) {
 
      // setup event listeners for keyboard keys
     document.addEventListener("keydown", onKeyDownStartScreen);
-    document.removeEventListener("keydown", onKeyDownPauseScreen);
+    document.removeEventListener("keydown", onKeyDownInfoScreen);
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
     createjs.Ticker.addEventListener("tick", onTick);
@@ -156,7 +154,7 @@ function onNewGame(e) {
 
     // remove/setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
-    document.removeEventListener("keydown", onKeyDownPauseScreen);
+    document.removeEventListener("keydown", onKeyDownInfoScreen);
     document.addEventListener("keydown", onKeyDownArenaScreen);
 
     //add assets
@@ -183,7 +181,6 @@ function onNewGame(e) {
             mouseY = Math.floor(e.stageY);
         });
         stage.addEventListener("click", shootProjectile);
-        //stage.addEventListener("click", updateArrowCount);
         clearTimeout(shootInterval);
     }, 1000);
 }
@@ -248,13 +245,11 @@ function onMenu(e){
     clearInterval(arenaCloudInterval);
     clearInterval(birdTimer);
     document.removeEventListener("keydown", onKeyDownArenaScreen);
-    document.addEventListener("keydown", onKeyDownPauseScreen);
-    //load Pause screen assets
-    loadPauseScreen();
+    document.addEventListener("keydown", onKeyDownInfoScreen);
+    //load Info screen assets
+    loadInfoScreen();
 
     addMousePointer();
-    // setup event listeners for keyboard keys
-    document.addEventListener("keydown", onKeyDownPauseScreen);
 }
 function onResumeGame(e){
     onNewGame();
@@ -420,22 +415,9 @@ function loadArenaScreen(){
 
     scoreText = assetManager.getSprite("assets");
     scoreText.x = 200;
-    scoreText.y = 500;
+    scoreText.y = 550;
     scoreText.gotoAndStop("scoreText");
     stage.addChild(scoreText);
-
-    // -- Health Elements
-    healthIcon = assetManager.getSprite("assetsCharacters");
-    healthIcon.x = 125;
-    healthIcon.y = 500;
-    healthIcon.gotoAndPlay("heartBeat");
-    stage.addChild(healthIcon);
-
-    healthBar = assetManager.getSprite("assets");
-    healthBar.x = 200;
-    healthBar.y = 525;
-    healthBar.gotoAndStop("healthBarFull");
-    stage.addChild(healthBar);
 
     btnMenu = assetManager.getSprite("assets");
     btnMenu.x = 500;
@@ -447,7 +429,7 @@ function loadArenaScreen(){
     //btnMenu.addEventListener("mouseover", onMenuHover);
     stage.addChild(developerCredits);
 }
-function loadPauseScreen(){
+function loadInfoScreen(){
 
     //new background
     infoBackground = assetManager.getSprite("assets");
@@ -459,31 +441,37 @@ function loadPauseScreen(){
     addCloudsInfoScreen(4);
     addBirdsInfoScreen(4);
 
-    pauseTitle = assetManager.getSprite("assets");
-    pauseTitle.x = 200;
-    pauseTitle.y = 75;
-    pauseTitle.gotoAndStop("pauseText");
-    stage.addChild(pauseTitle);
-
     stage.addChild(arrowPointer);
-    arrowPointer.x = 220;
-    arrowPointer.y = 311;
 
-    resumeGame = assetManager.getSprite("assets");
-    resumeGame.x = 260;
-    resumeGame.y = 300;
-    resumeGame.gotoAndStop("resumeText");
-    stage.addChild(resumeGame);
-    // setup event listener to Resume Game
-    resumeGame.addEventListener("click", onResumeGame);
+    if(isGameOver){
+        infoTitle = new createjs.Text("Womp Womp. Game Over!", "24px Noteworthy", "FF7700");
+        arrowPointer.x = 220;
+        arrowPointer.y = 336;
+
+    }else{
+        infoTitle = assetManager.getSprite("assets");
+        infoTitle.gotoAndStop("pauseText");
+
+        arrowPointer.x = 220;
+        arrowPointer.y = 311;
+
+        resumeGame = assetManager.getSprite("assets");
+        resumeGame.x = 260;
+        resumeGame.y = 300;
+        resumeGame.gotoAndStop("resumeText");
+        stage.addChild(resumeGame);
+        // setup event listener to Resume Game
+        resumeGame.addEventListener("click", onResumeGame);
+    }
+        infoTitle.x = 200;
+        infoTitle.y = 75;
+        stage.addChild(infoTitle);
 
     restartText = assetManager.getSprite("assets");
     restartText.x = 260;
     restartText.y = 325;
     restartText.gotoAndStop("restartText");
     stage.addChild(restartText);
-    // setup event listener to Resume Game
-    resumeGame.addEventListener("click", onResumeGame);
 
     // Add Instructions Back In
     stage.addChild(instructions);
@@ -543,7 +531,7 @@ function onKeyDownArenaScreen(e) {
     // if (e.keyCode == 27 || e.keyCode == 82) onResumeGame();
 
 }
-function onKeyDownPauseScreen(e) {
+function onKeyDownInfoScreen(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 81) onReady();
     if (e.keyCode == 73) onInstructions();
@@ -559,7 +547,9 @@ function onKeyDownPauseScreen(e) {
                 arrowPointer.y = 336;
                 break;
             case 336:
+                if(!isGameOver){
                 arrowPointer.y = 311;
+                }
                 break;
             default:
         }
@@ -713,7 +703,9 @@ function onTick(e) {
         stage.addChild(livesCount);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
-            alert("Game Over!!!!");
+            isGameOver = true;
+            onMenu();
+
             willy.setLives(3);
         }
     }
