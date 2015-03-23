@@ -30,7 +30,6 @@ var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
         createjs.Ticker.addEventListener("tick", onInfoMove);
         infoBirdContainer.addChild(clip);
         birdCount++;
-        //console.log(birdCount);
     }
     this.setupMe = function() {
         // random selection of speed of bug
@@ -96,7 +95,6 @@ var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
     }
     function onKillBird(e) {
         willy.increaseKillCount();
-        console.log(willy.getAccuracy());
         clipMover.stopMe();
         clip.gotoAndPlay("birdDead");
         clip.addEventListener("animationend", onKilledBird);
@@ -126,7 +124,6 @@ var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
         stage.removeChild(willyClip);
         //re-add willy to stage
         willyClip.gotoAndPlay("wormAlive");
-        //alert(willy.getLives());
         stage.addChild(willyClip);
         console.log("Willy killed");
     }

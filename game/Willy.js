@@ -14,7 +14,7 @@ var Willy = function(stage, assetManager) {
     var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
     var clipMover = new MoverDiagonal(clip, stage);
-    
+
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return clip;
@@ -37,16 +37,16 @@ var Willy = function(stage, assetManager) {
     };
     this.setIsWillyKilled = function(value) {
         isWillyKilled = value;
-    };  
+    };
     this.getIsBirdKilled = function() {
         return isBirdKilled;
     };
     this.setIsBirdKilled = function(value) {
         isBirdKilled = value;
-    };    
+    };
     this.getKillCount = function() {
         return killCount;
-    };    
+    };
     this.setKillCount = function(value) {
         killCount = value;
     };
@@ -57,12 +57,14 @@ var Willy = function(stage, assetManager) {
         arrowCount = value;
     }
     this.getAccuracy = function() {
-        accuracy = Math.floor((killCount/arrowCount)*100);
+        if(arrowCount > 0){
+            accuracy = Math.floor((killCount/arrowCount)*100);
+        }
         return accuracy;
     };
     this.setAccuracy = function(value){
         accuracy = value;
-    }    
+    }
     this.getIsKilled = function() {
         return isKilled;
     };
@@ -82,7 +84,6 @@ var Willy = function(stage, assetManager) {
     this.increaseKillCount = function(){
         killCount+=1;
         isBirdKilled = true;
-        console.log(killCount);
     }
     this.setXPosYPos = function(xPos, yPos){
         clip.x = xPos;
@@ -90,26 +91,26 @@ var Willy = function(stage, assetManager) {
     };
     //Moving Willy
     this.moveUp = function(){
-        if(clip.y > 125){   
+        if(clip.y > 125){
             clip.y -= 5;
-        }  
+        }
     }
     this.moveDown = function(){
-        if(clip.y < (stage.canvas.height - 150)){   
+        if(clip.y < (stage.canvas.height - 150)){
             clip.y += 5;
-        }  
+        }
     }
     this.moveRight = function(){
         clip.scaleX = 1;
         direction = "right";
-        if(clip.x < (stage.canvas.width - 55)){   
+        if(clip.x < (stage.canvas.width - 55)){
             clip.x += 5;
         }
     }
     this.moveLeft = function(){
         clip.scaleX = -1;
         direction = "left";
-        if(clip.x > 55){   
+        if(clip.x > 55){
             clip.x -= 5;
         }
     }

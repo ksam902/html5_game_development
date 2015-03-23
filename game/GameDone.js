@@ -49,15 +49,22 @@ var killsText;
 var numKills;
 
 var enemiesText;
+var numEnemiesText;
+
 var waveText;
+var numWaveText;
 var scoreText;
 
 var arrowsText;
 var arrowsNumText;
-var arrowCount;
 
-var waveCount;
-var livesCount;
+//------game arena stats
+var numWave;
+var numLives;
+var numEnemies;
+var numArrows;
+// increase this every wave
+var targetNumEnemies
 
 //info assets
 var accuracy;
@@ -80,15 +87,12 @@ var developerCredits;
 var direction;
 //Gameplay Booleans
 var isGameOver = false;
-
+//collision detection
 collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
 
 // ------------------------------------------------------------ event handlers
 function onInit() {
-
-    //console.log(">> initializing");
-
     // get reference to canvas
     canvas = document.getElementById("stage");
     // set canvas to as wide/high as the browser window
@@ -131,8 +135,9 @@ function onReady(e) {
         }, 750);
         btnBegin.disabled = true;
     });
-    //console.log(">> setup");
 
+    //clear stage
+    stage.removeAllChildren();
     // kill event listener
     stage.removeEventListener("onAssetLoaded", onProgress);
     stage.removeEventListener("onAllAssetsLoaded", onReady);
@@ -158,6 +163,16 @@ function onNewGame(e) {
     document.addEventListener("keydown", onKeyDownArenaScreen);
 
     //add assets
+    // RESET Game Variables
+    numWave = 1;
+    //start game with 10 enemies
+    targetNumEnemies = 3;
+    // decrease numEnemies each kill - at the start of a wave the numEnemies is set to the new targetNumEnemies
+    numEnemies = targetNumEnemies;
+    // construct and setup birdTimer to drop birds on displaylist
+    birdDelay = 2000;
+    birdTimer = window.setInterval(onAddBird, birdDelay);
+
     loadArenaScreen();
     addMousePointer();
 
@@ -168,9 +183,6 @@ function onNewGame(e) {
     document.addEventListener("keydown", keyDownMove);
     document.addEventListener("keyup", keyUpMove);
 
-    // construct and setup birdTimer to drop birds on displaylist
-    birdDelay = 2000;
-    birdTimer = window.setInterval(onAddBird, birdDelay);
 
     // --- SHOOTING FUNCTION - Mouse Pointer ----
     //delay shooting ability - will prevent arrow from being fired when the arena intially loads
@@ -237,9 +249,8 @@ function moveWilly(){
 }
 function onMenu(e){
     stage.removeEventListener("click", shootProjectile);
-    stage.removeEventListener("click", updateArrowCount);
-    //remove all assets and intervals
-    stage.removeAllChildren();
+    stage.removeEventListener("click", updateNumArrows);
+
     infoBirdContainer.removeAllChildren();
     cloudContainer.removeAllChildren();
     clearInterval(arenaCloudInterval);
@@ -369,10 +380,10 @@ function loadArenaScreen(){
     livesText.gotoAndStop("livesText");
     stage.addChild(livesText);
 
-    livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
-    livesCount.x = 85;
-    livesCount.y = 14;
-    stage.addChild(livesCount);
+    numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+    numLives.x = 85;
+    numLives.y = 14;
+    stage.addChild(numLives);
 
     killsText = assetManager.getSprite("assets");
     killsText.x = 100;
@@ -391,16 +402,21 @@ function loadArenaScreen(){
     enemiesText.gotoAndStop("birdsText");
     stage.addChild(enemiesText);
 
+    numEnemiesText = new createjs.Text(numEnemies.toString(), "14px Noteworthy", "FF7700");
+    numEnemiesText.x = 320;
+    numEnemiesText.y = 14;
+    stage.addChild(numEnemiesText);
+
     arrowsText = assetManager.getSprite("assets");
     arrowsText.x = 340;
     arrowsText.y = 11;
     arrowsText.gotoAndStop("arrowsText");
     stage.addChild(arrowsText);
 
-    arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
-    arrowCount.x = 460;
-    arrowCount.y = 14;
-    stage.addChild(arrowCount);
+    numArrows = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
+    numArrows.x = 460;
+    numArrows.y = 14;
+    stage.addChild(numArrows);
 
     waveText = assetManager.getSprite("assets");
     waveText.x = 480;
@@ -408,10 +424,10 @@ function loadArenaScreen(){
     waveText.gotoAndStop("waveText");
     stage.addChild(waveText);
 
-    waveCount = new createjs.Text("1", "14px Noteworthy", "FF7700");
-    waveCount.x = 550;
-    waveCount.y = 14;
-    stage.addChild(waveCount);
+    numWaveText = new createjs.Text(numWave, "14px Noteworthy", "FF7700");
+    numWaveText.x = 550;
+    numWaveText.y = 14;
+    stage.addChild(numWaveText);
 
     scoreText = assetManager.getSprite("assets");
     scoreText.x = 200;
@@ -430,6 +446,8 @@ function loadArenaScreen(){
     stage.addChild(developerCredits);
 }
 function loadInfoScreen(){
+    //remove all assets and intervals
+    stage.removeAllChildren();
 
     //new background
     infoBackground = assetManager.getSprite("assets");
@@ -489,15 +507,15 @@ function loadInfoScreen(){
     numKills.y = 265;
     stage.addChild(numKills);
 
-    accuracy = new createjs.Text(willy.getAccuracy().toString(), "12px Noteworthy", "FF7700");
-    accuracy.x = 175;
+    accuracy = new createjs.Text(willy.getAccuracy().toString() + "%", "12px Noteworthy", "FF7700");
+    accuracy.x = 165;
     accuracy.y = 290;
     stage.addChild(accuracy);
 
-    waveCount = new createjs.Text("1", "12px Noteworthy", "FF7700");
-    waveCount.x = 175;
-    waveCount.y = 315;
-    stage.addChild(waveCount);
+    numWave = new createjs.Text("1", "12px Noteworthy", "FF7700");
+    numWave.x = 175;
+    numWave.y = 315;
+    stage.addChild(numWave);
 
     stage.addChild(developerCredits);
 }
@@ -548,7 +566,7 @@ function onKeyDownInfoScreen(e) {
                 break;
             case 336:
                 if(!isGameOver){
-                arrowPointer.y = 311;
+                    arrowPointer.y = 311;
                 }
                 break;
             default:
@@ -592,23 +610,22 @@ function onKeyDownGameOverScreen(e){
 }
 // --------- END KEYDOWN FUNCTIONS --------
 // --------- UPDATE ARENA STATS --------
-function updateArrowCount(){
+function updateNumArrows(){
 
-    stage.removeChild(arrowCount);
-    arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
-    arrowCount.x = 460;
-    arrowCount.y = 14;
-    stage.addChild(arrowCount);
+    stage.removeChild(numArrows);
+    numArrows = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
+    numArrows.x = 460;
+    numArrows.y = 14;
+    stage.addChild(numArrows);
 }
 function updateLivesCount(){
 
-    stage.removeChild(livesCount);
-    livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
-    livesCount.x = 85;
-    livesCount.y = 14;
-    stage.addChild(livesCount);
+    stage.removeChild(numLives);
+    numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+    numLives.x = 85;
+    numLives.y = 14;
+    stage.addChild(numLives);
 }
-
 // --------- END UPDATE ARENA STATS --------
 // --------- CLOUDS --------
 
@@ -620,7 +637,6 @@ function addCloudsInfoScreen(numClouds){
         if(infoCloudCount <= numClouds){
             var cloud = new Cloud(stage, cloudContainer, assetManager);
             cloud.getInfoScreenClouds();
-            //console.log(infoCloudCount + "/" + numClouds +  " Cloud Info Function");
             infoCloudCount ++;
         }else{
             clearInterval(infoCloudInterval);
@@ -635,7 +651,6 @@ function addCloudsArenaScreen(numClouds){
         if(arenaCloudCount <= numClouds){
             var cloud = new Cloud(stage, cloudContainer, assetManager);
             cloud.getArenaClouds();
-            //console.log(arenaCloudCount + "/" + numClouds + " Cloud Arena Function");
             arenaCloudCount ++;
         }else{
             clearInterval(arenaCloudInterval);
@@ -653,7 +668,6 @@ function addBirdsInfoScreen(numBirds){
         if(infoBirdCount <= numBirds){
             var bird = new Bird(stage, infoBirdContainer, assetManager, willy);
             bird.getInfoScreenBirds();
-            //console.log(infoBirdCount + "/" + numBirds + " Bird Info Function");
             infoBirdCount ++;
         }else{
             clearInterval(infoBirdInterval);
@@ -663,8 +677,7 @@ function addBirdsInfoScreen(numBirds){
 function onAddBird(e) {
     arenaBird = new Bird(stage, infoBirdContainer, assetManager, willy, arrows);
     arenaBird.setupMe();
-    // birds.push(arenaBird);
-    // console.log(birds);
+    console.log("Bird Added : " + birdDelay);
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
@@ -674,11 +687,11 @@ function shootProjectile(){
     arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
     arrows.push(arrow);
 
-    stage.removeChild(arrowCount);
-    arrowCount = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
-    arrowCount.x = 460;
-    arrowCount.y = 14;
-    stage.addChild(arrowCount);
+    stage.removeChild(numArrows);
+    numArrows = new createjs.Text(willy.getArrowCount().toString(), "14px Noteworthy", "FF7700");
+    numArrows.x = 460;
+    numArrows.y = 14;
+    stage.addChild(numArrows);
 }
 // --------- END WILLY --------
 // --------- TICK --------
@@ -693,19 +706,42 @@ function onTick(e) {
         numKills.x = 155;
         numKills.y = 14;
         stage.addChild(numKills);
+
+        numEnemies -= 1;
+        if(numEnemies === 0){
+            alert("End Of Wave!");
+            //increase numWave
+            stage.removeChild(numWaveText);
+            numWaveText = new createjs.Text((numWave+=1), "14px Noteworthy", "FF7700");
+            numWaveText.x = 550;
+            numWaveText.y = 14;
+            stage.addChild(numWaveText);
+            //increase number of enemies for wave
+            targetNumEnemies +=1;
+            numEnemies = targetNumEnemies;
+            //increase bird generation
+            clearInterval(birdTimer);
+            birdDelay -= 100;
+            birdTimer = window.setInterval(onAddBird, birdDelay);
+        }
+
+        stage.removeChild(numEnemiesText);
+        numEnemiesText = new createjs.Text(numEnemies, "14px Noteworthy", "FF7700");
+        numEnemiesText.x = 320;
+        numEnemiesText.y = 14;
+        stage.addChild(numEnemiesText);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
         willy.decreaseLivesCount();
-        stage.removeChild(livesCount);
-        livesCount = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
-        livesCount.x = 85;
-        livesCount.y = 14;
-        stage.addChild(livesCount);
+        stage.removeChild(numLives);
+        numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+        numLives.x = 85;
+        numLives.y = 14;
+        stage.addChild(numLives);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
             isGameOver = true;
             onMenu();
-
             willy.setLives(3);
         }
     }
