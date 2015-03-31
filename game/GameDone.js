@@ -294,6 +294,8 @@ function onQuitGame(e){
     addMousePointer();
 }
 function onInstructions(e){
+    document.removeEventListener("keydown", onKeyDownGameOverScreen);
+    document.removeEventListener("keydown", onKeyDownStartScreen);
     instructionsBackground = assetManager.getSprite("assets");
     instructionsBackground.gotoAndStop("instructionsBackground");
     stage.addChild(instructionsBackground);
@@ -304,6 +306,12 @@ function onInstructions(e){
     btnThanks.gotoAndStop("btnThanks");
     stage.addChild(btnThanks);
     btnThanks.addEventListener("click", function(){
+        console.log(isGameOver);
+        if(!isGameOver){
+            document.addEventListener("keydown", onKeyDownGameOverScreen);
+        }else{
+            document.addEventListener("keydown", onKeyDownStartScreen);
+        }
         stage.removeChild(instructionsBackground);
         stage.removeChild(btnThanks);
     });
@@ -473,11 +481,6 @@ function loadGameOverScreen(){
     //remove all assets and intervals
     stage.removeAllChildren();
 
-    // remove/setup event listeners for keyboard keys
-    document.removeEventListener("keydown", onKeyDownStartScreen);
-    document.addEventListener("keydown", onKeyDownGameOverScreen);
-    document.removeEventListener("keydown", onKeyDownArenaScreen);
-
     //new background
     infoBackground = assetManager.getSprite("assets");
     infoBackground.gotoAndStop("infoBackground");
@@ -487,14 +490,17 @@ function loadGameOverScreen(){
     stage.addChild(infoBirdContainer);
     addCloudsInfoScreen(4);
     addBirdsInfoScreen(4);
-    stage.addChild(arrowPointer);
 
     infoTitle = new createjs.Text("Womp Womp. Game Over!", "24px Noteworthy", "FF7700");
-    arrowPointer.x = 200;
-    arrowPointer.y = 400;
     infoTitle.x = 175;
     infoTitle.y = 150;
     stage.addChild(infoTitle);
+
+    arrowPointer = assetManager.getSprite("assets");
+    arrowPointer.x = 220;
+    arrowPointer.y = 339;
+    arrowPointer.gotoAndStop("arrowPointer");
+    stage.addChild(arrowPointer);
 
     restartText = assetManager.getSprite("assets");
     restartText.x = 260;
@@ -525,10 +531,16 @@ function loadGameOverScreen(){
     accuracy.y = 290;
     stage.addChild(accuracy);
 
-    numWave = new createjs.Text("1", "12px Noteworthy", "FF7700");
+    numWave = new createjs.Text(numWave, "12px Noteworthy", "FF7700");
     numWave.x = 175;
     numWave.y = 315;
     stage.addChild(numWave);
+
+
+    // remove/setup event listeners for keyboard keys
+    document.removeEventListener("keydown", onKeyDownStartScreen);
+    document.addEventListener("keydown", onKeyDownGameOverScreen);
+    document.removeEventListener("keydown", onKeyDownArenaScreen);
 
     stage.addChild(developerCredits);
 }
@@ -559,17 +571,35 @@ function onKeyDownArenaScreen(e) {
     if (e.keyCode == 80) onPause();
 }
 function onKeyDownGameOverScreen(e) {
+
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 81) onReady();
     if (e.keyCode == 73) onInstructions();
-
     if(e.keyCode == "38"){
         //direction = "up";
-        arrowPointer.y = 339;
+        switch(arrowPointer.y){
+            case 386:
+                arrowPointer.y = 364;
+                break;
+            case 364:
+                arrowPointer.y = 339;
+                break;
+            default:
+                break;
+        }
         e.preventDefault();
     } else if(e.keyCode == "40"){
         //direction = "down";
-        arrowPointer.y = 364;
+        switch(arrowPointer.y){
+            case 339:
+                arrowPointer.y = 364;
+                break;
+            case 364:
+                arrowPointer.y = 386;
+                break;
+            default:
+                break;
+        }
         e.preventDefault();
     }
     if(e.keyCode == "13" && arrowPointer.y === 339){
@@ -578,9 +608,9 @@ function onKeyDownGameOverScreen(e) {
     if(e.keyCode == "13" && arrowPointer.y === 364){
         onInstructions();
     }
-
-}
-function onKeyDownGameOverScreen(e){
+    if(e.keyCode == "13" && arrowPointer.y === 386){
+        onReady();
+    }
 }
 // --------- END KEYDOWN FUNCTIONS --------
 // --------- UPDATE ARENA STATS --------
@@ -717,12 +747,13 @@ function shootProjectile(){
         numArrows.y = 500;
         stage.addChild(numArrows);
 //check for depleted arrows
-        if(willy.getNumArrows() === 0){
+    if(willy.getNumArrows() === 0){
         infoTitle = assetManager.getSprite("assets");
         infoTitle.gotoAndStop("arrowsDepleted");
-        infoTitle.x = 100;
+        infoTitle.x = 125;
         infoTitle.y = 75;
         stage.addChild(infoTitle);
+        stage.removeEventListener("click", shootProjectile);
         arrowsDepletedInterval = setTimeout(function(){
             stage.removeChild(infoTitle);
             isGameOver = true;
