@@ -5,7 +5,7 @@ var Projectile = function(stage, assetManager) {
     var targetY;
     var angle = 0;
     var arrowCount = 0;
-    var speed = 4;
+    var speed = 8;
     var moving = false;
     // private variables
     var xDisplace = -1;
@@ -44,7 +44,6 @@ var Projectile = function(stage, assetManager) {
 
     // -------------------------------------------------- private methods
     function startArrow(){
-
         // calculating X and Y displacement
         xDisplace = Math.cos(angle) * speed;
         yDisplace = Math.sin(angle) * speed;
@@ -55,8 +54,12 @@ var Projectile = function(stage, assetManager) {
     // -------------------------------------------------- event handlers
     function onMove(e) {
         // move sprite
-        arrow.x = arrow.x + xDisplace;
-        arrow.y = arrow.y + yDisplace;
+        if(willy.getIsPaused()){
+
+        }else{
+            arrow.x = arrow.x + xDisplace;
+            arrow.y = arrow.y + yDisplace;
+        }
 
     }
 };

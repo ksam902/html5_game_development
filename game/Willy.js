@@ -1,6 +1,7 @@
 //Class for Willy
 var Willy = function(stage, assetManager) {
     // initialization
+    var isPaused = false;
     var isWillyKilled = false;
     var isDead = false;
     var lives = 3;
@@ -8,6 +9,7 @@ var Willy = function(stage, assetManager) {
 
     var accuracy = 0;
     var arrowCount = 0;
+    var numArrows = 10;
     var killCount = 0;
     var isBirdKilled = false;
     //get Willy
@@ -53,9 +55,6 @@ var Willy = function(stage, assetManager) {
     this.getArrowCount = function() {
         return arrowCount;
     };
-    this.setArrowCount = function(value){
-        arrowCount = value;
-    }
     this.getAccuracy = function() {
         if(arrowCount > 0){
             accuracy = Math.floor((killCount/arrowCount)*100);
@@ -74,10 +73,33 @@ var Willy = function(stage, assetManager) {
     this.getWillyY = function(){
         return clip.y;
     };
+    this.getIsPaused = function() {
+        return isPaused;
+    };
+    this.setIsPaused = function(value) {
+        isPaused = value;
+    };
     // ---------------------------------------------- public methods
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
+        arrowCount = 0;
+        lives = 3;
+        isWillyKilled = false;
+        isDead = false;
+        accuracy = 0;
+        numArrows = 10;
+        isPaused = false;
     };
+    //deal with willy's arrow situation
+    this.getNumArrows = function(){
+        return numArrows;
+    }
+    this.decreaseNumArrows = function(){
+        numArrows-=1;
+    }
+    this.setNumArrows = function(value){
+        numArrows = value;
+    }
     this.increaseArrowCount = function(){
         arrowCount+=1;
     }
