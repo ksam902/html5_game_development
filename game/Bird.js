@@ -59,15 +59,12 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
             clip.rotation = getRandomNum(135, 180);
         }
 
-        // fire startMe again to take the new rotation of the bug
         clip.gotoAndPlay("birdAlive");
-        // clipMover.startMe();
 
+        createjs.Ticker.addEventListener("tick", onIsWaveComplete);
         createjs.Ticker.addEventListener("tick", onPauseCheck);
         createjs.Ticker.addEventListener("tick", onCollisionTest);
         arenaBirdsContainer.addChild(clip);
-        //stage.addChild(clip);
-
     };
 
     function getRandomNum(min, max){
@@ -75,6 +72,14 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
     }
 
     // ----------------------------------------------- event handlers
+    function onIsWaveComplete(){
+            // only do collision test on every other tick to save on processing
+            if ((createjs.Ticker.getTicks() % 2 === 0)) {
+                if ( willy.getIsWaveComplete()) {
+                    onKillBird();
+                }
+            }
+    }
     function onPauseCheck(){
             // only do collision test on every other tick to save on processing
             if ((createjs.Ticker.getTicks() % 2 === 0)) {
@@ -115,6 +120,7 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
 
     }
     function onKillBird(e) {
+        createjs.Ticker.removeEventListener("tick", onIsWaveComplete);
         createjs.Ticker.removeEventListener("tick", onPauseCheck);
         createjs.Ticker.removeEventListener("tick", onCollisionTest);
         clipMover.stopMe();
@@ -127,7 +133,6 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
         clip.removeEventListener("animationend", onKilledBird);
         // remove displayobject
         arenaBirdsContainer.removeChild(clip);
-        //stage.removeChild(clip);
     }
     function onKillWilly(e) {
         //update willy's lives

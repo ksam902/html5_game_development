@@ -646,18 +646,10 @@ function updateLivesCount(){
 // --------- END UPDATE ARENA STATS --------
 // --------- WAVE --------
 function increaseWave(){
+            willy.setIsWaveComplete(true);
             clearInterval(isArrowsDepleted);
             clearInterval(arrowsDepletedInterval);
-            arenaBirdsContainer.removeAllChildren();
-            stage.removeChild(arenaBirdsContainer);
             //remove the birds in the array from the stage
-            for(var index = 0; index < birds.length; index++){
-                var bird = birds[index];
-                bird = bird.getClip();
-                //bird.killAnimation();
-                //stage.removeChild(bird);
-                birds.splice(index, 1);
-            }
                 downKey = false;
                 upKey = false;
                 leftKey = false;
@@ -687,14 +679,18 @@ function increaseWave(){
                 //stop adding birds to the screen
                 clearInterval(birdTimer);
                 waveInterval = setTimeout(function(){
+                    birds = [];
+                    arenaBirdsContainer.removeAllChildren();
+                    stage.removeChild(arenaBirdsContainer);
                     stage.removeChild(infoTitle);
+                    willy.setIsWaveComplete(false);
                     stage.addChild(arenaBirdsContainer);
                     stage.addEventListener("click", shootProjectile);
                     //increase bird generation
                     birdDelay -= 100;
                     birdTimer = window.setInterval(onAddBird, birdDelay);
                     clearTimeout(waveInterval);
-                }, 2000);
+                }, 3000);
 
 }
 
@@ -755,7 +751,6 @@ function onAddBird(e) {
 // --------- WILLY --------
 function shootProjectile(){
         willy.decreaseNumArrows();
-        console.log(willy.getNumArrows());
         stage.removeChild(numArrows);
         numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
         numArrows.x = 460;

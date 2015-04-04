@@ -12,6 +12,7 @@ var Willy = function(stage, assetManager) {
     var numArrows = 10;
     var killCount = 0;
     var isBirdKilled = false;
+    var isWaveComplete;
     //get Willy
     var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
@@ -79,6 +80,12 @@ var Willy = function(stage, assetManager) {
     this.setIsPaused = function(value) {
         isPaused = value;
     };
+    this.getIsWaveComplete = function() {
+        return isWaveComplete;
+    };
+    this.setIsWaveComplete = function(value) {
+        isWaveComplete = value;
+    };
     // ---------------------------------------------- public methods
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
@@ -89,6 +96,7 @@ var Willy = function(stage, assetManager) {
         accuracy = 0;
         numArrows = 10;
         isPaused = false;
+        isWaveComplete = false;
         //move registration point
         clip.regX = clip.getBounds().width/4;
     };
