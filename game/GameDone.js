@@ -31,6 +31,7 @@ var assetManager = null;
 var arenaBird;
 var bird = null;
 var birds=[];
+var arenaBirdsContainer;
 var birdDelay;
 var birdTimer;
 var birdsShot;
@@ -39,6 +40,8 @@ var cloud;
 var arrow = null;
 var arrows=[];
 var shootInterval;
+var isArrowsDepleted;
+var arrowsDepletedInterval;
 //START SCREEN ASSETS
 var arrowPointer;
 
@@ -105,6 +108,7 @@ function onInit() {
 
     cloudContainer = new createjs.Container();
     infoBirdContainer = new createjs.Container();
+    arenaBirdsContainer = new createjs.Container();
 
     // construct preloader object to load spritesheet and sound assets
     assetManager = new AssetManager();
@@ -123,7 +127,6 @@ function onReady(e) {
     // Adding aimer for the mouse
     mousePointer = assetManager.getSprite("assets");
     mousePointer.gotoAndStop("mousePointer");
-    addMousePointer();
     canvas.addEventListener("mouseenter", addMousePointer);
     canvas.addEventListener("mouseout", removeMousePointer);
 
@@ -165,14 +168,13 @@ function onNewGame(e) {
     document.removeEventListener("keydown", onKeyDownGameOverScreen);
     document.addEventListener("keydown", onKeyDownArenaScreen);
 
-    //add assets
     // RESET Game Variables
     isGameOver = false;
     numWave = 1;
     //state game with 10 arrows
-    numArrowsWilly = 10;
+    numArrowsWilly = 3;
     //start game with 10 enemies
-    targetNumEnemies = 7;
+    targetNumEnemies = 2;
     // decrease numEnemies each kill - at the start of a wave the numEnemies is set to the new targetNumEnemies
     numEnemies = targetNumEnemies;
     // construct and setup birdTimer to drop birds on displaylist
@@ -180,7 +182,6 @@ function onNewGame(e) {
     birdTimer = window.setInterval(onAddBird, birdDelay);
 
     loadArenaScreen();
-    addMousePointer();
 
     // --- SHOOTING FUNCTION - Mouse Pointer ----
     //delay shooting ability by half a second - will prevent arrow from being fired when the arena intially loads
@@ -291,7 +292,6 @@ function onPause(e){
 }
 function onQuitGame(e){
     onReady();
-    addMousePointer();
 }
 function onInstructions(e){
     document.removeEventListener("keydown", onKeyDownGameOverScreen);
@@ -334,6 +334,10 @@ function removeMousePointer(){
 
 function loadStartScreen(){
 
+    stage.removeAllChildren();
+    infoBirdContainer.removeAllChildren();
+    cloudContainer.removeAllChildren();
+
     //Add in Clear Interval Function and pass it desired interval
     clearInterval(infoCloudInterval);
     clearInterval(infoBirdInterval);
@@ -348,7 +352,7 @@ function loadStartScreen(){
 
     willy = new Willy(stage, assetManager);
     willy.resetMe();
-    willy.setXPosYPos(275, 450);
+    willy.setXPosYPos(300, 450);
 
     //add clouds and backgrounds
     addBirdsInfoScreen(3);
@@ -387,6 +391,8 @@ function loadStartScreen(){
     developerCredits.y = 575;
     developerCredits.gotoAndStop("developerText");
     stage.addChild(developerCredits);
+
+    addMousePointer();
 }
 function loadArenaScreen(){
     //remove and reset assets
@@ -402,14 +408,18 @@ function loadArenaScreen(){
     willy = new Willy(stage, assetManager);
     willy.resetMe();
     willy.setKillCount(0);
-    willy.setNumArrows(10);
-    willy.setXPosYPos(275, 350);
+    willy.setNumArrows(3);
+    willy.setXPosYPos(300, 350);
     document.addEventListener("keydown", keyDownMove);
     document.addEventListener("keyup", keyUpMove);
 
     //add clouds
     stage.addChild(cloudContainer);
     addCloudsArenaScreen(4);
+
+    //add birds container
+    arenaBirdsContainer.removeAllChildren();
+    stage.addChild(arenaBirdsContainer);
 
     // -- Stats Assets
     livesText = assetManager.getSprite("assets");
@@ -476,6 +486,8 @@ function loadArenaScreen(){
     // setup event listener to go to pause screen
     btnPause.addEventListener("click", onPause);
     stage.addChild(developerCredits);
+
+    addMousePointer();
 }
 function loadGameOverScreen(){
     //remove all assets and intervals
@@ -536,13 +548,14 @@ function loadGameOverScreen(){
     numWave.y = 315;
     stage.addChild(numWave);
 
-
     // remove/setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
     document.addEventListener("keydown", onKeyDownGameOverScreen);
     document.removeEventListener("keydown", onKeyDownArenaScreen);
 
     stage.addChild(developerCredits);
+
+    addMousePointer();
 }
 // --------- END LOAD SCREEN ASSETS --------
 // --------- SCREEN KEYDOWN FUNCTIONS --------
@@ -633,12 +646,16 @@ function updateLivesCount(){
 // --------- END UPDATE ARENA STATS --------
 // --------- WAVE --------
 function increaseWave(){
+            clearInterval(isArrowsDepleted);
+            clearInterval(arrowsDepletedInterval);
+            arenaBirdsContainer.removeAllChildren();
+            stage.removeChild(arenaBirdsContainer);
             //remove the birds in the array from the stage
             for(var index = 0; index < birds.length; index++){
                 var bird = birds[index];
                 bird = bird.getClip();
                 //bird.killAnimation();
-                stage.removeChild(bird);
+                //stage.removeChild(bird);
                 birds.splice(index, 1);
             }
                 downKey = false;
@@ -671,6 +688,8 @@ function increaseWave(){
                 clearInterval(birdTimer);
                 waveInterval = setTimeout(function(){
                     stage.removeChild(infoTitle);
+                    stage.addChild(arenaBirdsContainer);
+                    stage.addEventListener("click", shootProjectile);
                     //increase bird generation
                     birdDelay -= 100;
                     birdTimer = window.setInterval(onAddBird, birdDelay);
@@ -719,7 +738,7 @@ function addBirdsInfoScreen(numBirds){
     infoBirdInterval = setInterval(addInfoBird, 4000);
     function addInfoBird() {
         if(infoBirdCount <= numBirds){
-            var bird = new Bird(stage, infoBirdContainer, assetManager, willy);
+            var bird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy);
             bird.getInfoScreenBirds();
             infoBirdCount ++;
         }else{
@@ -728,38 +747,46 @@ function addBirdsInfoScreen(numBirds){
     }
 }
 function onAddBird(e) {
-    arenaBird = new Bird(stage, infoBirdContainer, assetManager, willy, arrows);
+    arenaBird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy, arrows);
     arenaBird.setupMe();
     birds.push(arenaBird);
 }
 // --------- END BIRDS --------
 // --------- WILLY --------
 function shootProjectile(){
-        // add arrow on mouse click to the stage
-        arrow = new Projectile(stage, assetManager);
-        arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
-        arrows.push(arrow);
-        willy.increaseArrowCount();
         willy.decreaseNumArrows();
+        console.log(willy.getNumArrows());
         stage.removeChild(numArrows);
         numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
         numArrows.x = 460;
         numArrows.y = 500;
         stage.addChild(numArrows);
-//check for depleted arrows
-    if(willy.getNumArrows() === 0){
-        infoTitle = assetManager.getSprite("assets");
-        infoTitle.gotoAndStop("arrowsDepleted");
-        infoTitle.x = 125;
-        infoTitle.y = 75;
-        stage.addChild(infoTitle);
+        // add arrow on mouse click to the stage
+        arrow = new Projectile(stage, assetManager);
+        arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
+        arrows.push(arrow);
+        willy.increaseArrowCount();
+        //check for depleted arrows
+    if (willy.getNumArrows() === 0){
+        // Willy has no more arrows
         stage.removeEventListener("click", shootProjectile);
+        //allow time for last arrow shot to play out
+        isArrowsDepleted = setTimeout(function(){
+            infoTitle = assetManager.getSprite("assets");
+            infoTitle.gotoAndStop("arrowsDepleted");
+            infoTitle.x = 125;
+            infoTitle.y = 75;
+            stage.addChild(infoTitle);
+            clearInterval(birdTimer);
+            arenaBirdsContainer.removeAllChildren();
+            clearTimeout(isArrowsDepleted);
+        }, 3000);
         arrowsDepletedInterval = setTimeout(function(){
             stage.removeChild(infoTitle);
             isGameOver = true;
             onPause();
             clearTimeout(arrowsDepletedInterval);
-        }, 3000);
+        }, 6000);
     }
 }
 // --------- END WILLY --------

@@ -89,6 +89,8 @@ var Willy = function(stage, assetManager) {
         accuracy = 0;
         numArrows = 10;
         isPaused = false;
+        //move registration point
+        clip.regX = clip.getBounds().width/4;
     };
     //deal with willy's arrow situation
     this.getNumArrows = function(){

@@ -1,5 +1,5 @@
 //Class for Bird
-var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
+var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy, arrow) {
     // initialization
     var xPos;
     var yPos;
@@ -65,7 +65,8 @@ var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
 
         createjs.Ticker.addEventListener("tick", onPauseCheck);
         createjs.Ticker.addEventListener("tick", onCollisionTest);
-        stage.addChild(clip);
+        arenaBirdsContainer.addChild(clip);
+        //stage.addChild(clip);
 
     };
 
@@ -125,7 +126,8 @@ var Bird = function(stage, infoBirdContainer, assetManager, willy, arrow) {
         // cleanup event listeners
         clip.removeEventListener("animationend", onKilledBird);
         // remove displayobject
-        stage.removeChild(clip);
+        arenaBirdsContainer.removeChild(clip);
+        //stage.removeChild(clip);
     }
     function onKillWilly(e) {
         //update willy's lives

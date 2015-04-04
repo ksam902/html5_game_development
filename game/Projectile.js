@@ -23,10 +23,10 @@ var Projectile = function(stage, assetManager) {
 
         //placing arrow based on willy's whereabouts
         if(willy.getDirection() == "left"){
-            arrow.x = willyX - 40;
+            arrow.x = willyX;
             arrow.y = willyY + 20;
         }else{
-            arrow.x = willyX + 40;
+            arrow.x = willyX;
             arrow.y = willyY + 20;
         }
         targetX = mouseX - arrow.x;
