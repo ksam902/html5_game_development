@@ -352,7 +352,7 @@ function loadStartScreen(){
 
     willy = new Willy(stage, assetManager);
     willy.resetMe();
-    willy.setXPosYPos(300, 450);
+    willy.setXPosYPos(310, 455);
 
     //add clouds and backgrounds
     addBirdsInfoScreen(3);
@@ -409,7 +409,7 @@ function loadArenaScreen(){
     willy.resetMe();
     willy.setKillCount(0);
     willy.setNumArrows(3);
-    willy.setXPosYPos(300, 350);
+    willy.setXPosYPos(310, 350);
     document.addEventListener("keydown", keyDownMove);
     document.addEventListener("keyup", keyUpMove);
 
@@ -491,6 +491,7 @@ function loadArenaScreen(){
 }
 function loadGameOverScreen(){
     //remove all assets and intervals
+    clearInterval(arenaCloudInterval);
     stage.removeAllChildren();
 
     //new background

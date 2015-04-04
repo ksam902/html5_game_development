@@ -154,7 +154,7 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
     function onInfoMove(e) {
 
         if(clip.x > stage.canvas.width){
-            clip.x = -50;
+            clip.x = getRandomNum(-50, -200);
         }else{;
            clip.x ++;
         }

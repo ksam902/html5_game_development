@@ -65,7 +65,7 @@ var Cloud = function(stage, cloudContainer, assetManager) {
     function onMove(e) {
 
         if(clip.x > stage.canvas.width){
-            clip.x = -100;
+            clip.x = getRandomNum(-100, -150);
         }else{
            clip.x ++;
         }
