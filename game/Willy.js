@@ -135,14 +135,14 @@ var Willy = function(stage, assetManager) {
     this.moveRight = function(){
         clip.scaleX = 1;
         direction = "right";
-        if(clip.x < (stage.canvas.width - 55)){
+        if(clip.x < (stage.canvas.width - 25)){
             clip.x += 5;
         }
     }
     this.moveLeft = function(){
         clip.scaleX = -1;
         direction = "left";
-        if(clip.x > 55){
+        if(clip.x > 25){
             clip.x -= 5;
         }
     }

@@ -75,6 +75,7 @@ var targetNumEnemies
 
 //info assets
 var accuracy;
+var numArrowsShot;
 var resumeText;
 var restartText;
 var startBackground;
@@ -311,7 +312,6 @@ function onInstructions(e){
     btnThanks.gotoAndStop("btnThanks");
     stage.addChild(btnThanks);
     btnThanks.addEventListener("click", function(){
-        console.log(isGameOver);
         if(!isGameOver){
             document.addEventListener("keydown", onKeyDownGameOverScreen);
         }else{
@@ -513,11 +513,6 @@ function loadGameOverScreen(){
     addCloudsInfoScreen(4);
     addBirdsInfoScreen(4);
 
-    infoTitle = new createjs.Text("Womp Womp. Game Over!", "24px Noteworthy", "FF7700");
-    infoTitle.x = 175;
-    infoTitle.y = 150;
-    stage.addChild(infoTitle);
-
     arrowPointer = assetManager.getSprite("assets");
     arrowPointer.x = 220;
     arrowPointer.y = 339;
@@ -543,20 +538,33 @@ function loadGameOverScreen(){
     // setup event listener to Quit Game
     quitGame.addEventListener("click", onQuitGame);
 
-    numKills = new createjs.Text(willy.getKillCount().toString(), "12px Noteworthy", "FF7700");
-    numKills.x = 175;
-    numKills.y = 265;
+    // numWave = new createjs.Text(numWave, "12px Noteworthy", "FF7700");
+    numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
+    console.log("Wave Complete : " + numWaveText.text);
+    numWaveText.x = 175;
+    numWaveText.y = 260;
+    stage.addChild(numWaveText);
+
+    // numArrowsShot = new createjs.Text(willy.getArrowCount().toString(), "12px Noteworthy", "FF7700");
+    numArrowsShot = new createjs.BitmapText(willy.getArrowCount().toString(), spritesheet);
+    console.log("Arrows Shot : " + willy.getArrowCount().toString());
+    numArrowsShot.x = 325;
+    numArrowsShot.y = 260;
+    stage.addChild(numArrowsShot);
+
+    // numKills = new createjs.Text(willy.getKillCount().toString(), "12px Noteworthy", "FF7700");
+    numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
+    console.log("Num Kills : " + willy.getKillCount().toString());
+    numKills.x = 425;
+    numKills.y = 260;
     stage.addChild(numKills);
 
-    accuracy = new createjs.Text(willy.getAccuracy().toString() + "%", "12px Noteworthy", "FF7700");
-    accuracy.x = 165;
-    accuracy.y = 290;
+    // accuracy = new createjs.Text(willy.getAccuracy().toString() + "%", "12px Noteworthy", "FF7700");
+    accuracy = new createjs.BitmapText(willy.getAccuracy().toString(), spritesheet);
+    console.log("Accuracy : " + willy.getAccuracy().toString());
+    accuracy.x = 550;
+    accuracy.y = 260;
     stage.addChild(accuracy);
-
-    numWave = new createjs.Text(numWave, "12px Noteworthy", "FF7700");
-    numWave.x = 175;
-    numWave.y = 315;
-    stage.addChild(numWave);
 
     // remove/setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
@@ -791,7 +799,7 @@ function onTick(e) {
         numKills.x = 155;
         numKills.y = 500;
         stage.addChild(numKills);
-
+        console.log("Kills : " + numKills.text);
         numEnemies -= 1;
         if(numEnemies === 0){
             increaseWave();
