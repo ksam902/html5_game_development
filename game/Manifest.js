@@ -396,7 +396,7 @@ var manifest = [
         src:"lib/assets_new.png",
         id:"assets",
         data:{
-"framerate":24,
+"framerate":30,
 "images":["assets_new.png"],
 "frames":[
     [750, 1258, 51, 35, 0, 0, 0],

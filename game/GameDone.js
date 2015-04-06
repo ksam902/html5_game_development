@@ -62,8 +62,11 @@ var arrowsText;
 var arrowsNumText;
 
 //------game arena stats
+var statsContainer;
+var spritesheet;
 var numWave;
 var numLives;
+var numLivesBitmap;
 var numEnemies;
 var numArrows;
 var numArrowsWilly;
@@ -169,6 +172,9 @@ function onNewGame(e) {
     document.addEventListener("keydown", onKeyDownArenaScreen);
 
     // RESET Game Variables
+    spritesheet = assetManager.getSprite("assets")["spriteSheet"]["_data"];
+    statsContainer = new createjs.Container();
+    stage.addChild(statsContainer);
     isGameOver = false;
     numWave = 1;
     //state game with 10 arrows
@@ -180,6 +186,7 @@ function onNewGame(e) {
     // construct and setup birdTimer to drop birds on displaylist
     birdDelay = 2000;
     birdTimer = window.setInterval(onAddBird, birdDelay);
+
 
     loadArenaScreen();
 
@@ -259,7 +266,6 @@ function onPause(e){
         infoTitle.y = 175;
         stage.addChild(infoTitle);
         stage.removeEventListener("click", shootProjectile);
-        stage.removeEventListener("click", updateNumArrows);
         stage.removeChild(btnPause);
         btnPause = assetManager.getSprite("assets");
         btnPause.x = 500;
@@ -285,7 +291,6 @@ function onPause(e){
         addMousePointer();
         shootInterval = setTimeout(function(){
             stage.addEventListener("click", shootProjectile);
-            stage.removeEventListener("click", updateNumArrows);
             clearTimeout(shootInterval);
         }, 500);
     }
@@ -428,11 +433,11 @@ function loadArenaScreen(){
     livesText.gotoAndStop("livesText");
     stage.addChild(livesText);
 
-    //numLives = new createjs.BitmapText(willy.getLives().toString(),spritesheet.gotoAndStop(""));
-    numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
-     numLives.x = 85;
-     numLives.y = 500;
-     stage.addChild(numLives);
+    numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
+    numLives.x = 85;
+    numLives.y = 500;
+    console.log("Lives : " + numLives.text);
+    stage.addChild(numLives);
 
     killsText = assetManager.getSprite("assets");
     killsText.x = 100;
@@ -440,9 +445,10 @@ function loadArenaScreen(){
     killsText.gotoAndStop("killsText");
     stage.addChild(killsText);
 
-    numKills = new createjs.Text(willy.getKillCount().toString(), "14px Noteworthy", "FF7700");
+    numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
     numKills.x = 155;
     numKills.y = 500;
+    console.log("Kills : " + numKills.text);
     stage.addChild(numKills);
 
     enemiesText = assetManager.getSprite("assets");
@@ -451,10 +457,11 @@ function loadArenaScreen(){
     enemiesText.gotoAndStop("birdsText");
     stage.addChild(enemiesText);
 
-    numEnemiesText = new createjs.Text(numEnemies.toString(), "14px Noteworthy", "FF7700");
+    numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
     numEnemiesText.x = 320;
     numEnemiesText.y = 500;
     stage.addChild(numEnemiesText);
+    console.log("Enemies : " + numEnemiesText.text);
 
     arrowsText = assetManager.getSprite("assets");
     arrowsText.x = 340;
@@ -462,9 +469,10 @@ function loadArenaScreen(){
     arrowsText.gotoAndStop("arrowsText");
     stage.addChild(arrowsText);
 
-    numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
+    numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
     numArrows.x = 460;
     numArrows.y = 500;
+    console.log("Arrows : "+numArrows.text);
     stage.addChild(numArrows);
 
     waveText = assetManager.getSprite("assets");
@@ -473,9 +481,10 @@ function loadArenaScreen(){
     waveText.gotoAndStop("waveText");
     stage.addChild(waveText);
 
-    numWaveText = new createjs.Text(numWave, "14px Noteworthy", "FF7700");
+    numWaveText = new createjs.BitmapText(numWave, spritesheet);
     numWaveText.x = 550;
     numWaveText.y = 500;
+    console.log("Wave : "+ numWaveText.text);
     stage.addChild(numWaveText);
 
     btnPause = assetManager.getSprite("assets");
@@ -627,24 +636,6 @@ function onKeyDownGameOverScreen(e) {
     }
 }
 // --------- END KEYDOWN FUNCTIONS --------
-// --------- UPDATE ARENA STATS --------
-function updateNumArrows(){
-
-    stage.removeChild(numArrows);
-    numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
-    numArrows.x = 460;
-    numArrows.y = 500;
-    stage.addChild(numArrows);
-}
-function updateLivesCount(){
-
-    stage.removeChild(numLives);
-    numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
-    numLives.x = 85;
-    numLives.y = 500;
-    stage.addChild(numLives);
-}
-// --------- END UPDATE ARENA STATS --------
 // --------- WAVE --------
 function increaseWave(){
             willy.setIsWaveComplete(true);
@@ -664,16 +655,17 @@ function increaseWave(){
                  numArrowsWilly = numArrowsWilly + 5;
                  willy.setNumArrows(numArrowsWilly);
                 stage.removeChild(numArrows);
-                numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
+                numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
                 numArrows.x = 460;
                 numArrows.y = 500;
                 stage.addChild(numArrows);
                 //increase numWave
                 stage.removeChild(numWaveText);
-                numWaveText = new createjs.Text((numWave+=1), "14px Noteworthy", "FF7700");
+                numWaveText = new createjs.BitmapText((numWave+=1).toString(), spritesheet);
                 numWaveText.x = 550;
                 numWaveText.y = 500;
                 stage.addChild(numWaveText);
+                console.log("Wave : " + numWaveText.text);
                 //increase number of enemies for wave
                 targetNumEnemies +=3;
                 numEnemies = targetNumEnemies;
@@ -753,10 +745,11 @@ function onAddBird(e) {
 function shootProjectile(){
         willy.decreaseNumArrows();
         stage.removeChild(numArrows);
-        numArrows = new createjs.Text(willy.getNumArrows().toString(), "14px Noteworthy", "FF7700");
+        numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
         numArrows.x = 460;
         numArrows.y = 500;
         stage.addChild(numArrows);
+        console.log("Arrows : "+ numArrows.text);
         // add arrow on mouse click to the stage
         arrow = new Projectile(stage, assetManager);
         arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
@@ -794,7 +787,7 @@ function onTick(e) {
 
     if(willy.getIsBirdKilled()){
         stage.removeChild(numKills);
-        numKills = new createjs.Text(willy.getKillCount().toString(), "14px Noteworthy", "FF7700");
+        numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
         numKills.x = 155;
         numKills.y = 500;
         stage.addChild(numKills);
@@ -804,15 +797,17 @@ function onTick(e) {
             increaseWave();
         }
         stage.removeChild(numEnemiesText);
-        numEnemiesText = new createjs.Text(numEnemies, "14px Noteworthy", "FF7700");
+        numEnemiesText = new createjs.BitmapText(numEnemies, spritesheet);
         numEnemiesText.x = 320;
         numEnemiesText.y = 500;
         stage.addChild(numEnemiesText);
+        console.log("Enemies : "+ numEnemiesText.text);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
         willy.decreaseLivesCount();
         stage.removeChild(numLives);
-        numLives = new createjs.Text(willy.getLives().toString(), "14px Noteworthy", "FF7700");
+        numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
+        console.log("Lives : " + numLives.text);
         numLives.x = 85;
         numLives.y = 500;
         stage.addChild(numLives);
