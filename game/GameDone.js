@@ -99,6 +99,9 @@ var isGameOver;
 collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
 
+//SOUNDS
+var shootSound;
+
 // ------------------------------------------------------------ event handlers
 function onInit() {
     // get reference to canvas
@@ -122,6 +125,10 @@ function onInit() {
     assetManager.loadAssets(manifest);
     btnBegin = document.getElementById("btnBegin");
     btnBegin.disabled = true;
+
+    //sounds
+    createjs.Sound.registerSound("sounds/Bow_Fire_Arrow.ogg", "shootArrow");
+
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -173,7 +180,7 @@ function onNewGame(e) {
     document.addEventListener("keydown", onKeyDownArenaScreen);
 
     // RESET Game Variables
-    spritesheet = assetManager.getSprite("assets")["spriteSheet"]["_data"];
+    spritesheet = assetManager.getSpriteSheet("assets");
     statsContainer = new createjs.Container();
     stage.addChild(statsContainer);
     isGameOver = false;
@@ -481,7 +488,7 @@ function loadArenaScreen(){
     waveText.gotoAndStop("waveText");
     stage.addChild(waveText);
 
-    numWaveText = new createjs.BitmapText(numWave, spritesheet);
+    numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     numWaveText.x = 550;
     numWaveText.y = 500;
     console.log("Wave : "+ numWaveText.text);
@@ -499,10 +506,11 @@ function loadArenaScreen(){
     addMousePointer();
 }
 function loadGameOverScreen(){
-    //remove all assets and intervals
-    clearInterval(arenaCloudInterval);
-    stage.removeAllChildren();
 
+    //remove all assets and intervals
+    stage.removeAllChildren();
+    cloudContainer.removeAllChildren();
+    clearInterval(arenaCloudInterval);
     //new background
     infoBackground = assetManager.getSprite("assets");
     infoBackground.gotoAndStop("infoBackground");
@@ -751,6 +759,8 @@ function onAddBird(e) {
 // --------- END BIRDS --------
 // --------- WILLY --------
 function shootProjectile(){
+    createjs.Sound.play("shootArrow");
+
         willy.decreaseNumArrows();
         stage.removeChild(numArrows);
         numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
@@ -805,7 +815,7 @@ function onTick(e) {
             increaseWave();
         }
         stage.removeChild(numEnemiesText);
-        numEnemiesText = new createjs.BitmapText(numEnemies, spritesheet);
+        numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
         numEnemiesText.x = 320;
         numEnemiesText.y = 500;
         stage.addChild(numEnemiesText);
