@@ -4,7 +4,7 @@ var Willy = function(stage, assetManager) {
     var isPaused = false;
     var isWillyKilled = false;
     var isDead = false;
-    var lives = 3;
+    var lives = 1;
     var direction = "";
 
     var accuracy = 0;
@@ -90,7 +90,7 @@ var Willy = function(stage, assetManager) {
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
         arrowCount = 0;
-        lives = 3;
+        lives = 1;
         isWillyKilled = false;
         isDead = false;
         accuracy = 0;
