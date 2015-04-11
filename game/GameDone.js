@@ -64,6 +64,7 @@ var arrowsNumText;
 //------game arena stats
 var statsContainer;
 var spritesheet;
+var imgLives, imgKills, imgBirdsRemaining, imgArrows, imgWave;
 var numWave;
 var numLives;
 var numLivesBitmap;
@@ -127,7 +128,7 @@ function onInit() {
     btnBegin.disabled = true;
 
     //sounds
-    createjs.Sound.registerSound("sounds/Bow_Fire_Arrow.ogg", "shootArrow");
+    createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
 
 }
 
@@ -434,65 +435,63 @@ function loadArenaScreen(){
     stage.addChild(arenaBirdsContainer);
 
     // -- Stats Assets
-    livesText = assetManager.getSprite("assets");
-    livesText.x = 25;
-    livesText.y = 500;
-    livesText.gotoAndStop("livesText");
-    stage.addChild(livesText);
+    imgLives = assetManager.getSprite("assetsCharacters");
+    imgLives.x = 25;
+    imgLives.y = 25;
+    imgLives.gotoAndStop("stats_lives");
+    statsContainer.addChild(imgLives);
 
     numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
     numLives.x = 85;
     numLives.y = 500;
-    console.log("Lives : " + numLives.text);
-    stage.addChild(numLives);
+    statsContainer.addChild(numLives);
 
-    killsText = assetManager.getSprite("assets");
-    killsText.x = 100;
-    killsText.y = 500;
-    killsText.gotoAndStop("killsText");
-    stage.addChild(killsText);
+    imgKills = assetManager.getSprite("assetsCharacters");
+    imgKills.x = 100;
+    imgKills.y = 25;
+    imgKills.gotoAndStop("stats_kills");
+    statsContainer.addChild(imgKills);
 
     numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
     numKills.x = 155;
     numKills.y = 500;
-    console.log("Kills : " + numKills.text);
-    stage.addChild(numKills);
+    statsContainer.addChild(numKills);
 
-    enemiesText = assetManager.getSprite("assets");
-    enemiesText.x = 175;
-    enemiesText.y = 500;
-    enemiesText.gotoAndStop("birdsText");
-    stage.addChild(enemiesText);
+    imgBirdsRemaining = assetManager.getSprite("assetsCharacters");
+    imgBirdsRemaining.x = 175;
+    imgBirdsRemaining.y = 25;
+    imgBirdsRemaining.gotoAndStop("stats_birds");
+    statsContainer.addChild(imgBirdsRemaining);
 
     numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
     numEnemiesText.x = 320;
     numEnemiesText.y = 500;
-    stage.addChild(numEnemiesText);
-    console.log("Enemies : " + numEnemiesText.text);
+    statsContainer.addChild(numEnemiesText);
 
-    arrowsText = assetManager.getSprite("assets");
-    arrowsText.x = 340;
-    arrowsText.y = 500;
-    arrowsText.gotoAndStop("arrowsText");
-    stage.addChild(arrowsText);
+    imgArrows = assetManager.getSprite("assetsCharacters");
+    imgArrows.x = 340;
+    imgArrows.y = 25;
+    imgArrows.gotoAndStop("stats_arrows");
+    statsContainer.addChild(imgArrows);
 
     numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
     numArrows.x = 460;
     numArrows.y = 500;
-    console.log("Arrows : "+numArrows.text);
-    stage.addChild(numArrows);
+    statsContainer.addChild(numArrows);
 
-    waveText = assetManager.getSprite("assets");
-    waveText.x = 480;
-    waveText.y = 500;
-    waveText.gotoAndStop("waveText");
-    stage.addChild(waveText);
+    imgWave = assetManager.getSprite("assetsCharacters");
+    imgWave.x = 275;
+    imgWave.y = 500;
+    imgWave.gotoAndStop("stats_wave");
+    statsContainer.addChild(imgWave);
 
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     numWaveText.x = 550;
     numWaveText.y = 500;
-    console.log("Wave : "+ numWaveText.text);
-    stage.addChild(numWaveText);
+    statsContainer.addChild(numWaveText);
+
+    stage.addChild(statsContainer);
+
 
     btnPause = assetManager.getSprite("assets");
     btnPause.x = 500;
@@ -759,7 +758,8 @@ function onAddBird(e) {
 // --------- END BIRDS --------
 // --------- WILLY --------
 function shootProjectile(){
-    createjs.Sound.play("shootArrow");
+        //play sound
+        createjs.Sound.play("shootArrow");
 
         willy.decreaseNumArrows();
         stage.removeChild(numArrows);
