@@ -107,7 +107,7 @@ collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
 
 //SOUNDS
-var shootSound;
+var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
 
 // ------------------------------------------------------------ event handlers
 function onInit() {
@@ -135,6 +135,8 @@ function onInit() {
 
     //sounds
     createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
+    createjs.Sound.registerSound("sounds/willy_dead.ogg", "willyDies");
+
 
 }
 
@@ -164,8 +166,8 @@ function onReady(e) {
     stage.removeEventListener("onAssetLoaded", onProgress);
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
-    //FIRST TIME VISIT
-    isInstructions = true;
+    //FIRST TIME VISIT - isInstructions should = true
+    isInstructions = false;
     loadStartScreen();
 
      // setup event listeners for keyboard keys
@@ -478,8 +480,6 @@ function loadArenaScreen(){
         document.addEventListener("keydown", keyDownMove);
         document.addEventListener("keyup", keyUpMove);
     }
-
-
 
     //add clouds
     stage.addChild(cloudContainer);
@@ -850,6 +850,7 @@ function onTick(e) {
         statsContainer.addChild(numEnemiesText);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
+        createjs.Sound.play("willyDies");
         willy.decreaseLivesCount();
         statsContainer.removeChild(numLives);
         numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
