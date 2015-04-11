@@ -136,7 +136,8 @@ function onInit() {
     //sounds
     createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
     createjs.Sound.registerSound("sounds/willy_dead.ogg", "willyDies");
-
+    createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
+    createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
 
 }
 
@@ -390,13 +391,13 @@ function loadStartScreen(){
     stage.addChild(gameTitle);
 
     arrowPointer = assetManager.getSprite("assets");
-    arrowPointer.x = 205;
+    arrowPointer.x = 200;
     arrowPointer.y = 339;
     arrowPointer.gotoAndStop("arrowPointer");
     stage.addChild(arrowPointer);
 
     newGame = assetManager.getSprite("assets");
-    newGame.x = 245;
+    newGame.x = 240;
     newGame.y = 325;
     newGame.gotoAndStop("newGameText");
     stage.addChild(newGame);
@@ -404,7 +405,7 @@ function loadStartScreen(){
     newGame.addEventListener("click", onNewGame);
 
     instructions = assetManager.getSprite("assets");
-    instructions.x = 245;
+    instructions.x = 240;
     instructions.y = 365;
     instructions.gotoAndStop("instructionsText");
     stage.addChild(instructions);
@@ -543,7 +544,8 @@ function loadArenaScreen(){
     addMousePointer();
 }
 function loadGameOverScreen(){
-
+    //play game over sound
+    createjs.Sound.play("gameOver");
     //remove all assets and intervals
     stage.removeAllChildren();
     cloudContainer.removeAllChildren();
@@ -559,13 +561,13 @@ function loadGameOverScreen(){
     addBirdsInfoScreen(4);
 
     arrowPointer = assetManager.getSprite("assets");
-    arrowPointer.x = 205;
+    arrowPointer.x = 200;
     arrowPointer.y = 339;
     arrowPointer.gotoAndStop("arrowPointer");
     stage.addChild(arrowPointer);
 
     restartText = assetManager.getSprite("assets");
-    restartText.x = 245;
+    restartText.x = 240;
     restartText.y = 325;
     restartText.gotoAndStop("restartText");
     stage.addChild(restartText);
@@ -576,7 +578,7 @@ function loadGameOverScreen(){
     stage.addChild(instructions);
 
     quitGame = assetManager.getSprite("assets");
-    quitGame.x = 245;
+    quitGame.x = 240;
     quitGame.y = 410;
     quitGame.gotoAndStop("quitText");
     stage.addChild(quitGame);
@@ -685,6 +687,8 @@ function onKeyDownGameOverScreen(e) {
 // --------- END KEYDOWN FUNCTIONS --------
 // --------- WAVE --------
 function increaseWave(){
+            //play wave complete sound
+            createjs.Sound.play("waveComplete");
             willy.setIsWaveComplete(true);
             clearInterval(isArrowsDepleted);
             clearInterval(arrowsDepletedInterval);
