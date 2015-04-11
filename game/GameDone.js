@@ -168,7 +168,7 @@ function onReady(e) {
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = false;
+    isInstructions = true;
     loadStartScreen();
 
      // setup event listeners for keyboard keys
@@ -525,7 +525,7 @@ function loadArenaScreen(){
     statsContainer.addChild(imgWave);
 
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
-    numWaveText.x = 325;
+    numWaveText.x = 315;
     numWaveText.y = 510;
     statsContainer.addChild(numWaveText);
 
@@ -587,26 +587,26 @@ function loadGameOverScreen(){
 
     // numWave = new createjs.Text(numWave, "12px Noteworthy", "FF7700");
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
-    numWaveText.x = 175;
+    numWaveText.x = 160;
     numWaveText.y = 260;
     stage.addChild(numWaveText);
 
     // numArrowsShot = new createjs.Text(willy.getArrowCount().toString(), "12px Noteworthy", "FF7700");
     numArrowsShot = new createjs.BitmapText(willy.getArrowCount().toString(), spritesheet);
-    numArrowsShot.x = 325;
+    numArrowsShot.x = 315;
     numArrowsShot.y = 260;
     stage.addChild(numArrowsShot);
 
     // numKills = new createjs.Text(willy.getKillCount().toString(), "12px Noteworthy", "FF7700");
     numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
-    numKills.x = 425;
+    numKills.x = 420;
     numKills.y = 260;
     stage.addChild(numKills);
 
     // accuracy = new createjs.Text(willy.getAccuracy().toString() + "%", "12px Noteworthy", "FF7700");
     accuracy = new createjs.BitmapText(willy.getAccuracy().toString(), spritesheet);
     console.log("Accuracy : " + willy.getAccuracy().toString());
-    accuracy.x = 562;
+    accuracy.x = 560;
     accuracy.y = 259;
     stage.addChild(accuracy);
 
@@ -713,7 +713,7 @@ function increaseWave(){
                 //increase numWave
                 statsContainer.removeChild(numWaveText);
                 numWaveText = new createjs.BitmapText((numWave+=1).toString(), spritesheet);
-                numWaveText.x = 325;
+                numWaveText.x = 315;
                 numWaveText.y = 510;
                 statsContainer.addChild(numWaveText);
                 //increase number of enemies for wave
