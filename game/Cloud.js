@@ -27,7 +27,7 @@ var Cloud = function(stage, cloudContainer, assetManager) {
         rdmCloud = getRandomCloud();
         clip.gotoAndStop(rdmCloud);
         clip.x = getRandomNum(-100, -150);
-        clip.y = getRandomNum(0, 125);
+        clip.y = getRandomNum(0, 100);
         createjs.Ticker.addEventListener("tick", onMove);
         cloudContainer.addChild(clip);
     }

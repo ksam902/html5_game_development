@@ -26,6 +26,10 @@ var key;
 // frame rate of game
 var frameRate = 30;
 
+//ARENA INSTRUCTIONS
+var instructionContainer, instrucInterval, imgInstruc;
+
+
 // game objects
 var assetManager = null;
 var arenaBird;
@@ -73,6 +77,8 @@ var numArrows;
 var numArrowsWilly;
 // increase this every wave
 var targetNumEnemies
+
+
 
 //info assets
 var accuracy;
@@ -417,6 +423,40 @@ function loadArenaScreen(){
     arenaBackground.gotoAndStop("arenaBackground");
     stage.addChild(arenaBackground);
 
+    //IF NEW GAME
+
+    instructionContainer = new createjs.Container();
+    imgInstruc = assetManager.getSprite("assetsCharacters");
+    imgInstruc.x = 100;
+    imgInstruc.y = 275;
+    imgInstruc.gotoAndStop("instruc_move");
+    instructionContainer.addChild(imgInstruc);
+
+    stage.addChild(instructionContainer);
+
+
+
+
+        // isArrowsDepleted = setTimeout(function(){
+        //     infoTitle = assetManager.getSprite("assets");
+        //     infoTitle.gotoAndStop("arrowsDepleted");
+        //     infoTitle.x = 125;
+        //     infoTitle.y = 150;
+        //     stage.addChild(infoTitle);
+        //     clearInterval(birdTimer);
+        //     arenaBirdsContainer.removeAllChildren();
+        //     clearTimeout(isArrowsDepleted);
+        // }, 3000);
+        // arrowsDepletedInterval = setTimeout(function(){
+        //     stage.removeChild(infoTitle);
+        //     isGameOver = true;
+        //     onPause();
+        //     clearTimeout(arrowsDepletedInterval);
+        // }, 6000);
+
+
+
+
     // -- WILLY --
     willy = new Willy(stage, assetManager);
     willy.resetMe();
@@ -443,23 +483,23 @@ function loadArenaScreen(){
     statsContainer.addChild(imgStatsBar);
 
     numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
-    numLives.x = 125;
-    numLives.y = 30;
+    numLives.x = 115;
+    numLives.y = 10;
     statsContainer.addChild(numLives);
 
     numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
     numKills.x = 265;
-    numKills.y = 30;
+    numKills.y = 10;
     statsContainer.addChild(numKills);
 
     numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
-    numEnemiesText.x = 395;
-    numEnemiesText.y = 30;
+    numEnemiesText.x = 415;
+    numEnemiesText.y = 10;
     statsContainer.addChild(numEnemiesText);
 
     numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-    numArrows.x = 525;
-    numArrows.y = 30;
+    numArrows.x = 550;
+    numArrows.y = 10;
     statsContainer.addChild(numArrows);
 
     imgWave = assetManager.getSprite("assetsCharacters");
@@ -651,8 +691,8 @@ function increaseWave(){
                  willy.setNumArrows(numArrowsWilly);
                 statsContainer.removeChild(numArrows);
                 numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-                numArrows.x = 525;
-                numArrows.y = 30;
+                numArrows.x = 550;
+                numArrows.y = 10;
                 statsContainer.addChild(numArrows);
                 //increase numWave
                 statsContainer.removeChild(numWaveText);
@@ -743,8 +783,8 @@ function shootProjectile(){
         willy.decreaseNumArrows();
         statsContainer.removeChild(numArrows);
         numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-        numArrows.x = 525;
-        numArrows.y = 30;
+        numArrows.x = 550;
+        numArrows.y = 10;
         statsContainer.addChild(numArrows);
         // add arrow on mouse click to the stage
         arrow = new Projectile(stage, assetManager);
@@ -785,7 +825,7 @@ function onTick(e) {
         statsContainer.removeChild(numKills);
         numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
         numKills.x = 265;
-        numKills.y = 30;
+        numKills.y = 10;
         statsContainer.addChild(numKills);
         numEnemies -= 1;
         if(numEnemies === 0){
@@ -793,16 +833,16 @@ function onTick(e) {
         }
         statsContainer.removeChild(numEnemiesText);
         numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
-        numEnemiesText.x = 395;
-        numEnemiesText.y = 30;
+        numEnemiesText.x = 415;
+        numEnemiesText.y = 10;
         statsContainer.addChild(numEnemiesText);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
         willy.decreaseLivesCount();
         statsContainer.removeChild(numLives);
         numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
-        numLives.x = 125;
-        numLives.y = 30;
+        numLives.x = 115;
+        numLives.y = 10;
         statsContainer.addChild(numLives);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
