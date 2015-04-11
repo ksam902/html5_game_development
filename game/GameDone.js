@@ -27,7 +27,7 @@ var key;
 var frameRate = 30;
 
 //ARENA INSTRUCTIONS
-var instructionContainer, instrucInterval, imgInstruc;
+var isInstructions, instructionContainer, instMoveInterval, instAimInterval, instArrowInterval, imgInstruc;
 
 
 // game objects
@@ -164,6 +164,8 @@ function onReady(e) {
     stage.removeEventListener("onAssetLoaded", onProgress);
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
+    //FIRST TIME VISIT
+    isInstructions = true;
     loadStartScreen();
 
      // setup event listeners for keyboard keys
@@ -198,10 +200,12 @@ function onNewGame(e) {
     targetNumEnemies = 2;
     // decrease numEnemies each kill - at the start of a wave the numEnemies is set to the new targetNumEnemies
     numEnemies = targetNumEnemies;
-    // construct and setup birdTimer to drop birds on displaylist
-    birdDelay = 2000;
-    birdTimer = window.setInterval(onAddBird, birdDelay);
-
+    //Generate birds right away if the player has restarted
+    if(!isInstructions){
+        // construct and setup birdTimer to drop birds on displaylist
+        birdDelay = 2000;
+        birdTimer = window.setInterval(onAddBird, birdDelay);
+    }
 
     loadArenaScreen();
 
@@ -423,48 +427,59 @@ function loadArenaScreen(){
     arenaBackground.gotoAndStop("arenaBackground");
     stage.addChild(arenaBackground);
 
-    //IF NEW GAME
-
-    instructionContainer = new createjs.Container();
-    imgInstruc = assetManager.getSprite("assetsCharacters");
-    imgInstruc.x = 100;
-    imgInstruc.y = 275;
-    imgInstruc.gotoAndStop("instruc_move");
-    instructionContainer.addChild(imgInstruc);
-
-    stage.addChild(instructionContainer);
-
-
-
-
-        // isArrowsDepleted = setTimeout(function(){
-        //     infoTitle = assetManager.getSprite("assets");
-        //     infoTitle.gotoAndStop("arrowsDepleted");
-        //     infoTitle.x = 125;
-        //     infoTitle.y = 150;
-        //     stage.addChild(infoTitle);
-        //     clearInterval(birdTimer);
-        //     arenaBirdsContainer.removeAllChildren();
-        //     clearTimeout(isArrowsDepleted);
-        // }, 3000);
-        // arrowsDepletedInterval = setTimeout(function(){
-        //     stage.removeChild(infoTitle);
-        //     isGameOver = true;
-        //     onPause();
-        //     clearTimeout(arrowsDepletedInterval);
-        // }, 6000);
-
-
-
-
     // -- WILLY --
     willy = new Willy(stage, assetManager);
     willy.resetMe();
     willy.setKillCount(0);
     willy.setNumArrows(3);
     willy.setXPosYPos(310, 350);
-    document.addEventListener("keydown", keyDownMove);
-    document.addEventListener("keyup", keyUpMove);
+
+    //IF NEW GAME
+    if(isInstructions){
+        instructionContainer = new createjs.Container();
+        imgInstruc = assetManager.getSprite("assetsCharacters");
+        imgInstruc.x = 100;
+        imgInstruc.y = 250;
+        imgInstruc.gotoAndStop("instruc_move");
+        instructionContainer.addChild(imgInstruc);
+
+        stage.addChild(instructionContainer);
+
+        instMoveInterval = setTimeout(function(){
+            instructionContainer.removeChild(imgInstruc);
+            imgInstruc = assetManager.getSprite("assetsCharacters");
+            imgInstruc.x = 325;
+            imgInstruc.y = 250;
+            imgInstruc.gotoAndStop("instruc_aim");
+            instructionContainer.addChild(imgInstruc);
+            clearInterval(instMoveInterval);
+        }, 4000);
+        instAimInterval = setTimeout(function(){
+            instructionContainer.removeChild(imgInstruc);
+            imgInstruc = assetManager.getSprite("assetsCharacters");
+            imgInstruc.x = 100;
+            imgInstruc.y = 250;
+            imgInstruc.gotoAndStop("instruc_arrow");
+            instructionContainer.addChild(imgInstruc);
+            clearInterval(instAimInterval);
+        }, 8000);
+         instArrowInterval = setTimeout(function(){
+            instructionContainer.removeAllChildren();
+            clearInterval(instArrowInterval);
+            //now start generating birds
+            birdDelay = 2000;
+            birdTimer = window.setInterval(onAddBird, birdDelay);
+            //delay willy movement
+            document.addEventListener("keydown", keyDownMove);
+            document.addEventListener("keyup", keyUpMove);
+        }, 12000);
+    }else{
+        //let willy move right away
+        document.addEventListener("keydown", keyDownMove);
+        document.addEventListener("keyup", keyUpMove);
+    }
+
+
 
     //add clouds
     stage.addChild(cloudContainer);
@@ -550,7 +565,7 @@ function loadGameOverScreen(){
     stage.addChild(arrowPointer);
 
     restartText = assetManager.getSprite("assets");
-    restartText.x = 255;
+    restartText.x = 260;
     restartText.y = 325;
     restartText.gotoAndStop("restartText");
     stage.addChild(restartText);
@@ -630,16 +645,13 @@ function onKeyDownArenaScreen(e) {
 }
 function onKeyDownGameOverScreen(e) {
 
-    // keystroke for "P" Button activating the menu screen
-    if (e.keyCode == 81) onReady();
-    if (e.keyCode == 73) onInstructions();
     if(e.keyCode == "38"){
         //direction = "up";
         switch(arrowPointer.y){
-            case 420:
-                arrowPointer.y = 375;
+            case 425:
+                arrowPointer.y = 380;
                 break;
-            case 375:
+            case 380:
                 arrowPointer.y = 339;
                 break;
             default:
@@ -650,10 +662,10 @@ function onKeyDownGameOverScreen(e) {
         //direction = "down";
         switch(arrowPointer.y){
             case 339:
-                arrowPointer.y = 375;
+                arrowPointer.y = 380;
                 break;
-            case 375:
-                arrowPointer.y = 420;
+            case 380:
+                arrowPointer.y = 425;
                 break;
             default:
                 break;
@@ -663,11 +675,11 @@ function onKeyDownGameOverScreen(e) {
     if(e.keyCode == "13" && arrowPointer.y === 339){
         onNewGame();
     }
-    if(e.keyCode == "13" && arrowPointer.y === 375){
+    if(e.keyCode == "13" && arrowPointer.y === 380){
         onInstructions();
     }
-    if(e.keyCode == "13" && arrowPointer.y === 420){
-        onReady();
+    if(e.keyCode == "13" && arrowPointer.y === 425){
+        onNewGame();
     }
 }
 // --------- END KEYDOWN FUNCTIONS --------
@@ -855,6 +867,7 @@ function onTick(e) {
     }else if(isGameOver){
         loadGameOverScreen();
         isGameOver = false;
+        isInstructions = false;
     }
     // update the stage!
     stage.update();
