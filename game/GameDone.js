@@ -136,6 +136,7 @@ function onInit() {
     //sounds
     createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
     createjs.Sound.registerSound("sounds/willy_dead.ogg", "willyDies");
+    createjs.Sound.registerSound("sounds/bird_dead.ogg", "birdDies");
     createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
     createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
 
@@ -838,6 +839,8 @@ function onTick(e) {
     document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
 
     if(willy.getIsBirdKilled()){
+        //play bird dies sound
+         createjs.Sound.play("birdDies");
         statsContainer.removeChild(numKills);
         numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
         numKills.x = 265;
