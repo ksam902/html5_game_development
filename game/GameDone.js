@@ -1,16 +1,29 @@
 //page variables
 var btnBegin;
 var infoCloudCount;
-var infoCloudInterval;
-var cloudContainer;
 var infoBirdCount;
-var infoBirdInterval;
-var infoBirdContainer;
 var arenaCloudCount;
-var arenaCloudInterval;
+
 var mouseX;
 var mouseY;
 var willyInfo;
+
+
+// --- SOUNDS
+var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
+
+// --- INTERVALS
+var infoCloudInterval, infoBirdInterval, arenaCloudInterval, instMoveInterval, instAimInterval, instArrowInterval;
+
+// --- CONTAINERS
+var cloudContainer, infoBirdContainer;
+
+
+// ------------------- VISUALS
+// --- SPEECH
+var isInstructions, instructionContainer,  imgSpeech;
+
+
 
 // game variables
 var stage = null;
@@ -26,8 +39,7 @@ var key;
 // frame rate of game
 var frameRate = 30;
 
-//ARENA INSTRUCTIONS
-var isInstructions, instructionContainer, instMoveInterval, instAimInterval, instArrowInterval, imgInstruc;
+
 
 
 // game objects
@@ -106,8 +118,7 @@ var isGameOver;
 collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
 
-//SOUNDS
-var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
+
 
 // ------------------------------------------------------------ event handlers
 function onInit() {
@@ -169,7 +180,7 @@ function onReady(e) {
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = false;
+    isInstructions = true;
     loadStartScreen();
 
      // setup event listeners for keyboard keys
@@ -377,9 +388,15 @@ function loadStartScreen(){
     stage.addChild(cloudContainer);
     stage.addChild(infoBirdContainer);
 
+    imgSpeech = assetManager.getSprite("assetsCharacters");
+    imgSpeech.x = 320;
+    imgSpeech.y = 425;
+    imgSpeech.gotoAndStop("speech_start_screen");
+    stage.addChild(imgSpeech);
+
     willy = new Willy(stage, assetManager);
     willy.resetMe();
-    willy.setXPosYPos(310, 455);
+    willy.setXPosYPos(295, 490);
 
     //add clouds and backgrounds
     addBirdsInfoScreen(3);
@@ -441,30 +458,30 @@ function loadArenaScreen(){
     //IF NEW GAME
     if(isInstructions){
         instructionContainer = new createjs.Container();
-        imgInstruc = assetManager.getSprite("assetsCharacters");
-        imgInstruc.x = 100;
-        imgInstruc.y = 250;
-        imgInstruc.gotoAndStop("instruc_move");
-        instructionContainer.addChild(imgInstruc);
+        imgSpeech = assetManager.getSprite("assetsCharacters");
+        imgSpeech.x = 100;
+        imgSpeech.y = 250;
+        imgSpeech.gotoAndStop("instruc_move");
+        instructionContainer.addChild(imgSpeech);
 
         stage.addChild(instructionContainer);
 
         instMoveInterval = setTimeout(function(){
-            instructionContainer.removeChild(imgInstruc);
-            imgInstruc = assetManager.getSprite("assetsCharacters");
-            imgInstruc.x = 325;
-            imgInstruc.y = 250;
-            imgInstruc.gotoAndStop("instruc_aim");
-            instructionContainer.addChild(imgInstruc);
+            instructionContainer.removeChild(imgSpeech);
+            imgSpeech = assetManager.getSprite("assetsCharacters");
+            imgSpeech.x = 325;
+            imgSpeech.y = 250;
+            imgSpeech.gotoAndStop("instruc_aim");
+            instructionContainer.addChild(imgSpeech);
             clearInterval(instMoveInterval);
         }, 4000);
         instAimInterval = setTimeout(function(){
-            instructionContainer.removeChild(imgInstruc);
-            imgInstruc = assetManager.getSprite("assetsCharacters");
-            imgInstruc.x = 100;
-            imgInstruc.y = 250;
-            imgInstruc.gotoAndStop("instruc_arrow");
-            instructionContainer.addChild(imgInstruc);
+            instructionContainer.removeChild(imgSpeech);
+            imgSpeech = assetManager.getSprite("assetsCharacters");
+            imgSpeech.x = 100;
+            imgSpeech.y = 250;
+            imgSpeech.gotoAndStop("instruc_arrow");
+            instructionContainer.addChild(imgSpeech);
             clearInterval(instAimInterval);
         }, 8000);
          instArrowInterval = setTimeout(function(){
