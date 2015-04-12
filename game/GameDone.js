@@ -12,7 +12,7 @@ window.alphaThresh = 0.75;
 var spritesheet;
 var stage = null;
 var canvas = null;
-var mousePointer;
+var mousePointer, mouseX, mouseY;
 
 // Keys
 var downKey, upKey, leftKey, rightKey = false;
@@ -21,10 +21,6 @@ var key;
 //page variables
 var btnBegin;
 var infoCloudCount, infoBirdCount, arenaCloudCount;
-
-var mouseX, mouseY;
-var willyInfo;
-
 
 // --- SOUNDS
 var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
@@ -43,6 +39,7 @@ var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, inst
 // --- BACKGROUNDS & ASSETS
 var gameBackground;
 var instructionsBackground;
+
 // menu options
 var newGame, restartText, quitGame, instructions;
 var arrowPointer;
@@ -59,24 +56,21 @@ var imgStatsBar, imgWave;
 var isInstructions, imgSpeech;
 
 // -- NUMBER GAMEPLAY VARIABLES
+
+// -- GAME OBJECTS
+var cloud, arenaBird, bird, arrow, willy;
+ // Arrays
+var birds = [];
+var arrows =[];
+
+// -- BIRD VARIABLES
+var birdDelay, birdTimer;
+
 var numWave, numLives, numKills, numEnemies, numArrows, numArrowsWilly, numArrowsShot, accuracy;
 // increase this every wave
 var targetNumEnemies;
 //arena assets - bitmapText representives of score
 var numEnemiesText, numWaveText;
-
-// -- GAME OBJECTS
-var arenaBird;
-var bird = null;
-var birds=[];
-
-var birdDelay;
-var birdTimer;
-var willy = null;
-var cloud;
-var arrow = null;
-var arrows=[];
-
 
 
 // ------------------------------------------------------------ event handlers
@@ -714,9 +708,13 @@ function moveWilly(){
 function increaseWave(){
     //remove Willy's shooting ability
     stage.removeEventListener("click", shootProjectile);
+    //remove pause button
+    statsContainer.removeChild(btnPause);
     //play wave complete sound
     createjs.Sound.play("waveComplete");
     willy.setIsWaveComplete(true);
+    //stop adding birds to the screen and disregard arrow count
+    clearInterval(birdTimer);
     clearInterval(isArrowsInterval);
     clearInterval(isArrowsInfoTitleInterval);
     //remove the birds in the array from the stage
@@ -750,13 +748,12 @@ function increaseWave(){
     //increase number of enemies for wave
     targetNumEnemies +=3;
     numEnemies = targetNumEnemies;
-    //stop adding birds to the screen
-    clearInterval(birdTimer);
     waveInterval = setTimeout(function(){
         birds = [];
         arenaBirdsContainer.removeAllChildren();
         stage.removeChild(arenaBirdsContainer);
         stage.removeChild(infoTitle);
+        statsContainer.addChild(btnPause);
         willy.setIsWaveComplete(false);
         stage.addChild(arenaBirdsContainer);
         stage.addEventListener("click", shootProjectile);
