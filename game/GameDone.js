@@ -106,6 +106,9 @@ function onInit() {
     createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
     createjs.Sound.registerSound("sounds/willy_talk.ogg", "willy_talk");
     createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
+
+    //FIRST TIME VISIT - isInstructions should = true
+    isInstructions = true;
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -138,8 +141,6 @@ function onReady(e) {
     //get access to assets
     spritesheet = assetManager.getSpriteSheet("assets");
 
-    //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = true;
     loadStartScreen();
 }
 function onNewGame(e) {
