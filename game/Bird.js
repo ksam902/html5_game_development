@@ -107,13 +107,13 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
                     a = a.getClip();
                     intersection = collisionMethod(clip,a,window.alphaThresh);
                     if ( intersection ) {
+                        stage.removeChild(a);
+                        //remove arow from array
+                        arrows.splice(c, 1);
                         willy.increaseKillCount();
                         isKilled = true;
                         onKillBird();
                         createjs.Ticker.removeEventListener("tick", onCollisionTest);
-                        stage.removeChild(a);
-                        //remove arow from array
-                        arrows.splice(c, 1);
                     }
                 }
             }

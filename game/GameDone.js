@@ -169,7 +169,7 @@ function onReady(e) {
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = true;
+    isInstructions = false;
     loadStartScreen();
 
      // setup event listeners for keyboard keys
@@ -199,7 +199,7 @@ function onNewGame(e) {
     isGameOver = false;
     numWave = 1;
     //state game with 10 arrows
-    numArrowsWilly = 3;
+    numArrowsWilly = 10;
     //start game with 10 enemies
     targetNumEnemies = 2;
     // decrease numEnemies each kill - at the start of a wave the numEnemies is set to the new targetNumEnemies
@@ -292,7 +292,7 @@ function onPause(e){
         stage.removeChild(btnPause);
         btnPause = assetManager.getSprite("assets");
         btnPause.x = 500;
-        btnPause.y = 550;
+        btnPause.y = 515;
         btnPause.gotoAndStop("btnResume");
         // setup event listener to go to pause screen
         btnPause.addEventListener("click", onPause);
@@ -306,7 +306,7 @@ function onPause(e){
         stage.removeChild(btnPause);
         btnPause = assetManager.getSprite("assets");
         btnPause.x = 500;
-        btnPause.y = 550;
+        btnPause.y = 515;
         btnPause.gotoAndStop("btnPause");
         // setup event listener to go to pause screen
         btnPause.addEventListener("click", onPause);
@@ -435,7 +435,7 @@ function loadArenaScreen(){
     willy = new Willy(stage, assetManager);
     willy.resetMe();
     willy.setKillCount(0);
-    willy.setNumArrows(3);
+    willy.setNumArrows(10);
     willy.setXPosYPos(310, 350);
 
     //IF NEW GAME
@@ -473,11 +473,27 @@ function loadArenaScreen(){
             //now start generating birds
             birdDelay = 2000;
             birdTimer = window.setInterval(onAddBird, birdDelay);
+            // add pause button
+            btnPause = assetManager.getSprite("assets");
+            btnPause.x = 500;
+            btnPause.y = 515;
+            btnPause.gotoAndStop("btnPause");
+            stage.addChild(btnPause);
+            // setup event listener to go to pause screen
+            btnPause.addEventListener("click", onPause);
             //delay willy movement
             document.addEventListener("keydown", keyDownMove);
             document.addEventListener("keyup", keyUpMove);
         }, 12000);
     }else{
+        // add pause button right away
+        btnPause = assetManager.getSprite("assets");
+        btnPause.x = 500;
+        btnPause.y = 515;
+        btnPause.gotoAndStop("btnPause");
+        stage.addChild(btnPause);
+        // setup event listener to go to pause screen
+        btnPause.addEventListener("click", onPause);
         //let willy move right away
         document.addEventListener("keydown", keyDownMove);
         document.addEventListener("keyup", keyUpMove);
@@ -510,11 +526,15 @@ function loadArenaScreen(){
     statsContainer.addChild(numKills);
 
     numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
+    if(numEnemies < 20){
+        numEnemies.letterSpacing = 5;
+    }
     numEnemiesText.x = 415;
     numEnemiesText.y = 10;
     statsContainer.addChild(numEnemiesText);
 
     numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
+    numArrows.letterSpacing = 5;
     numArrows.x = 550;
     numArrows.y = 10;
     statsContainer.addChild(numArrows);
@@ -527,19 +547,11 @@ function loadArenaScreen(){
 
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     numWaveText.x = 315;
-    numWaveText.y = 510;
+    numWaveText.y = 515;
     statsContainer.addChild(numWaveText);
 
     stage.addChild(statsContainer);
 
-
-    btnPause = assetManager.getSprite("assets");
-    btnPause.x = 500;
-    btnPause.y = 550;
-    btnPause.gotoAndStop("btnPause");
-    stage.addChild(btnPause);
-    // setup event listener to go to pause screen
-    btnPause.addEventListener("click", onPause);
     stage.addChild(developerCredits);
 
     addMousePointer();
@@ -586,27 +598,34 @@ function loadGameOverScreen(){
     // setup event listener to Quit Game
     quitGame.addEventListener("click", onQuitGame);
 
-    // numWave = new createjs.Text(numWave, "12px Noteworthy", "FF7700");
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
+    if(numWave< 20){
+        numWave.letterSpacing = 5;
+    }
     numWaveText.x = 160;
     numWaveText.y = 260;
     stage.addChild(numWaveText);
 
-    // numArrowsShot = new createjs.Text(willy.getArrowCount().toString(), "12px Noteworthy", "FF7700");
     numArrowsShot = new createjs.BitmapText(willy.getArrowCount().toString(), spritesheet);
+    if(willy.getArrowCount() < 20){
+        numArrowsShot.letterSpacing = 5;
+    }
     numArrowsShot.x = 315;
     numArrowsShot.y = 260;
     stage.addChild(numArrowsShot);
 
-    // numKills = new createjs.Text(willy.getKillCount().toString(), "12px Noteworthy", "FF7700");
     numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
+    if(willy.getKillCount() < 20){
+        numKills.letterSpacing = 5;
+    }
     numKills.x = 420;
     numKills.y = 260;
     stage.addChild(numKills);
 
-    // accuracy = new createjs.Text(willy.getAccuracy().toString() + "%", "12px Noteworthy", "FF7700");
     accuracy = new createjs.BitmapText(willy.getAccuracy().toString(), spritesheet);
-    console.log("Accuracy : " + willy.getAccuracy().toString());
+    if(willy.getAccuracy() < 20){
+        accuracy.letterSpacing = 5;
+    }
     accuracy.x = 560;
     accuracy.y = 259;
     stage.addChild(accuracy);
@@ -708,6 +727,9 @@ function increaseWave(){
                  willy.setNumArrows(numArrowsWilly);
                 statsContainer.removeChild(numArrows);
                 numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
+                if(willy.getNumArrows() < 20){
+                    numArrows.letterSpacing = 5;
+                }
                 numArrows.x = 550;
                 numArrows.y = 10;
                 statsContainer.addChild(numArrows);
@@ -715,7 +737,7 @@ function increaseWave(){
                 statsContainer.removeChild(numWaveText);
                 numWaveText = new createjs.BitmapText((numWave+=1).toString(), spritesheet);
                 numWaveText.x = 315;
-                numWaveText.y = 510;
+                numWaveText.y = 515;
                 statsContainer.addChild(numWaveText);
                 //increase number of enemies for wave
                 targetNumEnemies +=3;
@@ -800,6 +822,9 @@ function shootProjectile(){
         willy.decreaseNumArrows();
         statsContainer.removeChild(numArrows);
         numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
+        if(willy.getNumArrows() < 20){
+            numArrows.letterSpacing = 5;
+        }
         numArrows.x = 550;
         numArrows.y = 10;
         statsContainer.addChild(numArrows);
@@ -843,6 +868,9 @@ function onTick(e) {
          createjs.Sound.play("birdDies");
         statsContainer.removeChild(numKills);
         numKills = new createjs.BitmapText(willy.getKillCount().toString(), spritesheet);
+        if(willy.getKillCount() < 20){
+            numKills.letterSpacing = 5;
+        }
         numKills.x = 265;
         numKills.y = 10;
         statsContainer.addChild(numKills);
@@ -852,6 +880,9 @@ function onTick(e) {
         }
         statsContainer.removeChild(numEnemiesText);
         numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
+        if(numEnemies < 20){
+            numEnemies.letterSpacing = 5;
+        }
         numEnemiesText.x = 415;
         numEnemiesText.y = 10;
         statsContainer.addChild(numEnemiesText);
