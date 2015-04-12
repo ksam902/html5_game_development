@@ -105,6 +105,7 @@ function onInit() {
     createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
     createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
     createjs.Sound.registerSound("sounds/willy_talk.ogg", "willy_talk");
+    createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -388,7 +389,7 @@ function loadArenaScreen(){
     //IF NEW GAME DISPLAY INSTRUCTIONS
     if(isInstructions){
         //play sound
-        createjs.Sound.play("willy_talk");
+        createjs.Sound.play("willy_talks");
 
         imgSpeech = assetManager.getSprite("assetsCharacters");
         imgSpeech.x = 85;
@@ -399,7 +400,7 @@ function loadArenaScreen(){
 
         instMoveInterval = setTimeout(function(){
             //play sound
-            createjs.Sound.play("willy_talk");
+            createjs.Sound.play("willy_talks");
             instructionContainer.removeChild(imgSpeech);
             imgSpeech = assetManager.getSprite("assetsCharacters");
             imgSpeech.x = 315;
@@ -407,10 +408,10 @@ function loadArenaScreen(){
             imgSpeech.gotoAndStop("instruc_aim");
             instructionContainer.addChild(imgSpeech);
             clearInterval(instMoveInterval);
-        }, 4000);
+        }, 3500);
         instAimInterval = setTimeout(function(){
             //play sound
-            createjs.Sound.play("willy_talk");
+            createjs.Sound.play("willy_talks");
             instructionContainer.removeChild(imgSpeech);
             imgSpeech = assetManager.getSprite("assetsCharacters");
             imgSpeech.x = 85;
@@ -418,12 +419,12 @@ function loadArenaScreen(){
             imgSpeech.gotoAndStop("instruc_arrow");
             instructionContainer.addChild(imgSpeech);
             clearInterval(instAimInterval);
-        }, 8000);
+        }, 7500);
          instArrowInterval = setTimeout(function(){
             instructionContainer.removeAllChildren();
             clearInterval(instArrowInterval);
             isNotFirstVisitAssets();
-        }, 12000);
+        }, 11500);
     }else{
         isNotFirstVisitAssets();
     }
