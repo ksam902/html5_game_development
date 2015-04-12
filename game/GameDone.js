@@ -117,9 +117,6 @@ var direction;
 //Gameplay Booleans
 var isGameOver;
 
-
-
-
 // ------------------------------------------------------------ event handlers
 function onInit() {
     // get reference to canvas
@@ -180,14 +177,12 @@ function onReady(e) {
     canvas.addEventListener("mouseenter", addMousePointer);
     canvas.addEventListener("mouseout", removeMousePointer);
 
-     // setup event listeners for keyboard keys
-    document.addEventListener("keydown", onKeyDownStartScreen);
-    document.removeEventListener("keydown", onKeyDownGameOverScreen);
-    document.removeEventListener("keydown", keyDownMove);
-    document.removeEventListener("keyup", keyUpMove);
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
     createjs.Ticker.addEventListener("tick", onTick);
+
+    //get access to assets
+    spritesheet = assetManager.getSpriteSheet("assets");
 
     //FIRST TIME VISIT - isInstructions should = true
     isInstructions = false;
@@ -195,19 +190,7 @@ function onReady(e) {
 }
 function onNewGame(e) {
 
-    stage.removeAllChildren();
-    infoBirdContainer.removeAllChildren();
-    cloudContainer.removeAllChildren();
-
-    // remove/setup event listeners for keyboard keys
-    document.removeEventListener("keydown", onKeyDownStartScreen);
-    document.removeEventListener("keydown", onKeyDownGameOverScreen);
-    document.addEventListener("keydown", onKeyDownArenaScreen);
-
     // RESET Game Variables
-    spritesheet = assetManager.getSpriteSheet("assets");
-
-    stage.addChild(statsContainer);
     isGameOver = false;
     numWave = 1;
     //state game with 10 arrows
@@ -222,7 +205,6 @@ function onNewGame(e) {
         birdDelay = 2000;
         birdTimer = window.setInterval(onAddBird, birdDelay);
     }
-
     loadArenaScreen();
 
     // --- SHOOTING FUNCTION - Mouse Pointer ----
@@ -236,57 +218,7 @@ function onNewGame(e) {
         clearTimeout(shootInterval);
     }, 500);
 }
-function keyDownMove(e){
-    key = e.which;
-    if(key == "37" || key == "65"){
-        //direction = "left";
-        leftKey = true;
-        e.preventDefault();
-    } else if(key == "38" || key == "87"){
-        //direction = "up";
-        upKey = true;
-        e.preventDefault();
-    }else if(key == "39" || key == "68"){
-        //direction = "right";
-        rightKey = true;
-        e.preventDefault();
-    }else if(key == "40" || key == "83"){
-        //direction = "down";
-        downKey = true;
-        e.preventDefault();
-    }
-}
-function keyUpMove(e){
-    key = e.which;
-    if(key == "37" || key == "65"){
-        //direction = "left";
-        leftKey = false;
-        e.preventDefault();
-    } else if(key == "38" || key == "87"){
-        //direction = "up";
-        upKey = false;
-        e.preventDefault();
-    }else if(key == "39" || key == "68"){
-        //direction = "right";
-        rightKey = false;
-        e.preventDefault();
-    }else if(key == "40" || key == "83"){
-        //direction = "down";
-        downKey = false;
-        e.preventDefault();
-    }
-}
-function moveWilly(){
-    if(leftKey){
-        willy.moveLeft();
-    } else if(upKey){
-        willy.moveUp();
-    }else if(rightKey){
-        willy.moveRight();
-    }else if(downKey){
-        willy.moveDown();
-    }
-}
+
 
 function onPause(e){
 
@@ -334,6 +266,8 @@ function onQuitGame(e){
 function onInstructions(e){
     document.removeEventListener("keydown", onKeyDownGameOverScreen);
     document.removeEventListener("keydown", onKeyDownStartScreen);
+    document.addEventListener("keydown", onKeyDownInstructions);
+
     instructionsBackground = assetManager.getSprite("assets");
     instructionsBackground.gotoAndStop("instructionsBackground");
     stage.addChild(instructionsBackground);
@@ -357,19 +291,19 @@ function onInstructions(e){
     addMousePointer();
     stage.addChild(mousePointerContainer);
 }
-function addMousePointer(){
-    $( "#stage" ).mousemove(function( event ) {
-        mousePointer.x = stage.mouseX - 20;
-        mousePointer.y = stage.mouseY - 20;
-    });
-    mousePointerContainer.addChild(mousePointer);
-}
-function removeMousePointer(){
-    mousePointerContainer.removeChild(mousePointer);
-}
+
 // --------- LOAD SCREEN ASSETS --------
 
 function loadStartScreen(){
+    // setup event listeners for keyboard keys
+    document.addEventListener("keydown", onKeyDownStartScreen);
+    document.removeEventListener("keydown", onKeyDownInstructions);
+    document.removeEventListener("keydown", onKeyDownGameOverScreen);
+    document.removeEventListener("keydown", onKeyDownArenaScreen);
+    document.removeEventListener("keydown", keyDownMove);
+    document.removeEventListener("keyup", keyUpMove);
+    // prevent any movement
+    downKey, upKey, leftKey, rightKey = false;
 
     // clear the stage and all of the containers
     stage.removeAllChildren();
@@ -442,9 +376,20 @@ function loadStartScreen(){
     stage.addChild(mousePointerContainer);
 }
 function loadArenaScreen(){
+    // setup event listeners for keyboard keys
+    document.removeEventListener("keydown", onKeyDownStartScreen);
+    document.removeEventListener("keydown", onKeyDownInstructions);
+    document.removeEventListener("keydown", onKeyDownGameOverScreen);
+    document.addEventListener("keydown", onKeyDownArenaScreen);
+    document.addEventListener("keydown", keyDownMove);
+    document.addEventListener("keyup", keyUpMove);
+    // prevent any movement
+    downKey, upKey, leftKey, rightKey = false;
     //remove and reset assets
     stage.removeAllChildren();
+    cloudContainer.removeAllChildren();
     clearInterval(infoCloudInterval);
+    infoBirdContainer.removeAllChildren();
     clearInterval(infoBirdInterval);
 
     arenaBackground = assetManager.getSprite("assets");
@@ -457,6 +402,13 @@ function loadArenaScreen(){
     willy.setKillCount(0);
     willy.setNumArrows(10);
     willy.setXPosYPos(310, 350);
+
+    //add arena clouds
+    stage.addChild(cloudContainer);
+    addCloudsArenaScreen(4);
+    //add birds container afetr clearing it out
+    arenaBirdsContainer.removeAllChildren();
+    stage.addChild(arenaBirdsContainer);
 
     //IF NEW GAME
     if(isInstructions){
@@ -519,14 +471,6 @@ function loadArenaScreen(){
         document.addEventListener("keyup", keyUpMove);
     }
 
-    //add clouds
-    stage.addChild(cloudContainer);
-    addCloudsArenaScreen(4);
-
-    //add birds container
-    arenaBirdsContainer.removeAllChildren();
-    stage.addChild(arenaBirdsContainer);
-
     // -- Stats Assets
 
     imgStatsBar = assetManager.getSprite("assetsCharacters");
@@ -570,22 +514,32 @@ function loadArenaScreen(){
     numWaveText.y = 515;
     statsContainer.addChild(numWaveText);
 
-    stage.addChild(statsContainer);
-
     stage.addChild(developerCredits);
 
+    //add containers
+    stage.addChild(statsContainer);
     // always add aimer last
     removeMousePointer()
     addMousePointer();
     stage.addChild(mousePointerContainer);
 }
 function loadGameOverScreen(){
+    // remove/setup event listeners for keyboard keys
+    // setup event listeners for keyboard keys
+    document.removeEventListener("keydown", onKeyDownStartScreen);
+    document.removeEventListener("keydown", onKeyDownInstructions);
+    document.addEventListener("keydown", onKeyDownGameOverScreen);
+    document.removeEventListener("keydown", onKeyDownArenaScreen);
+    document.removeEventListener("keydown", keyDownMove);
+    document.removeEventListener("keyup", keyUpMove);
     //play game over sound
     createjs.Sound.play("gameOver");
     //remove all assets and intervals
     stage.removeAllChildren();
     cloudContainer.removeAllChildren();
     clearInterval(arenaCloudInterval);
+    arenaBirdsContainer.removeAllChildren();
+
     //new background
     infoBackground = assetManager.getSprite("assets");
     infoBackground.gotoAndStop("infoBackground");
@@ -653,11 +607,6 @@ function loadGameOverScreen(){
     accuracy.y = 259;
     stage.addChild(accuracy);
 
-    // remove/setup event listeners for keyboard keys
-    document.removeEventListener("keydown", onKeyDownStartScreen);
-    document.addEventListener("keydown", onKeyDownGameOverScreen);
-    document.removeEventListener("keydown", onKeyDownArenaScreen);
-
     stage.addChild(developerCredits);
 
     // always add aimer last
@@ -686,6 +635,17 @@ function onKeyDownStartScreen(e) {
     }
     if(e.keyCode == "13" && arrowPointer.y === 380){
         onInstructions();
+    }
+}
+function onKeyDownInstructions(e) {
+    if(e.keyCode == "13"){
+        if(!isGameOver){
+            document.addEventListener("keydown", onKeyDownGameOverScreen);
+        }else{
+            document.addEventListener("keydown", onKeyDownStartScreen);
+        }
+        stage.removeChild(instructionsBackground);
+        stage.removeChild(btnThanks);
     }
 }
 function onKeyDownArenaScreen(e) {
@@ -729,6 +689,57 @@ function onKeyDownGameOverScreen(e) {
     }
     if(e.keyCode == "13" && arrowPointer.y === 425){
         onReady();
+    }
+}
+function keyDownMove(e){
+    key = e.which;
+    if(key == "37" || key == "65"){
+        //direction = "left";
+        leftKey = true;
+        e.preventDefault();
+    } else if(key == "38" || key == "87"){
+        //direction = "up";
+        upKey = true;
+        e.preventDefault();
+    }else if(key == "39" || key == "68"){
+        //direction = "right";
+        rightKey = true;
+        e.preventDefault();
+    }else if(key == "40" || key == "83"){
+        //direction = "down";
+        downKey = true;
+        e.preventDefault();
+    }
+}
+function keyUpMove(e){
+    key = e.which;
+    if(key == "37" || key == "65"){
+        //direction = "left";
+        leftKey = false;
+        e.preventDefault();
+    } else if(key == "38" || key == "87"){
+        //direction = "up";
+        upKey = false;
+        e.preventDefault();
+    }else if(key == "39" || key == "68"){
+        //direction = "right";
+        rightKey = false;
+        e.preventDefault();
+    }else if(key == "40" || key == "83"){
+        //direction = "down";
+        downKey = false;
+        e.preventDefault();
+    }
+}
+function moveWilly(){
+    if(leftKey){
+        willy.moveLeft();
+    } else if(upKey){
+        willy.moveUp();
+    }else if(rightKey){
+        willy.moveRight();
+    }else if(downKey){
+        willy.moveDown();
     }
 }
 // --------- END KEYDOWN FUNCTIONS --------
@@ -841,7 +852,17 @@ function onAddBird(e) {
     birds.push(arenaBird);
 }
 // --------- END BIRDS --------
-// --------- WILLY --------
+// --------- MOUSE EVENTS --------
+function addMousePointer(){
+    $( "#stage" ).mousemove(function( event ) {
+        mousePointer.x = stage.mouseX - 20;
+        mousePointer.y = stage.mouseY - 20;
+    });
+    mousePointerContainer.addChild(mousePointer);
+}
+function removeMousePointer(){
+    mousePointerContainer.removeAllChildren();
+}
 function shootProjectile(){
         //play sound
         createjs.Sound.play("shootArrow");
@@ -872,7 +893,7 @@ function shootProjectile(){
             infoTitle.y = 150;
             stage.addChild(infoTitle);
             clearInterval(birdTimer);
-            arenaBirdsContainer.removeAllChildren();
+            //arenaBirdsContainer.removeAllChildren();
             clearTimeout(isArrowsDepleted);
         }, 3000);
         arrowsDepletedInterval = setTimeout(function(){
