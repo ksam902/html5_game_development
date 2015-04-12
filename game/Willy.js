@@ -28,10 +28,6 @@ var Willy = function(stage, assetManager) {
     this.getLives = function() {
         return lives;
     };
-    // this.setLives = function(value) {
-    //     lives = value;
-    //     isKilled = true;
-    // };
     this.decreaseLivesCount = function(value) {
         lives -= 1;
     };

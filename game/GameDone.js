@@ -22,9 +22,6 @@ var downKey, upKey, leftKey, rightKey = false;
 var btnBegin;
 var infoCloudCount, infoBirdCount, arenaCloudCount;
 
-// --- SOUNDS
-var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
-
 // ---- BOOLEANS
 var isGameOver;
 
@@ -107,7 +104,7 @@ function onInit() {
     createjs.Sound.registerSound("sounds/bird_dead.ogg", "birdDies");
     createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
     createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
-
+    createjs.Sound.registerSound("sounds/willy_talk.ogg", "willy_talk");
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -390,6 +387,9 @@ function loadArenaScreen(){
 
     //IF NEW GAME DISPLAY INSTRUCTIONS
     if(isInstructions){
+        //play sound
+        createjs.Sound.play("willy_talk");
+
         imgSpeech = assetManager.getSprite("assetsCharacters");
         imgSpeech.x = 85;
         imgSpeech.y = 225;
@@ -398,6 +398,8 @@ function loadArenaScreen(){
         stage.addChild(instructionContainer);
 
         instMoveInterval = setTimeout(function(){
+            //play sound
+            createjs.Sound.play("willy_talk");
             instructionContainer.removeChild(imgSpeech);
             imgSpeech = assetManager.getSprite("assetsCharacters");
             imgSpeech.x = 315;
@@ -407,6 +409,8 @@ function loadArenaScreen(){
             clearInterval(instMoveInterval);
         }, 4000);
         instAimInterval = setTimeout(function(){
+            //play sound
+            createjs.Sound.play("willy_talk");
             instructionContainer.removeChild(imgSpeech);
             imgSpeech = assetManager.getSprite("assetsCharacters");
             imgSpeech.x = 85;
@@ -483,7 +487,7 @@ function loadGameOverScreen(){
     clearInterval(birdTimer);
     isGameOver = false;
     // no longer first visit so do not need speech instructions
-    sInstructions = false;
+    isInstructions = false;
     // remove/setup event listeners for keyboard keys
     // setup event listeners for keyboard keys
     document.removeEventListener("keydown", onKeyDownStartScreen);
@@ -857,7 +861,7 @@ function addCloudsArenaScreen(numClouds){
 function addBirdsInfoScreen(numBirds){
     infoBirdCount = 1;
     // set interval
-    infoBirdInterval = setInterval(addInfoBird, 3000);
+    infoBirdInterval = setInterval(addInfoBird, 4000);
     function addInfoBird() {
         if(infoBirdCount <= numBirds){
             var bird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy);
