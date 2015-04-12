@@ -135,6 +135,7 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
         willy.setIsWillyKilled(true);
         willyClip.gotoAndPlay("wormDead");
         willyClip.addEventListener("animationend", onKilledWilly);
+
     }
 
     function onKilledWilly(e) {
@@ -142,10 +143,12 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
         willyClip.removeEventListener("animationend", onKilledWilly);
         stage.removeChild(clip);
         stage.removeChild(willyClip);
-        //re-add willy to stage
-        willyClip.gotoAndPlay("wormAlive");
-        stage.addChild(willyClip);
-        console.log("Willy killed");
+        //re-add willy to stage if he had more than 1 life
+        if(willy.getLives()>0){
+            willyClip.gotoAndPlay("wormAlive");
+            stage.addChild(willyClip);
+            console.log("Willy killed");
+        }
     }
     function onInfoMove(e) {
 

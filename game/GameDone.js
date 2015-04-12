@@ -542,7 +542,6 @@ function loadGameOverScreen(){
     // setup event listener to Quit Game
     quitGame.addEventListener("click", onQuitGame);
 
-
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     if(numWave< 20){
         numWave.letterSpacing = 5;
@@ -713,57 +712,59 @@ function moveWilly(){
 // --------- END KEYDOWN FUNCTIONS --------
 // --------- WAVE --------
 function increaseWave(){
-            //play wave complete sound
-            createjs.Sound.play("waveComplete");
-            willy.setIsWaveComplete(true);
-            clearInterval(isArrowsInterval);
-            clearInterval(isArrowsInfoTitleInterval);
-            //remove the birds in the array from the stage
-            downKey = false;
-            upKey = false;
-            leftKey = false;
-            rightKey = false;
-            infoTitle = assetManager.getSprite("assets");
-            infoTitle.gotoAndStop("waveComplete");
-            infoTitle.x = 225;
-            infoTitle.y = 200;
-            stage.addChild(infoTitle);
+    //remove Willy's shooting ability
+    stage.removeEventListener("click", shootProjectile);
+    //play wave complete sound
+    createjs.Sound.play("waveComplete");
+    willy.setIsWaveComplete(true);
+    clearInterval(isArrowsInterval);
+    clearInterval(isArrowsInfoTitleInterval);
+    //remove the birds in the array from the stage
+    downKey = false;
+    upKey = false;
+    leftKey = false;
+    rightKey = false;
+    infoTitle = assetManager.getSprite("assets");
+    infoTitle.gotoAndStop("waveComplete");
+    infoTitle.x = 225;
+    infoTitle.y = 200;
+    stage.addChild(infoTitle);
 
-             //increase number of arrows willy has at his disposal - update stats bar
-             numArrowsWilly = numArrowsWilly + 5;
-             willy.setNumArrows(numArrowsWilly);
-            statsContainer.removeChild(numArrows);
-            numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-            if(willy.getNumArrows() < 20){
-                numArrows.letterSpacing = 5;
-            }
-            numArrows.x = 550;
-            numArrows.y = 10;
-            statsContainer.addChild(numArrows);
-            //increase numWave - update stats bar
-            statsContainer.removeChild(numWaveText);
-            numWaveText = new createjs.BitmapText((numWave+=1).toString(), spritesheet);
-            numWaveText.x = 315;
-            numWaveText.y = 515;
-            statsContainer.addChild(numWaveText);
-            //increase number of enemies for wave
-            targetNumEnemies +=3;
-            numEnemies = targetNumEnemies;
-            //stop adding birds to the screen
-            clearInterval(birdTimer);
-            waveInterval = setTimeout(function(){
-                birds = [];
-                arenaBirdsContainer.removeAllChildren();
-                stage.removeChild(arenaBirdsContainer);
-                stage.removeChild(infoTitle);
-                willy.setIsWaveComplete(false);
-                stage.addChild(arenaBirdsContainer);
-                stage.addEventListener("click", shootProjectile);
-                //increase bird generation
-                birdDelay -= 100;
-                birdTimer = window.setInterval(onAddBird, birdDelay);
-                clearTimeout(waveInterval);
-            }, 3000);
+     //increase number of arrows willy has at his disposal - update stats bar
+     numArrowsWilly = numArrowsWilly + 5;
+     willy.setNumArrows(numArrowsWilly);
+    statsContainer.removeChild(numArrows);
+    numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
+    if(willy.getNumArrows() < 20){
+        numArrows.letterSpacing = 5;
+    }
+    numArrows.x = 550;
+    numArrows.y = 10;
+    statsContainer.addChild(numArrows);
+    //increase numWave - update stats bar
+    statsContainer.removeChild(numWaveText);
+    numWaveText = new createjs.BitmapText((numWave+=1).toString(), spritesheet);
+    numWaveText.x = 315;
+    numWaveText.y = 515;
+    statsContainer.addChild(numWaveText);
+    //increase number of enemies for wave
+    targetNumEnemies +=3;
+    numEnemies = targetNumEnemies;
+    //stop adding birds to the screen
+    clearInterval(birdTimer);
+    waveInterval = setTimeout(function(){
+        birds = [];
+        arenaBirdsContainer.removeAllChildren();
+        stage.removeChild(arenaBirdsContainer);
+        stage.removeChild(infoTitle);
+        willy.setIsWaveComplete(false);
+        stage.addChild(arenaBirdsContainer);
+        stage.addEventListener("click", shootProjectile);
+        //increase bird generation
+        birdDelay -= 100;
+        birdTimer = window.setInterval(onAddBird, birdDelay);
+        clearTimeout(waveInterval);
+    }, 3000);
 
 }
 

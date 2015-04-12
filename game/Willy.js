@@ -4,7 +4,7 @@ var Willy = function(stage, assetManager) {
     var isPaused = false;
     var isWillyKilled = false;
     var isDead = false;
-    var lives = 1;
+    var lives;
     var direction = "";
 
     var accuracy = 0;
@@ -28,10 +28,10 @@ var Willy = function(stage, assetManager) {
     this.getLives = function() {
         return lives;
     };
-    this.setLives = function(value) {
-        lives = value;
-        isKilled = true;
-    };
+    // this.setLives = function(value) {
+    //     lives = value;
+    //     isKilled = true;
+    // };
     this.decreaseLivesCount = function(value) {
         lives -= 1;
     };
@@ -90,7 +90,7 @@ var Willy = function(stage, assetManager) {
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
         arrowCount = 0;
-        lives = 1;
+        lives = 3;
         isWillyKilled = false;
         isDead = false;
         accuracy = 0;
