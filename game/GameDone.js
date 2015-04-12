@@ -14,9 +14,9 @@ var stage = null;
 var canvas = null;
 var mousePointer, mouseX, mouseY;
 
-// Keys
-var downKey, upKey, leftKey, rightKey = false;
+// Keys - Directional Variables
 var key;
+var downKey, upKey, leftKey, rightKey = false;
 
 //page variables
 var btnBegin;
@@ -37,13 +37,13 @@ var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, inst
 // ------------------- VISUALS
 
 // --- BACKGROUNDS & ASSETS
+var infoTitle;
 var gameBackground;
 var instructionsBackground;
 
 // menu options
 var newGame, restartText, quitGame, instructions;
 var arrowPointer;
-var infoTitle;
 var developerCredits;
 
 // -- BUTTONS
@@ -59,6 +59,7 @@ var isInstructions, imgSpeech;
 
 // -- GAME OBJECTS
 var cloud, arenaBird, bird, arrow, willy;
+
  // Arrays
 var birds = [];
 var arrows =[];
@@ -71,7 +72,6 @@ var numWave, numLives, numKills, numEnemies, numArrows, numArrowsWilly, numArrow
 var targetNumEnemies;
 //arena assets - bitmapText representives of score
 var numEnemiesText, numWaveText;
-
 
 // ------------------------------------------------------------ event handlers
 function onInit() {
@@ -141,7 +141,7 @@ function onReady(e) {
     spritesheet = assetManager.getSpriteSheet("assets");
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = false;
+    isInstructions = true;
     loadStartScreen();
 }
 function onNewGame(e) {
@@ -154,7 +154,7 @@ function onNewGame(e) {
     isGameOver = false;
     numWave = 1;
     numArrowsWilly = 10;
-    targetNumEnemies = 2;
+    targetNumEnemies = 5;
     numEnemies = targetNumEnemies;
     loadArenaScreen();
 
@@ -195,6 +195,7 @@ function isNotFirstVisitAssets(){
 function onPause(e){
 
     if(!willy.getIsPaused()){
+        stage.removeEventListener("click", shootProjectile);
         //game is paused
         willy.setIsPaused(true);
         clearInterval(birdTimer);
@@ -309,7 +310,7 @@ function loadStartScreen(){
     willy.setXPosYPos(295, 490);
 
     //add clouds and backgrounds
-    addBirdsInfoScreen(6);
+    addBirdsInfoScreen(5);
     addCloudsInfoScreen(4);
 
     infoTitle = assetManager.getSprite("assets");
@@ -442,14 +443,16 @@ function loadArenaScreen(){
 
     numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
     if(numEnemies < 20){
-        numEnemies.letterSpacing = 5;
+        numEnemiesText.letterSpacing = 5;
     }
     numEnemiesText.x = 415;
     numEnemiesText.y = 10;
     statsContainer.addChild(numEnemiesText);
 
     numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-    numArrows.letterSpacing = 5;
+    if(willy.getNumArrows() < 20){
+        numArrows.letterSpacing = 5;
+    }
     numArrows.x = 550;
     numArrows.y = 10;
     statsContainer.addChild(numArrows);
@@ -538,7 +541,7 @@ function loadGameOverScreen(){
 
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     if(numWave< 20){
-        numWave.letterSpacing = 5;
+        numWaveText.letterSpacing = 5;
     }
     numWaveText.x = 160;
     numWaveText.y = 260;
@@ -717,20 +720,16 @@ function increaseWave(){
     clearInterval(birdTimer);
     clearInterval(isArrowsInterval);
     clearInterval(isArrowsInfoTitleInterval);
-    //remove the birds in the array from the stage
-    downKey = false;
-    upKey = false;
-    leftKey = false;
-    rightKey = false;
+
     infoTitle = assetManager.getSprite("assets");
     infoTitle.gotoAndStop("waveComplete");
     infoTitle.x = 225;
     infoTitle.y = 200;
     stage.addChild(infoTitle);
 
-     //increase number of arrows willy has at his disposal - update stats bar
-     numArrowsWilly = numArrowsWilly + 5;
-     willy.setNumArrows(numArrowsWilly);
+    //increase number of arrows willy has at his disposal - update stats bar
+    numArrowsWilly = numArrowsWilly + 5;
+    willy.setNumArrows(numArrowsWilly);
     statsContainer.removeChild(numArrows);
     numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
     if(willy.getNumArrows() < 20){
@@ -858,7 +857,7 @@ function addCloudsArenaScreen(numClouds){
 function addBirdsInfoScreen(numBirds){
     infoBirdCount = 1;
     // set interval
-    infoBirdInterval = setInterval(addInfoBird, 2500);
+    infoBirdInterval = setInterval(addInfoBird, 3000);
     function addInfoBird() {
         if(infoBirdCount <= numBirds){
             var bird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy);
@@ -902,7 +901,7 @@ function onTick(e) {
         statsContainer.removeChild(numEnemiesText);
         numEnemiesText = new createjs.BitmapText(numEnemies.toString(), spritesheet);
         if(numEnemies < 20){
-            numEnemies.letterSpacing = 5;
+            numEnemiesText.letterSpacing = 5;
         }
         numEnemiesText.x = 415;
         numEnemiesText.y = 10;
