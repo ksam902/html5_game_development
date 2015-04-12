@@ -1,27 +1,10 @@
 // Cloud Class
 var Cloud = function(stage, cloudContainer, assetManager) {
     // initialization
-    var xPos;
-    var yPos;
     var rdmCloud;
-    var cloudHeight;
-    // to keep track of scope
-    var myScope = this;
-
     //get cloud
     var clip = assetManager.getSprite("assets");
 
-    // ---------------------------------------------- get/set methods
-    this.resetMe = function() {
-        //clip.gotoAndStop("cloud1");
-    };
-    // ---------------------------------------------- public methods
-    this.setupMe = function(){
-
-    };
-    this.onStartScreen = function(){
-
-    };
     // ---------------------------------------------- private methods
     this.getInfoScreenClouds = function(){
         rdmCloud = getRandomCloud();

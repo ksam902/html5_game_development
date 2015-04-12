@@ -1,22 +1,18 @@
 //Class for Bird
 var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy, arrow) {
     // initialization
-    var xPos;
-    var yPos;
     var birdCount = 0;
     var isKilled;
-    // to keep track of scope
-    var myScope = this;
 
+    //collision testing
     collisionMethod = ndgmr.checkPixelCollision;
     window.alphaThresh = 0.75;
-
-    //get willy
-    var willyClip = willy.getClip();
 
     //get bird
     var clip = assetManager.getSprite("assetsCharacters");
     var clipMover = new MoverDiagonal(clip, stage);
+    //get willy
+    var willyClip = willy.getClip();
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return clip;
@@ -164,7 +160,7 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
 
         if(clip.x > stage.canvas.width){
             //if bird is off screen, remove bird from stage
-            stage.removeChild(clip);
+            arenaBirdsContainer.removeChild(clip);
         }else{;
            clip.x ++;
         }

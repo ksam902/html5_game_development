@@ -185,40 +185,56 @@ function onReady(e) {
     spritesheet = assetManager.getSpriteSheet("assets");
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = false;
+    isInstructions = true;
     loadStartScreen();
 }
 function onNewGame(e) {
 
     // RESET Game Variables
+    downKey = false;
+    upKey = false;
+    leftKey = false;
+    rightKey = false;
     isGameOver = false;
     numWave = 1;
-    //state game with 10 arrows
     numArrowsWilly = 10;
-    //start game with 10 enemies
     targetNumEnemies = 2;
-    // decrease numEnemies each kill - at the start of a wave the numEnemies is set to the new targetNumEnemies
     numEnemies = targetNumEnemies;
-    //Generate birds right away if the player has restarted
-    if(!isInstructions){
+    loadArenaScreen();
+
+}
+function isNotFirstVisitAssets(){
+        document.addEventListener("keydown", keyDownMove);
+        document.addEventListener("keyup", keyUpMove);
+
         // construct and setup birdTimer to drop birds on displaylist
         birdDelay = 2000;
         birdTimer = window.setInterval(onAddBird, birdDelay);
-    }
-    loadArenaScreen();
 
-    // --- SHOOTING FUNCTION - Mouse Pointer ----
-    //delay shooting ability by half a second - will prevent arrow from being fired when the arena intially loads
-    shootInterval = setTimeout(function(){
-        stage.addEventListener("click", function(e) {
-            mouseX = Math.floor(e.stageX);
-            mouseY = Math.floor(e.stageY);
-        });
-        stage.addEventListener("click", shootProjectile);
-        clearTimeout(shootInterval);
-    }, 500);
+        // add pause button right away
+        btnPause = assetManager.getSprite("assets");
+        btnPause.x = 500;
+        btnPause.y = 515;
+        btnPause.gotoAndStop("btnPause");
+        statsContainer.addChild(btnPause);
+
+        // setup event listener to go to pause screen
+        btnPause.addEventListener("click", onPause);
+        //let willy move right away
+        document.addEventListener("keydown", keyDownMove);
+        document.addEventListener("keyup", keyUpMove);
+
+        // --- SHOOTING FUNCTION - Mouse Pointer ----
+        //delay shooting ability by half a second - will prevent arrow from being fired when the arena intially loads
+        shootInterval = setTimeout(function(){
+            stage.addEventListener("click", function(e) {
+                mouseX = Math.floor(e.stageX);
+                mouseY = Math.floor(e.stageY);
+            });
+            stage.addEventListener("click", shootProjectile);
+            clearTimeout(shootInterval);
+        }, 500);
 }
-
 
 function onPause(e){
 
@@ -302,8 +318,12 @@ function loadStartScreen(){
     document.removeEventListener("keydown", onKeyDownArenaScreen);
     document.removeEventListener("keydown", keyDownMove);
     document.removeEventListener("keyup", keyUpMove);
+    stage.removeEventListener("click", shootProjectile);
     // prevent any movement
-    downKey, upKey, leftKey, rightKey = false;
+    downKey = false;
+    upKey = false;
+    leftKey = false;
+    rightKey = false;
 
     // clear the stage and all of the containers
     stage.removeAllChildren();
@@ -333,7 +353,7 @@ function loadStartScreen(){
     willy.setXPosYPos(295, 490);
 
     //add clouds and backgrounds
-    addBirdsInfoScreen(3);
+    addBirdsInfoScreen(6);
     addCloudsInfoScreen(4);
 
     gameTitle = assetManager.getSprite("assets");
@@ -381,10 +401,11 @@ function loadArenaScreen(){
     document.removeEventListener("keydown", onKeyDownInstructions);
     document.removeEventListener("keydown", onKeyDownGameOverScreen);
     document.addEventListener("keydown", onKeyDownArenaScreen);
-    document.addEventListener("keydown", keyDownMove);
-    document.addEventListener("keyup", keyUpMove);
     // prevent any movement
-    downKey, upKey, leftKey, rightKey = false;
+    downKey = false;
+    upKey = false;
+    leftKey = false;
+    rightKey = false;
     //remove and reset assets
     stage.removeAllChildren();
     cloudContainer.removeAllChildren();
@@ -442,33 +463,10 @@ function loadArenaScreen(){
          instArrowInterval = setTimeout(function(){
             instructionContainer.removeAllChildren();
             clearInterval(instArrowInterval);
-            //now start generating birds
-            birdDelay = 2000;
-            birdTimer = window.setInterval(onAddBird, birdDelay);
-            // add pause button
-            btnPause = assetManager.getSprite("assets");
-            btnPause.x = 500;
-            btnPause.y = 515;
-            btnPause.gotoAndStop("btnPause");
-            statsContainer.addChild(btnPause);
-            // setup event listener to go to pause screen
-            btnPause.addEventListener("click", onPause);
-            //delay willy movement
-            document.addEventListener("keydown", keyDownMove);
-            document.addEventListener("keyup", keyUpMove);
+            isNotFirstVisitAssets();
         }, 12000);
     }else{
-        // add pause button right away
-        btnPause = assetManager.getSprite("assets");
-        btnPause.x = 500;
-        btnPause.y = 515;
-        btnPause.gotoAndStop("btnPause");
-        statsContainer.addChild(btnPause);
-        // setup event listener to go to pause screen
-        btnPause.addEventListener("click", onPause);
-        //let willy move right away
-        document.addEventListener("keydown", keyDownMove);
-        document.addEventListener("keyup", keyUpMove);
+        isNotFirstVisitAssets();
     }
 
     // -- Stats Assets
@@ -532,6 +530,9 @@ function loadGameOverScreen(){
     document.removeEventListener("keydown", onKeyDownArenaScreen);
     document.removeEventListener("keydown", keyDownMove);
     document.removeEventListener("keyup", keyUpMove);
+    stage.removeEventListener("click", shootProjectile);
+    // prevent any movement
+    downKey, upKey, leftKey, rightKey = false;
     //play game over sound
     createjs.Sound.play("gameOver");
     //remove all assets and intervals
@@ -548,7 +549,7 @@ function loadGameOverScreen(){
     stage.addChild(cloudContainer);
     stage.addChild(infoBirdContainer);
     addCloudsInfoScreen(4);
-    addBirdsInfoScreen(4);
+    addBirdsInfoScreen(6);
 
     arrowPointer = assetManager.getSprite("assets");
     arrowPointer.x = 200;
@@ -804,7 +805,7 @@ function increaseWave(){
 function addCloudsInfoScreen(numClouds){
     infoCloudCount = 1;
     // set interval
-    infoCloudInterval = setInterval(addInfoCloud, 6000);
+    infoCloudInterval = setInterval(addInfoCloud, 4000);
     function addInfoCloud() {
         if(infoCloudCount <= numClouds){
             var cloud = new Cloud(stage, cloudContainer, assetManager);
@@ -835,7 +836,7 @@ function addCloudsArenaScreen(numClouds){
 function addBirdsInfoScreen(numBirds){
     infoBirdCount = 1;
     // set interval
-    infoBirdInterval = setInterval(addInfoBird, 4000);
+    infoBirdInterval = setInterval(addInfoBird, 2500);
     function addInfoBird() {
         if(infoBirdCount <= numBirds){
             var bird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy);
@@ -868,6 +869,7 @@ function shootProjectile(){
         createjs.Sound.play("shootArrow");
 
         willy.decreaseNumArrows();
+        willy.increaseArrowCount();
         statsContainer.removeChild(numArrows);
         numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
         if(willy.getNumArrows() < 20){
@@ -880,11 +882,12 @@ function shootProjectile(){
         arrow = new Projectile(stage, assetManager);
         arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
         arrows.push(arrow);
-        willy.increaseArrowCount();
         //check for depleted arrows
     if (willy.getNumArrows() === 0){
         // Willy has no more arrows
         stage.removeEventListener("click", shootProjectile);
+        //remove pause button
+        statsContainer.removeChild(btnPause);
         //allow time for last arrow shot to play out
         isArrowsDepleted = setTimeout(function(){
             infoTitle = assetManager.getSprite("assets");
@@ -936,6 +939,11 @@ function onTick(e) {
         statsContainer.addChild(numEnemiesText);
         willy.setIsBirdKilled(false);
     }else if(willy.getIsWillyKilled()){
+        downKey = false;
+        upKey = false;
+        leftKey = false;
+        rightKey = false;
+        //play willy dies sound
         createjs.Sound.play("willyDies");
         willy.decreaseLivesCount();
         statsContainer.removeChild(numLives);
