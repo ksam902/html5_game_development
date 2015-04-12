@@ -591,11 +591,11 @@ function onKeyDownStartScreen(e) {
     // keystroke for "P" Button activating the menu screen
     if (e.keyCode == 78) onNewGame();
     if (e.keyCode == 73) onInstructions();
-    if(e.keyCode == "38"){
+    if(e.keyCode == "38" || e.keyCode == "87"){
         //direction = "up";
         arrowPointer.y = 339;
         e.preventDefault();
-    } else if(e.keyCode == "40"){
+    } else if(e.keyCode == "40" || e.keyCode == "83"){
         //direction = "down";
         arrowPointer.y = 380;
         e.preventDefault();
@@ -624,7 +624,7 @@ function onKeyDownArenaScreen(e) {
 }
 function onKeyDownGameOverScreen(e) {
 
-    if(e.keyCode == "38"){
+    if(e.keyCode == "38" || e.keyCode == "87"){
         //direction = "up";
         switch(arrowPointer.y){
             case 425:
@@ -637,7 +637,7 @@ function onKeyDownGameOverScreen(e) {
                 break;
         }
         e.preventDefault();
-    } else if(e.keyCode == "40"){
+    } else if(e.keyCode == "40" || e.keyCode == "83"){
         //direction = "down";
         switch(arrowPointer.y){
             case 339:
