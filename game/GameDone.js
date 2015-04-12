@@ -30,10 +30,10 @@ var willyInfo;
 var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
 
 // ---- BOOLEANS
-var isGameOver, isArrowsInfoTitleInterval, isArrowsGone;
+var isGameOver;
 
 // --- INTERVALS
-var infoCloudInterval, infoBirdInterval, arenaCloudInterval, shootInterval, isArrowsInterval, instMoveInterval, instAimInterval, instArrowInterval;
+var infoCloudInterval, infoBirdInterval, arenaCloudInterval, shootInterval, isArrowsInterval, isArrowsInfoTitleInterval, instMoveInterval, instAimInterval, instArrowInterval;
 
 // --- CONTAINERS
 var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, instructionContainer, mousePointerContainer;
@@ -65,15 +65,13 @@ var targetNumEnemies;
 //arena assets - bitmapText representives of score
 var numEnemiesText, numWaveText;
 
-// game objects
-
+// -- GAME OBJECTS
 var arenaBird;
 var bird = null;
 var birds=[];
 
 var birdDelay;
 var birdTimer;
-var birdsShot;
 var willy = null;
 var cloud;
 var arrow = null;
@@ -160,7 +158,6 @@ function onNewGame(e) {
     leftKey = false;
     rightKey = false;
     isGameOver = false;
-    isArrowsGone = false;
     numWave = 1;
     numArrowsWilly = 10;
     targetNumEnemies = 2;
@@ -505,6 +502,7 @@ function loadGameOverScreen(){
     createjs.Sound.play("gameOver");
     //remove all assets and intervals
     stage.removeAllChildren();
+    statsContainer.removeAllChildren();
     cloudContainer.removeAllChildren();
     clearInterval(arenaCloudInterval);
     arenaBirdsContainer.removeAllChildren();
@@ -543,6 +541,7 @@ function loadGameOverScreen(){
     stage.addChild(quitGame);
     // setup event listener to Quit Game
     quitGame.addEventListener("click", onQuitGame);
+
 
     numWaveText = new createjs.BitmapText(numWave.toString(), spritesheet);
     if(numWave< 20){
@@ -717,7 +716,6 @@ function increaseWave(){
             //play wave complete sound
             createjs.Sound.play("waveComplete");
             willy.setIsWaveComplete(true);
-            isArrowsGone = false;
             clearInterval(isArrowsInterval);
             clearInterval(isArrowsInfoTitleInterval);
             //remove the birds in the array from the stage
@@ -772,26 +770,25 @@ function increaseWave(){
 // --------- END WAVE --------
 // --------- MOUSE EVENTS --------
 function shootProjectile(){
-        //play sound
-        createjs.Sound.play("shootArrow");
+    //play sound
+    createjs.Sound.play("shootArrow");
 
-        willy.decreaseNumArrows();
-        willy.increaseArrowCount();
-        statsContainer.removeChild(numArrows);
-        numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
-        if(willy.getNumArrows() < 20){
-            numArrows.letterSpacing = 5;
-        }
-        numArrows.x = 550;
-        numArrows.y = 10;
-        statsContainer.addChild(numArrows);
-        // add arrow on mouse click to the stage
-        arrow = new Projectile(stage, assetManager);
-        arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
-        arrows.push(arrow);
+    willy.decreaseNumArrows();
+    willy.increaseArrowCount();
+    statsContainer.removeChild(numArrows);
+    numArrows = new createjs.BitmapText(willy.getNumArrows().toString(), spritesheet);
+    if(willy.getNumArrows() < 20){
+        numArrows.letterSpacing = 5;
+    }
+    numArrows.x = 550;
+    numArrows.y = 10;
+    statsContainer.addChild(numArrows);
+    // add arrow on mouse click to the stage
+    arrow = new Projectile(stage, assetManager);
+    arrow.setupMe(mouseX, mouseY, willy.getWillyX(), willy.getWillyY());
+    arrows.push(arrow);
 
-
-        //check for depleted arrows
+    //check for depleted arrows
     if (willy.getNumArrows() === 0){
         // Willy has no more arrows
         stage.removeEventListener("click", shootProjectile);
@@ -928,6 +925,9 @@ function onTick(e) {
         statsContainer.addChild(numLives);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
+            //prevent depleted arrow title from appearing if WIlly dies after last shot and before game over
+            clearInterval(isArrowsInterval);
+            clearInterval(isArrowsInfoTitleInterval);
             loadGameOverScreen();
         }
     }else if(!willy.getIsPaused()){
