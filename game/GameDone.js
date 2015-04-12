@@ -1,11 +1,27 @@
+// ------------------- GLOBALS
+
+// frame rate of game
+var frameRate = 30;
+
+//collision detection
+collisionMethod = ndgmr.checkPixelCollision;
+window.alphaThresh = 0.75;
+
+// game variables & assets
+var spritesheet;
+var stage = null;
+var canvas = null;
+var mousePointer;
+
+// Keys
+var downKey, upKey, leftKey, rightKey = false;
+var key;
+
 //page variables
 var btnBegin;
-var infoCloudCount;
-var infoBirdCount;
-var arenaCloudCount;
+var infoCloudCount, infoBirdCount, arenaCloudCount;
 
-var mouseX;
-var mouseY;
+var mouseX, mouseY;
 var willyInfo;
 
 
@@ -16,28 +32,16 @@ var shootSound, willyDeathSound, birdDeathSound, waveSound, gameOverSound;
 var infoCloudInterval, infoBirdInterval, arenaCloudInterval, instMoveInterval, instAimInterval, instArrowInterval;
 
 // --- CONTAINERS
-var cloudContainer, infoBirdContainer;
-
+var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, instructionContainer, mousePointerContainer;
 
 // ------------------- VISUALS
+
 // --- SPEECH
-var isInstructions, instructionContainer,  imgSpeech;
+var isInstructions, imgSpeech;
 
+// -- BUTTONS
+var btnPause, btnThanks;
 
-
-// game variables
-var stage = null;
-var canvas = null;
-var mousePointer;
-// Keys
-var downKey = false;
-var upKey = false;
-var leftKey = false;
-var rightKey = false;
-var key;
-
-// frame rate of game
-var frameRate = 30;
 
 
 
@@ -47,7 +51,7 @@ var assetManager = null;
 var arenaBird;
 var bird = null;
 var birds=[];
-var arenaBirdsContainer;
+
 var birdDelay;
 var birdTimer;
 var birdsShot;
@@ -77,8 +81,8 @@ var arrowsText;
 var arrowsNumText;
 
 //------game arena stats
-var statsContainer;
-var spritesheet;
+
+
 var imgStatsBar;
 var imgWave;
 var numWave;
@@ -107,16 +111,12 @@ var newGame;
 var resumeGame;
 var quitGame;
 var instructions;
-var btnPause;
-var btnThanks;
 var developerCredits;
 
 var direction;
 //Gameplay Booleans
 var isGameOver;
-//collision detection
-collisionMethod = ndgmr.checkPixelCollision;
-window.alphaThresh = 0.75;
+
 
 
 
@@ -134,6 +134,9 @@ function onInit() {
     cloudContainer = new createjs.Container();
     infoBirdContainer = new createjs.Container();
     arenaBirdsContainer = new createjs.Container();
+    statsContainer = new createjs.Container();
+    instructionContainer = new createjs.Container();
+    mousePointerContainer = new createjs.Container();
 
     // construct preloader object to load spritesheet and sound assets
     assetManager = new AssetManager();
@@ -142,6 +145,7 @@ function onInit() {
     // load the assets
     assetManager.loadAssets(manifest);
     btnBegin = document.getElementById("btnBegin");
+    //disable the button until the game is loaded
     btnBegin.disabled = true;
 
     //sounds
@@ -154,14 +158,11 @@ function onInit() {
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
-
+// CALLED WHEN ALL ASSETS ARE LOADED
 function onReady(e) {
-
-    // Adding aimer for the mouse
-    mousePointer = assetManager.getSprite("assets");
-    mousePointer.gotoAndStop("mousePointer");
-    canvas.addEventListener("mouseenter", addMousePointer);
-    canvas.addEventListener("mouseout", removeMousePointer);
+    // kill event listener
+    stage.removeEventListener("onAssetLoaded", onProgress);
+    stage.removeEventListener("onAllAssetsLoaded", onReady);
 
     //enable the begin button when the game is ready
     btnBegin.disabled = false;
@@ -173,15 +174,11 @@ function onReady(e) {
         btnBegin.disabled = true;
     });
 
-    //clear stage
-    stage.removeAllChildren();
-    // kill event listener
-    stage.removeEventListener("onAssetLoaded", onProgress);
-    stage.removeEventListener("onAllAssetsLoaded", onReady);
-
-    //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = true;
-    loadStartScreen();
+    // Adding aimer for the mouse
+    mousePointer = assetManager.getSprite("assets");
+    mousePointer.gotoAndStop("mousePointer");
+    canvas.addEventListener("mouseenter", addMousePointer);
+    canvas.addEventListener("mouseout", removeMousePointer);
 
      // setup event listeners for keyboard keys
     document.addEventListener("keydown", onKeyDownStartScreen);
@@ -191,6 +188,10 @@ function onReady(e) {
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
     createjs.Ticker.addEventListener("tick", onTick);
+
+    //FIRST TIME VISIT - isInstructions should = true
+    isInstructions = false;
+    loadStartScreen();
 }
 function onNewGame(e) {
 
@@ -205,7 +206,7 @@ function onNewGame(e) {
 
     // RESET Game Variables
     spritesheet = assetManager.getSpriteSheet("assets");
-    statsContainer = new createjs.Container();
+
     stage.addChild(statsContainer);
     isGameOver = false;
     numWave = 1;
@@ -300,29 +301,27 @@ function onPause(e){
         infoTitle.y = 175;
         stage.addChild(infoTitle);
         stage.removeEventListener("click", shootProjectile);
-        stage.removeChild(btnPause);
+        statsContainer.removeChild(btnPause);
         btnPause = assetManager.getSprite("assets");
         btnPause.x = 500;
         btnPause.y = 515;
         btnPause.gotoAndStop("btnResume");
         // setup event listener to go to pause screen
         btnPause.addEventListener("click", onPause);
-        stage.addChild(btnPause);
-        addMousePointer();
+        statsContainer.addChild(btnPause);
     }else{
         //game is playing
         willy.setIsPaused(false);
         birdTimer = window.setInterval(onAddBird, birdDelay);
         stage.removeChild(infoTitle);
-        stage.removeChild(btnPause);
+        statsContainer.removeChild(btnPause);
         btnPause = assetManager.getSprite("assets");
         btnPause.x = 500;
         btnPause.y = 515;
         btnPause.gotoAndStop("btnPause");
         // setup event listener to go to pause screen
         btnPause.addEventListener("click", onPause);
-        stage.addChild(btnPause);
-        addMousePointer();
+        statsContainer.addChild(btnPause);
         shootInterval = setTimeout(function(){
             stage.addEventListener("click", shootProjectile);
             clearTimeout(shootInterval);
@@ -353,25 +352,26 @@ function onInstructions(e){
         stage.removeChild(instructionsBackground);
         stage.removeChild(btnThanks);
     });
+    // always add aimer last
+    removeMousePointer()
     addMousePointer();
-}
-function onPauseHover(e){
-    stage.removeChild("btnPause");
+    stage.addChild(mousePointerContainer);
 }
 function addMousePointer(){
     $( "#stage" ).mousemove(function( event ) {
         mousePointer.x = stage.mouseX - 20;
         mousePointer.y = stage.mouseY - 20;
     });
-    stage.addChild(mousePointer);
+    mousePointerContainer.addChild(mousePointer);
 }
 function removeMousePointer(){
-    stage.removeChild(mousePointer);
+    mousePointerContainer.removeChild(mousePointer);
 }
 // --------- LOAD SCREEN ASSETS --------
 
 function loadStartScreen(){
 
+    // clear the stage and all of the containers
     stage.removeAllChildren();
     infoBirdContainer.removeAllChildren();
     cloudContainer.removeAllChildren();
@@ -436,7 +436,10 @@ function loadStartScreen(){
     developerCredits.gotoAndStop("developerText");
     stage.addChild(developerCredits);
 
+    // always add aimer last
+    removeMousePointer()
     addMousePointer();
+    stage.addChild(mousePointerContainer);
 }
 function loadArenaScreen(){
     //remove and reset assets
@@ -457,7 +460,7 @@ function loadArenaScreen(){
 
     //IF NEW GAME
     if(isInstructions){
-        instructionContainer = new createjs.Container();
+
         imgSpeech = assetManager.getSprite("assetsCharacters");
         imgSpeech.x = 100;
         imgSpeech.y = 250;
@@ -495,7 +498,7 @@ function loadArenaScreen(){
             btnPause.x = 500;
             btnPause.y = 515;
             btnPause.gotoAndStop("btnPause");
-            stage.addChild(btnPause);
+            statsContainer.addChild(btnPause);
             // setup event listener to go to pause screen
             btnPause.addEventListener("click", onPause);
             //delay willy movement
@@ -508,7 +511,7 @@ function loadArenaScreen(){
         btnPause.x = 500;
         btnPause.y = 515;
         btnPause.gotoAndStop("btnPause");
-        stage.addChild(btnPause);
+        statsContainer.addChild(btnPause);
         // setup event listener to go to pause screen
         btnPause.addEventListener("click", onPause);
         //let willy move right away
@@ -571,7 +574,10 @@ function loadArenaScreen(){
 
     stage.addChild(developerCredits);
 
+    // always add aimer last
+    removeMousePointer()
     addMousePointer();
+    stage.addChild(mousePointerContainer);
 }
 function loadGameOverScreen(){
     //play game over sound
@@ -654,7 +660,11 @@ function loadGameOverScreen(){
 
     stage.addChild(developerCredits);
 
+    // always add aimer last
+    removeMousePointer()
     addMousePointer();
+    stage.addChild(mousePointerContainer);
+
 }
 // --------- END LOAD SCREEN ASSETS --------
 // --------- SCREEN KEYDOWN FUNCTIONS --------
@@ -718,7 +728,7 @@ function onKeyDownGameOverScreen(e) {
         onInstructions();
     }
     if(e.keyCode == "13" && arrowPointer.y === 425){
-        onNewGame();
+        onReady();
     }
 }
 // --------- END KEYDOWN FUNCTIONS --------
