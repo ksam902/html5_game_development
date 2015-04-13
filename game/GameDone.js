@@ -109,7 +109,7 @@ function onInit() {
     createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = false;
+    isInstructions = true;
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -579,7 +579,7 @@ function loadGameOverScreen(){
     stage.addChild(accuracy);
 
     imgRipWilly = assetManager.getSprite("assetsCharacters");
-    imgRipWilly.x = 260;
+    imgRipWilly.x = 255;
     imgRipWilly.y = 475;
     imgRipWilly.gotoAndStop("rip_willy");
     stage.addChild(imgRipWilly);
