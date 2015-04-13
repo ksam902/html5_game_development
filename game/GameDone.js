@@ -35,6 +35,7 @@ var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, inst
 
 // --- BACKGROUNDS & ASSETS
 var infoTitle;
+var imgRipWilly;
 var gameBackground;
 var instructionsBackground;
 
@@ -108,7 +109,7 @@ function onInit() {
     createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = true;
+    isInstructions = false;
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -549,7 +550,7 @@ function loadGameOverScreen(){
     if(numWave< 20){
         numWaveText.letterSpacing = 5;
     }
-    numWaveText.x = 160;
+    numWaveText.x = 150;
     numWaveText.y = 260;
     stage.addChild(numWaveText);
 
@@ -576,6 +577,18 @@ function loadGameOverScreen(){
     accuracy.x = 560;
     accuracy.y = 259;
     stage.addChild(accuracy);
+
+    imgRipWilly = assetManager.getSprite("assetsCharacters");
+    imgRipWilly.x = 260;
+    imgRipWilly.y = 475;
+    imgRipWilly.gotoAndStop("rip_willy");
+    stage.addChild(imgRipWilly);
+
+    imgSpeech = assetManager.getSprite("assetsCharacters");
+    imgSpeech.x = 320;
+    imgSpeech.y = 435;
+    imgSpeech.gotoAndStop("rip_willy_speech");
+    stage.addChild(imgSpeech);
 
     stage.addChild(developerCredits);
 
