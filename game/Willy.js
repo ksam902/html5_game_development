@@ -86,7 +86,7 @@ var Willy = function(stage, assetManager) {
     this.resetMe = function() {
         clip.gotoAndStop("wormAlive");
         arrowCount = 0;
-        lives = 1;
+        lives = 3;
         isWillyKilled = false;
         isDead = false;
         accuracy = 0;
