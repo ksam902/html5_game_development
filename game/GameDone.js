@@ -122,7 +122,7 @@ function onReady(e) {
     //enable the begin button when the game is ready
     btnBegin.disabled = false;
     $('#btnBegin').click(function(){
-        //$("div#main").fadeIn(800);
+        $("div#main").fadeIn(800);
         $('html, body').animate({
             scrollTop: $("#main").offset().top
         }, 750);
@@ -786,6 +786,8 @@ function increaseWave(){
 // --------- END WAVE --------
 // --------- MOUSE EVENTS --------
 function shootProjectile(){
+    console.log("SHOOT");
+
     //play sound
     createjs.Sound.play("shootArrow");
 
@@ -891,7 +893,6 @@ function onAddBird(e) {
     arenaBird = new Bird(stage, infoBirdContainer, arenaBirdsContainer, assetManager, willy, arrows);
     arenaBird.setupMe();
     birds.push(arenaBird);
-    console.log("BIRD ADDED : " + birdDelay);
 }
 // --------- END BIRDS --------
 

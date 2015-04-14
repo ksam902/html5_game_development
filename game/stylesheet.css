@@ -19,7 +19,7 @@ button#btnBegin {
 
 }
 #main{
-    /*display: none;*/
+    display: none;
     background-color: #2C2C2C;
     color: #FFFFFF;
     border-radius: 15px;
@@ -34,7 +34,7 @@ button#btnBegin {
     overflow-x: hidden;
 }
 #stage{
-    width:600px;
+    width:100%;
     height:600px;
     margin-left: auto;
     margin-right: auto;
