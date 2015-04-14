@@ -33,7 +33,7 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
     this.setupMe = function() {
         isKilled = false;
         // random selection of speed of bird
-        clipMover.setSpeed(getRandomNum(2,6));
+        clipMover.setSpeed(getRandomNum(2,7));
 
         // get bounds of sprite so we can determine width / height
         var dimensions = clip.getBounds();

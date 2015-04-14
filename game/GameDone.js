@@ -502,8 +502,6 @@ function loadGameOverScreen(){
     stage.removeEventListener("click", shootProjectile);
     // prevent any movement
     downKey, upKey, leftKey, rightKey = false;
-    //play game over sound
-    createjs.Sound.play("gameOver");
     //remove all assets and intervals
     stage.removeAllChildren();
     statsContainer.removeAllChildren();
@@ -942,6 +940,8 @@ function onTick(e) {
         statsContainer.addChild(numLives);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
+            //play game over sound
+            createjs.Sound.play("gameOver");
             //prevent depleted arrow title from appearing if WIlly dies after last shot and before game over
             clearInterval(isArrowsInterval);
             clearInterval(isArrowsInfoTitleInterval);
