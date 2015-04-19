@@ -21,16 +21,12 @@ var downKey, upKey, leftKey, rightKey = false;
 //page variables
 var btnBegin;
 var infoCloudCount, infoBirdCount, arenaCloudCount;
-
 // ---- BOOLEANS
 var isGameOver;
-
 // --- INTERVALS
-var infoCloudInterval, infoBirdInterval, arenaCloudInterval, shootInterval, isArrowsInterval, isArrowsInfoTitleInterval, instMoveInterval, instAimInterval, instArrowInterval;
-
+var infoCloudInterval, infoBirdInterval, arenaCloudInterval, shootInterval, isArrowsInterval, isArrowsInfoTitleInterval, instMoveInterval, instAimInterval, instArrowInterval, instStatsInterval;
 // --- CONTAINERS
 var cloudContainer, infoBirdContainer, arenaBirdsContainer, statsContainer, instructionContainer, mousePointerContainer;
-
 // ------------------- VISUALS
 
 // --- BACKGROUNDS & ASSETS
@@ -38,20 +34,16 @@ var infoTitle;
 var imgRipWilly;
 var gameBackground;
 var instructionsBackground;
-
 // menu options
 var newGame, restartText, quitGame, instructions;
 var arrowPointer;
 var developerCredits;
-
 // -- BUTTONS
 var btnPause, btnThanks;
-
 // -- STATS
 var imgStatsBar, imgWave;
-
 // --- SPEECH
-var isInstructions, imgSpeech;
+var isInstructions, imgSpeech, imgStatsInstructions;
 
 // -- NUMBER GAMEPLAY VARIABLES
 
@@ -105,7 +97,6 @@ function onInit() {
     createjs.Sound.registerSound("sounds/bird_dead.ogg", "birdDies");
     createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
     createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
-    createjs.Sound.registerSound("sounds/willy_talk.ogg", "willy_talk");
     createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
 
     //FIRST TIME VISIT - isInstructions should = true
@@ -423,10 +414,27 @@ function loadArenaScreen(){
             clearInterval(instAimInterval);
         }, 7500);
          instArrowInterval = setTimeout(function(){
-            instructionContainer.removeAllChildren();
-            clearInterval(instArrowInterval);
-            isNotFirstVisitAssets();
+            //play sound
+            createjs.Sound.play("willy_talks");
+            instructionContainer.removeChild(imgSpeech);
+            imgSpeech = assetManager.getSprite("assetsCharacters");
+            imgSpeech.x = 315;
+            imgSpeech.y = 225;
+            imgSpeech.gotoAndStop("instruc_stats");
+            instructionContainer.addChild(imgSpeech);
+
+            imgStatsInstructions = assetManager.getSprite("assetsCharacters");
+            imgStatsInstructions.x = 20;
+            imgStatsInstructions.y = 75;
+            imgStatsInstructions.gotoAndStop("stats_instruc");
+            instructionContainer.addChild(imgStatsInstructions);
         }, 11500);
+        instStatsInterval = setTimeout(function(){
+            clearInterval(instAimInterval);
+            instructionContainer.removeAllChildren();
+            clearInterval(instStatsInterval);
+            isNotFirstVisitAssets();
+        }, 16500);
     }else{
         isNotFirstVisitAssets();
     }
@@ -439,7 +447,7 @@ function loadArenaScreen(){
     statsContainer.addChild(imgStatsBar);
 
     numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
-    numLives.x = 115;
+    numLives.x = 105;
     numLives.y = 10;
     statsContainer.addChild(numLives);
 
@@ -502,6 +510,8 @@ function loadGameOverScreen(){
     stage.removeEventListener("click", shootProjectile);
     // prevent any movement
     downKey, upKey, leftKey, rightKey = false;
+    //play game over sound
+    createjs.Sound.play("gameOver");
     //remove all assets and intervals
     stage.removeAllChildren();
     statsContainer.removeAllChildren();
@@ -784,7 +794,7 @@ function increaseWave(){
 // --------- END WAVE --------
 // --------- MOUSE EVENTS --------
 function shootProjectile(){
-    console.log("SHOOT");
+    //console.log("SHOOT");
 
     //play sound
     createjs.Sound.play("shootArrow");
@@ -845,7 +855,7 @@ function removeMousePointer(){
 function addCloudsInfoScreen(numClouds){
     infoCloudCount = 1;
     // set interval
-    infoCloudInterval = setInterval(addInfoCloud, 4000);
+    infoCloudInterval = setInterval(addInfoCloud, 6000);
     function addInfoCloud() {
         if(infoCloudCount <= numClouds){
             var cloud = new Cloud(stage, cloudContainer, assetManager);
@@ -935,13 +945,11 @@ function onTick(e) {
         willy.decreaseLivesCount();
         statsContainer.removeChild(numLives);
         numLives = new createjs.BitmapText(willy.getLives().toString(), spritesheet);
-        numLives.x = 115;
+        numLives.x = 105;
         numLives.y = 10;
         statsContainer.addChild(numLives);
         willy.setIsWillyKilled(false);
         if(willy.getLives() === 0 ){
-            //play game over sound
-            createjs.Sound.play("gameOver");
             //prevent depleted arrow title from appearing if WIlly dies after last shot and before game over
             clearInterval(isArrowsInterval);
             clearInterval(isArrowsInfoTitleInterval);

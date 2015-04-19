@@ -1,19 +1,14 @@
 //Class for Arrow
 var Projectile = function(stage, assetManager) {
     // initialization
-    var targetX;
-    var targetY;
-    var angle = 0;
-    var arrowCount = 0;
+    var targetX, targetY, angle, xDisplace, yDisplace;
     var speed = 8;
-    var moving = false;
     // private variables
     var xDisplace = -1;
     var yDisplace = -1;
 
     //get arrow
     var arrow = assetManager.getSprite("assets");
-    //var arrowMover = new MoverDiagonal(arrow, stage);;
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return arrow;
@@ -23,10 +18,10 @@ var Projectile = function(stage, assetManager) {
 
         //placing arrow based on willy's whereabouts
         if(willy.getDirection() == "left"){
-            arrow.x = willyX;
+            arrow.x = willyX - 30;
             arrow.y = willyY + 20;
         }else{
-            arrow.x = willyX;
+            arrow.x = willyX + 30;
             arrow.y = willyY + 20;
         }
         targetX = mouseX - arrow.x;
@@ -54,9 +49,7 @@ var Projectile = function(stage, assetManager) {
     // -------------------------------------------------- event handlers
     function onMove(e) {
         // move sprite
-        if(willy.getIsPaused()){
-
-        }else{
+        if(!willy.getIsPaused()){
             arrow.x = arrow.x + xDisplace;
             arrow.y = arrow.y + yDisplace;
         }

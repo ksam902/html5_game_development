@@ -144,10 +144,10 @@ var Bird = function(stage, infoBirdContainer, arenaBirdsContainer, assetManager,
         stage.removeChild(clip);
         stage.removeChild(willyClip);
         //re-add willy to stage if he had more than 1 life
-        if(willy.getLives()>0){
+        if(willy.getLives() != 0){
             willyClip.gotoAndPlay("wormAlive");
             stage.addChild(willyClip);
-            console.log("Willy killed");
+            //console.log("Willy killed");
         }
     }
     function onInfoMove(e) {

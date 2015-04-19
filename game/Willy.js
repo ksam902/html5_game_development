@@ -1,29 +1,30 @@
 //Class for Willy
 var Willy = function(stage, assetManager) {
-    // initialization
-    var isPaused = false;
-    var isWillyKilled = false;
-    var isDead = false;
-    var lives;
-    var direction = "";
-
-    var accuracy = 0;
-    var arrowCount = 0;
-    var numArrows = 10;
-    var killCount = 0;
-    var isBirdKilled = false;
-    var isWaveComplete;
-    //get Willy
+    // Get Willy
     var clip = assetManager.getSprite("assetsCharacters");
     stage.addChild(clip);
     var clipMover = new MoverDiagonal(clip, stage);
+    // initialization
+    var isPaused, isWillyKilled, isBirdKilled, isWaveComplete = false;
+    // Willy Stats/Info
+    var lives, accuracy, arrowCount, numArrows, killCount, direction;
 
+    // ---------------------------------------------- public methods
+    this.resetMe = function() {
+        clip.gotoAndStop("wormAlive");
+        arrowCount = 0;
+        lives = 3;
+        isWillyKilled = false;
+        accuracy = 0;
+        numArrows = 10;
+        isPaused = false;
+        isWaveComplete = false;
+        //move registration point
+        clip.regX = clip.getBounds().width/4;
+    };
     // ---------------------------------------------- get/set methods
     this.getClip = function() {
         return clip;
-    };
-    this.getDirection = function() {
-        return direction;
     };
     this.getLives = function() {
         return lives;
@@ -49,20 +50,9 @@ var Willy = function(stage, assetManager) {
     this.setKillCount = function(value) {
         killCount = value;
     };
-    this.getArrowCount = function() {
-        return arrowCount;
-    };
-    this.getAccuracy = function() {
-        if(arrowCount > 0){
-            accuracy = Math.floor((killCount/arrowCount)*100);
-        }
-        return accuracy;
-    };
-    this.setAccuracy = function(value){
-        accuracy = value;
-    }
-    this.getIsKilled = function() {
-        return isKilled;
+    // used when setting up Projectile
+    this.getDirection = function() {
+        return direction;
     };
     this.getWillyX = function(){
         return clip.x;
@@ -82,29 +72,24 @@ var Willy = function(stage, assetManager) {
     this.setIsWaveComplete = function(value) {
         isWaveComplete = value;
     };
-    // ---------------------------------------------- public methods
-    this.resetMe = function() {
-        clip.gotoAndStop("wormAlive");
-        arrowCount = 0;
-        lives = 3;
-        isWillyKilled = false;
-        isDead = false;
-        accuracy = 0;
-        numArrows = 10;
-        isPaused = false;
-        isWaveComplete = false;
-        //move registration point
-        clip.regX = clip.getBounds().width/4;
-    };
     //deal with willy's arrow situation
+    this.getArrowCount = function() {
+        return arrowCount;
+    };
+    this.getAccuracy = function() {
+        if(arrowCount > 0){
+            accuracy = Math.floor((killCount/arrowCount)*100);
+        }
+        return accuracy;
+    };
     this.getNumArrows = function(){
         return numArrows;
     }
-    this.decreaseNumArrows = function(){
-        numArrows-=1;
-    }
     this.setNumArrows = function(value){
         numArrows = value;
+    }
+    this.decreaseNumArrows = function(){
+        numArrows-=1;
     }
     this.increaseArrowCount = function(){
         arrowCount+=1;
