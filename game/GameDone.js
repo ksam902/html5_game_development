@@ -19,7 +19,7 @@ var key;
 var downKey, upKey, leftKey, rightKey = false;
 
 //page variables
-var btnBegin;
+// var btnBegin;
 var infoCloudCount, infoBirdCount, arenaCloudCount;
 // ---- BOOLEANS
 var isGameOver;
@@ -87,9 +87,9 @@ function onInit() {
     stage.addEventListener("onAllAssetsLoaded", onReady);
     // load the assets
     assetManager.loadAssets(manifest);
-    btnBegin = document.getElementById("btnBegin");
+    // btnBegin = document.getElementById("btnBegin");
     //disable the button until the game is loaded
-    btnBegin.disabled = true;
+    // btnBegin.disabled = true;
 
     //sounds
     createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
@@ -111,14 +111,14 @@ function onReady(e) {
     stage.removeEventListener("onAllAssetsLoaded", onReady);
 
     //enable the begin button when the game is ready
-    btnBegin.disabled = false;
-    $('#btnBegin').click(function(){
-        $("div#main").fadeIn(800);
-        $('html, body').animate({
-            scrollTop: $("#main").offset().top
-        }, 750);
-        btnBegin.disabled = true;
-    });
+    // btnBegin.disabled = false;
+    // $('#btnBegin').click(function(){
+    //     $("div#main").fadeIn(800);
+    //     $('html, body').animate({
+    //         scrollTop: $("#main").offset().top
+    //     }, 750);
+    //     btnBegin.disabled = true;
+    // });
 
     // Adding aimer for the mouse
     mousePointer = assetManager.getSprite("assets");
@@ -909,7 +909,7 @@ function onAddBird(e) {
 
 function onTick(e) {
     // TESTING FPS
-    document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
+    // document.getElementById("fps").innerHTML = createjs.Ticker.getMeasuredFPS();
 
     if(willy.getIsBirdKilled()){
         //play bird dies sound
@@ -961,4 +961,3 @@ function onTick(e) {
     // update the stage!
     stage.update();
 }
-
