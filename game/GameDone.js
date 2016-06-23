@@ -100,7 +100,7 @@ function onInit() {
     createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
 
     //FIRST TIME VISIT - isInstructions should = true
-    isInstructions = true;
+    isInstructions = false;
 }
 
 function onProgress(e) { console.log("progress: " + assetManager.getProgress());}
@@ -171,6 +171,40 @@ function isNotFirstVisitAssets(){
         document.addEventListener("keydown", keyDownMove);
         document.addEventListener("keyup", keyUpMove);
 
+
+        var stage = document.getElementById('stage');
+
+        stage.oncontextmenu = function() {
+             return false;
+        }
+        var pressOptions = {
+            // event: 'press', //no need to pass defaults
+            // pointer: 1,
+            // threshold: 5,
+            time: 1
+        };
+
+        var canvas1 = new Hammer(stage);
+        var timer = null;
+        canvas1.get('press').set(pressOptions);
+
+        canvas1.on('press', function(ev) {
+            console.log("PRESSS DOWN");
+            timer = setInterval( moveWilly, 100 );
+        });
+
+        canvas1.on('pressup', function(ev) {
+            console.log("PRESS UP");
+            clearInterval( timer );
+        });
+
+        function moveWilly() {
+          if(timer){
+            willy.moveUp();
+          }
+        }
+
+
         // --- SHOOTING FUNCTION - Mouse Pointer ----
         //delay shooting ability by half a second - will prevent arrow from being fired when the arena intially loads
         shootInterval = setTimeout(function(){
@@ -178,7 +212,7 @@ function isNotFirstVisitAssets(){
                 mouseX = Math.floor(e.stageX);
                 mouseY = Math.floor(e.stageY);
             });
-            stage.addEventListener("click", shootProjectile);
+            // stage.addEventListener("click", shootProjectile);
             clearTimeout(shootInterval);
         }, 500);
 }
@@ -219,7 +253,7 @@ function onPause(e){
         btnPause.addEventListener("click", onPause);
         statsContainer.addChild(btnPause);
         shootInterval = setTimeout(function(){
-            stage.addEventListener("click", shootProjectile);
+            // stage.addEventListener("click", shootProjectile);
             clearTimeout(shootInterval);
         }, 500);
     }
@@ -507,7 +541,7 @@ function loadGameOverScreen(){
     document.removeEventListener("keydown", onKeyDownArenaScreen);
     document.removeEventListener("keydown", keyDownMove);
     document.removeEventListener("keyup", keyUpMove);
-    stage.removeEventListener("click", shootProjectile);
+    // stage.removeEventListener("click", shootProjectile);
     // prevent any movement
     downKey, upKey, leftKey, rightKey = false;
     //play game over sound
@@ -782,7 +816,7 @@ function increaseWave(){
         statsContainer.addChild(btnPause);
         willy.setIsWaveComplete(false);
         stage.addChild(arenaBirdsContainer);
-        stage.addEventListener("click", shootProjectile);
+        // stage.addEventListener("click", shootProjectile);
         //increase bird generation
         birdDelay -= 100;
         birdTimer = window.setInterval(onAddBird, birdDelay);

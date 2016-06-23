@@ -25,11 +25,11 @@ body{
     /*margin-left: auto;
     margin-right: auto;*/
 }
-
-#developer-info, #fps {
-    width: 400px;
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
+#stage2{
+    width:100vw;
+    height:100vh;
+    /*margin-left: auto;
+    margin-right: auto;*/
 }
+
+.md-scroll-mask { position: initial;}
