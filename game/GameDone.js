@@ -181,7 +181,7 @@ function isNotFirstVisitAssets(){
             // event: 'press', //no need to pass defaults
             // pointer: 1,
             // threshold: 5,
-            time: 1
+            time: 100
         };
 
         var canvas1 = new Hammer(stage);
@@ -206,8 +206,6 @@ function isNotFirstVisitAssets(){
 
         function moveWilly() {
           if(timer){
-            console.log(mouseX);
-            console.log(mouseY);
             willy.move(mouseX, mouseY);
           }
         }
