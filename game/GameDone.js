@@ -151,25 +151,25 @@ function onNewGame(e) {
 
 }
 function isNotFirstVisitAssets(){
-        document.addEventListener("keydown", keyDownMove);
-        document.addEventListener("keyup", keyUpMove);
-
-        // construct and setup birdTimer to drop birds on displaylist
-        birdDelay = 2000;
-        birdTimer = window.setInterval(onAddBird, birdDelay);
-
-        // add pause button right away
-        btnPause = assetManager.getSprite("assets");
-        btnPause.x = 500;
-        btnPause.y = 515;
-        btnPause.gotoAndStop("btnPause");
-        statsContainer.addChild(btnPause);
-
-        // setup event listener to go to pause screen
-        btnPause.addEventListener("click", onPause);
-        //let willy move right away
-        document.addEventListener("keydown", keyDownMove);
-        document.addEventListener("keyup", keyUpMove);
+        // document.addEventListener("keydown", keyDownMove);
+        // document.addEventListener("keyup", keyUpMove);
+        //
+        // // construct and setup birdTimer to drop birds on displaylist
+        // birdDelay = 2000;
+        // birdTimer = window.setInterval(onAddBird, birdDelay);
+        //
+        // // add pause button right away
+        // btnPause = assetManager.getSprite("assets");
+        // btnPause.x = 500;
+        // btnPause.y = 515;
+        // btnPause.gotoAndStop("btnPause");
+        // statsContainer.addChild(btnPause);
+        //
+        // // setup event listener to go to pause screen
+        // btnPause.addEventListener("click", onPause);
+        // //let willy move right away
+        // document.addEventListener("keydown", keyDownMove);
+        // document.addEventListener("keyup", keyUpMove);
 
 
         var stage = document.getElementById('stage');
@@ -186,10 +186,16 @@ function isNotFirstVisitAssets(){
 
         var canvas1 = new Hammer(stage);
         var timer = null;
+
+        var mouseX;
+        var mouseY;
+
         canvas1.get('press').set(pressOptions);
 
         canvas1.on('press', function(ev) {
             console.log("PRESSS DOWN");
+            mouseX = Math.floor(ev.pointers[0].clientX);
+            mouseY = Math.floor(ev.pointers[0].clientY);
             timer = setInterval( moveWilly, 100 );
         });
 
@@ -200,21 +206,23 @@ function isNotFirstVisitAssets(){
 
         function moveWilly() {
           if(timer){
-            willy.moveUp();
+            console.log(mouseX);
+            console.log(mouseY);
+            willy.move(mouseX, mouseY);
           }
         }
 
 
         // --- SHOOTING FUNCTION - Mouse Pointer ----
         //delay shooting ability by half a second - will prevent arrow from being fired when the arena intially loads
-        shootInterval = setTimeout(function(){
-            stage.addEventListener("click", function(e) {
-                mouseX = Math.floor(e.stageX);
-                mouseY = Math.floor(e.stageY);
-            });
-            // stage.addEventListener("click", shootProjectile);
-            clearTimeout(shootInterval);
-        }, 500);
+        // shootInterval = setTimeout(function(){
+        //     stage.addEventListener("click", function(e) {
+        //         mouseX = Math.floor(e.stageX);
+        //         mouseY = Math.floor(e.stageY);
+        //     });
+        //     // stage.addEventListener("click", shootProjectile);
+        //     clearTimeout(shootInterval);
+        // }, 500);
 }
 
 function onPause(e){

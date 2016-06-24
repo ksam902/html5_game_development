@@ -128,6 +128,19 @@ var Willy = function(stage, assetManager) {
         }
     }
 
+
+
+    this.move = function(mouseX, mouseY){
+      targetX = mouseX - clip.x;
+      targetY = mouseY - clip.y;
+      angle = Math.atan2(targetY, targetX);
+      // clip.rotation = angle * (180/Math.PI);
+      xDisplace = Math.cos(angle) * 8;
+      yDisplace = Math.sin(angle) * 8;
+      clip.x = clip.x + xDisplace;
+      clip.y = clip.y + yDisplace;
+    }
+
     // ----------------------------------------------- private methods
     function getRandomNum(min, max){
         return Math.floor(Math.random() * (max-min+1) + min);
