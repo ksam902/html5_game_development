@@ -2,20 +2,16 @@
 
 // frame rate of game
 var frameRate = 30;
-var assetManager = null;
+var assetManager, stage, canvas = null;
 
 //collision detection
 collisionMethod = ndgmr.checkPixelCollision;
 window.alphaThresh = 0.75;
 
 // game variables & assets
-var spritesheet;
-var stage = null;
-var canvas = null;
-var mousePointer, mouseX, mouseY;
+var spritesheet, mousePointer, mouseX, mouseY, key;
 
 // Keys - Directional Variables
-var key;
 var downKey, upKey, leftKey, rightKey = false;
 
 //page variables
@@ -67,19 +63,17 @@ var numEnemiesText, numWaveText;
 function onInit() {
     // get reference to canvas
     canvas = document.getElementById("stage");
+    canvas.oncontextmenu = function() {
+         return false;
+    }
     // set canvas to as wide/high as the browser window
     canvas.width = 600;
     canvas.height = 600;
     // create stage object
     stage = new createjs.Stage(canvas);
     stage.enableMouseOver(10);
-
-    cloudContainer = new createjs.Container();
-    infoBirdContainer = new createjs.Container();
-    arenaBirdsContainer = new createjs.Container();
-    statsContainer = new createjs.Container();
-    instructionContainer = new createjs.Container();
-    mousePointerContainer = new createjs.Container();
+    // create containers
+    createContainers();
 
     // construct preloader object to load spritesheet and sound assets
     assetManager = new AssetManager();
@@ -92,12 +86,7 @@ function onInit() {
     // btnBegin.disabled = true;
 
     //sounds
-    createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
-    createjs.Sound.registerSound("sounds/willy_dead.ogg", "willyDies");
-    createjs.Sound.registerSound("sounds/bird_dead.ogg", "birdDies");
-    createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
-    createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
-    createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
+    registerSounds();
 
     //FIRST TIME VISIT - isInstructions should = true
     isInstructions = false;
@@ -121,10 +110,10 @@ function onReady(e) {
     // });
 
     // Adding aimer for the mouse
-    mousePointer = assetManager.getSprite("assets");
-    mousePointer.gotoAndStop("mousePointer");
-    canvas.addEventListener("mouseenter", addMousePointer);
-    canvas.addEventListener("mouseout", removeMousePointer);
+    // mousePointer = assetManager.getSprite("assets");
+    // mousePointer.gotoAndStop("mousePointer");
+    // canvas.addEventListener("mouseenter", addMousePointer);
+    // canvas.addEventListener("mouseout", removeMousePointer);
 
     // startup the ticker
     createjs.Ticker.setFPS(frameRate);
@@ -133,8 +122,123 @@ function onReady(e) {
     //get access to assets
     spritesheet = assetManager.getSpriteSheet("assets");
 
-    loadStartScreen();
+    // loadStartScreen();
+    onNewGame();
 }
+
+
+
+
+
+function mobileConversion(){
+
+	var mouseTarget;	// the display object currently under the mouse, or being dragged
+	var dragStarted;	// indicates whether we are currently in a drag operation
+	var offset;
+	var update = true;
+
+
+		// load the source image:
+		var image = new Image();
+		image.src = "img/button.png";
+		image.onload = handleImageLoad;
+
+	function stop() {
+		createjs.Ticker.removeEventListener("tick", tick);
+	}
+
+	function handleImageLoad(event) {
+    console.log('handle image load');
+		var image = event.target;
+		var bitmap;
+		var container = new createjs.Container();
+		stage.addChild(container);
+
+		// create a shape that represents the center of the daisy image:
+		var hitArea = new createjs.Shape();
+		hitArea.graphics.beginFill("#FFF").drawEllipse(-11, -14, 24, 18);
+		// position hitArea relative to the internal coordinate system of the target bitmap instances:
+		hitArea.x = image.width / 2;
+		hitArea.y = image.height / 2;
+
+		// create and populate the screen with random daisies:
+		for (var i = 0; i < 100; i++) {
+			bitmap = new createjs.Bitmap(image);
+			container.addChild(bitmap);
+			bitmap.x = canvas.width * Math.random() | 0;
+			bitmap.y = canvas.height * Math.random() | 0;
+			bitmap.rotation = 360 * Math.random() | 0;
+			bitmap.regX = bitmap.image.width / 2 | 0;
+			bitmap.regY = bitmap.image.height / 2 | 0;
+			bitmap.scaleX = bitmap.scaleY = bitmap.scale = Math.random() * 0.4 + 0.6;
+			bitmap.name = "bmp_" + i;
+			bitmap.cursor = "pointer";
+
+			// assign the hit area:
+			bitmap.hitArea = hitArea;
+
+			bitmap.addEventListener("mousedown", function (evt) {
+        console.log('mouse down');
+				// bump the target in front of its siblings:
+				var o = evt.target;
+				o.parent.addChild(o);
+				o.offset = {x: o.x - evt.stageX, y: o.y - evt.stageY};
+			});
+
+			// the pressmove event is dispatched when the mouse moves after a mousedown on the target until the mouse is released.
+			bitmap.addEventListener("pressmove", function (evt) {
+        console.log('press move');
+				var o = evt.target;
+				o.x = evt.stageX + o.offset.x;
+				o.y = evt.stageY + o.offset.y;
+				// indicate that the stage should be updated on the next tick:
+				update = true;
+			});
+
+			bitmap.addEventListener("rollover", function (evt) {
+        console.log('rollover');
+				var o = evt.target;
+				o.scaleX = o.scaleY = o.scale * 1.2;
+				update = true;
+			});
+
+			bitmap.addEventListener("rollout", function (evt) {
+        console.log('rollout');
+				var o = evt.target;
+				o.scaleX = o.scaleY = o.scale;
+				update = true;
+			});
+
+		}
+
+		// examples.hideDistractor();
+		createjs.Ticker.addEventListener("tick", tick);
+	}
+
+	function tick(event) {
+		// this set makes it so the stage only re-renders when an event handler indicates a change has happened.
+		if (update) {
+			update = false; // only update once
+			stage.update(event);
+		}
+	}
+ // WILLY MOVEMENT
+  function moveWilly() {
+    if(timer){
+      willy.move(mouseX, mouseY);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
 function onNewGame(e) {
 
     // RESET Game Variables
@@ -170,45 +274,6 @@ function isNotFirstVisitAssets(){
         // //let willy move right away
         // document.addEventListener("keydown", keyDownMove);
         // document.addEventListener("keyup", keyUpMove);
-
-
-        var stage = document.getElementById('stage');
-
-        stage.oncontextmenu = function() {
-             return false;
-        }
-        var pressOptions = {
-            // event: 'press', //no need to pass defaults
-            // pointer: 1,
-            // threshold: 5,
-            time: 100
-        };
-
-        var canvas1 = new Hammer(stage);
-        var timer = null;
-
-        var mouseX;
-        var mouseY;
-
-        canvas1.get('press').set(pressOptions);
-
-        canvas1.on('press', function(ev) {
-            console.log("PRESSS DOWN");
-            mouseX = Math.floor(ev.pointers[0].clientX);
-            mouseY = Math.floor(ev.pointers[0].clientY);
-            timer = setInterval( moveWilly, 100 );
-        });
-
-        canvas1.on('pressup', function(ev) {
-            console.log("PRESS UP");
-            clearInterval( timer );
-        });
-
-        function moveWilly() {
-          if(timer){
-            willy.move(mouseX, mouseY);
-          }
-        }
 
 
         // --- SHOOTING FUNCTION - Mouse Pointer ----
@@ -532,6 +597,10 @@ function loadArenaScreen(){
     removeMousePointer()
     addMousePointer();
     stage.addChild(mousePointerContainer);
+
+
+    mobileConversion();
+
 }
 function loadGameOverScreen(){
     // resetting variables
@@ -881,11 +950,11 @@ function shootProjectile(){
     }
 }
 function addMousePointer(){
-    $( "#stage" ).mousemove(function( event ) {
-        mousePointer.x = stage.mouseX - 20;
-        mousePointer.y = stage.mouseY - 20;
-    });
-    mousePointerContainer.addChild(mousePointer);
+    // $( "#stage" ).mousemove(function( event ) {
+    //     mousePointer.x = stage.mouseX - 20;
+    //     mousePointer.y = stage.mouseY - 20;
+    // });
+    // mousePointerContainer.addChild(mousePointer);
 }
 function removeMousePointer(){
     mousePointerContainer.removeAllChildren();
@@ -1001,3 +1070,23 @@ function onTick(e) {
     // update the stage!
     stage.update();
 }
+
+// ---------- CODE CLEAN UP -----------
+
+function createContainers(){
+  cloudContainer = new createjs.Container();
+  infoBirdContainer = new createjs.Container();
+  arenaBirdsContainer = new createjs.Container();
+  statsContainer = new createjs.Container();
+  instructionContainer = new createjs.Container();
+  mousePointerContainer = new createjs.Container();
+};
+
+function registerSounds(){
+  createjs.Sound.registerSound("sounds/pew.ogg", "shootArrow");
+  createjs.Sound.registerSound("sounds/willy_dead.ogg", "willyDies");
+  createjs.Sound.registerSound("sounds/bird_dead.ogg", "birdDies");
+  createjs.Sound.registerSound("sounds/wave_complete.ogg", "waveComplete");
+  createjs.Sound.registerSound("sounds/game_over.ogg", "gameOver");
+  createjs.Sound.registerSound("sounds/willy_talks.ogg", "willy_talks");
+};

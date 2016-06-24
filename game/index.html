@@ -26,7 +26,6 @@
         <script type="text/javascript" src="Mover.js"></script>
         <script type="text/javascript" src="MoverDiagonal.js"></script>
 
-        <script type="text/javascript" src="dev.js"></script>
 
 
         <script type="text/javascript">
@@ -38,7 +37,9 @@
         </script>
 	</head>
     <body>
-      <!-- <canvas id="stage2"></canvas> -->
+      <script type="text/html" id="joystick-view">
+        <canvas id="joystickCanvas" width="<%= squareSize %>" height="<%= squareSize %>" style="width: <%= squareSize %>px; height: <%= squareSize %>px;"></canvas>
+      </script>
       <canvas id="stage"></canvas>
     </body>
 </html>
