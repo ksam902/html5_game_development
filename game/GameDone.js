@@ -63,9 +63,9 @@ var numEnemiesText, numWaveText;
 function onInit() {
     // get reference to canvas
     canvas = document.getElementById("stage");
-    canvas.oncontextmenu = function() {
-         return false;
-    }
+    // canvas.oncontextmenu = function() {
+    //      return false;
+    // }
     // set canvas to as wide/high as the browser window
     canvas.width = 600;
     canvas.height = 600;
@@ -137,23 +137,21 @@ function mobileConversion(){
 	var offset;
 	var update = true;
 
-
-		// load the source image:
-		var image = new Image();
-		image.src = "img/button.png";
-		image.onload = handleImageLoad;
+	// load the source image:
+	var image = new Image();
+	image.src = "img/button.png";
+	image.onload = handleImageLoad;
 
 	function stop() {
 		createjs.Ticker.removeEventListener("tick", tick);
 	}
 
 	function handleImageLoad(event) {
-    console.log('handle image load');
 		var image = event.target;
 		var bitmap;
 		var container = new createjs.Container();
 		stage.addChild(container);
-
+    createjs.Touch.enable(stage);
 		// create a shape that represents the center of the daisy image:
 		var hitArea = new createjs.Shape();
 		hitArea.graphics.beginFill("#FFF").drawEllipse(-11, -14, 24, 18);
@@ -161,33 +159,24 @@ function mobileConversion(){
 		hitArea.x = image.width / 2;
 		hitArea.y = image.height / 2;
 
-		// create and populate the screen with random daisies:
-		for (var i = 0; i < 100; i++) {
-			bitmap = new createjs.Bitmap(image);
-			container.addChild(bitmap);
-			bitmap.x = canvas.width * Math.random() | 0;
-			bitmap.y = canvas.height * Math.random() | 0;
-			bitmap.rotation = 360 * Math.random() | 0;
-			bitmap.regX = bitmap.image.width / 2 | 0;
-			bitmap.regY = bitmap.image.height / 2 | 0;
-			bitmap.scaleX = bitmap.scaleY = bitmap.scale = Math.random() * 0.4 + 0.6;
-			bitmap.name = "bmp_" + i;
-			bitmap.cursor = "pointer";
+		bitmap = new createjs.Bitmap(image);
+		container.addChild(bitmap);
+		bitmap.x = canvas.width * .075;
+		bitmap.y = canvas.height * .75;
 
-			// assign the hit area:
-			bitmap.hitArea = hitArea;
+		// assign the hit area:
+		bitmap.hitArea = hitArea;
 
-			bitmap.addEventListener("mousedown", function (evt) {
-        console.log('mouse down');
-				// bump the target in front of its siblings:
-				var o = evt.target;
-				o.parent.addChild(o);
-				o.offset = {x: o.x - evt.stageX, y: o.y - evt.stageY};
-			});
+		bitmap.addEventListener("mousedown", function (evt) {
+      console.log('mouse down');
+      console.log(bitmap.getTransformedBounds());
+			var o = evt.target;
+			o.parent.addChild(o);
+			o.offset = {x: o.x - evt.stageX, y: o.y - evt.stageY};
+		});
 
 			// the pressmove event is dispatched when the mouse moves after a mousedown on the target until the mouse is released.
 			bitmap.addEventListener("pressmove", function (evt) {
-        console.log('press move');
 				var o = evt.target;
 				o.x = evt.stageX + o.offset.x;
 				o.y = evt.stageY + o.offset.y;
@@ -209,7 +198,7 @@ function mobileConversion(){
 				update = true;
 			});
 
-		}
+		// }
 
 		// examples.hideDistractor();
 		createjs.Ticker.addEventListener("tick", tick);
